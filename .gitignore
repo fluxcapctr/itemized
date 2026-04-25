@@ -1,0 +1,9 @@
+node_modules/
+raw-files/*.json
+raw-files/*.csv
+raw-files/*.zip
+raw-files/cleveland-clinic-unzipped/
+.DS_Store
+.env
+.env.local
+*.log
