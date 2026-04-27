@@ -7,11 +7,19 @@
   "scripts": {
     "download": "node scripts/download-mrfs.mjs",
     "extract": "node scripts/extract-mri.mjs",
+    "extract:wide": "node scripts/extract-mri-wide.mjs",
+    "ratings": "node scripts/fetch-cms-ratings.mjs",
+    "build:data": "node scripts/build-ui-data.mjs",
+    "build:prod": "node scripts/build-ui-prod.mjs",
     "summarize": "node scripts/summarize-mri.mjs"
   },
   "dependencies": {
     "csv-parse": "^6.2.1",
     "stream-chain": "^3.6.1",
     "stream-json": "^2.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.0",
+    "zipcodes": "^8.0.0"
   }
 }

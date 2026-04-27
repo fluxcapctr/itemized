@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Monthly MRF refresh + UI rebuild for Itemized.
+  Fires on the 1st of every month at 4:00 AM local time.
+
+  INSTALL:
+    cp scripts/com.itemized.refresh.plist ~/Library/LaunchAgents/
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.itemized.refresh.plist
+    launchctl enable gui/$(id -u)/com.itemized.refresh
+
+  RUN ONCE TO TEST:
+    launchctl kickstart -k gui/$(id -u)/com.itemized.refresh
+
+  UNINSTALL:
+    launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.itemized.refresh.plist
+    rm ~/Library/LaunchAgents/com.itemized.refresh.plist
+
+  CHANGE SCHEDULE: edit StartCalendarInterval below, then bootout + bootstrap to reload.
+
+  LOGS: stdout/stderr go to /tmp/itemized-refresh-stdout.log + stderr.log; the
+  refresh.sh script also writes timestamped per-run logs to /tmp/itemized-refresh-*.log.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.itemized.refresh</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/superhenri/Hospital-Prices/scripts/refresh.sh</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>/Users/superhenri/Hospital-Prices</string>
+
+  <!-- Monthly: 1st of every month at 04:00 local. Change Day to ~ for "every day". -->
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Day</key>
+    <integer>1</integer>
+    <key>Hour</key>
+    <integer>4</integer>
+    <key>Minute</key>
+    <integer>0</integer>
+  </dict>
+
+  <!-- Limits: don't start if the laptop is on battery (saves the SSD). -->
+  <key>StartOnMount</key>
+  <false/>
+
+  <!-- Environment: PATH must include node and unzip. /usr/local/bin covers
+       Homebrew Intel; /opt/homebrew/bin covers Apple Silicon. -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    <key>REFRESH_DAYS</key>
+    <string>30</string>
+  </dict>
+
+  <!-- Logs -->
+  <key>StandardOutPath</key>
+  <string>/tmp/itemized-refresh-stdout.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/itemized-refresh-stderr.log</string>
+
+  <!-- Don't keep restarting if the script fails. -->
+  <key>KeepAlive</key>
+  <false/>
+  <key>RunAtLoad</key>
+  <false/>
+
+  <!-- Lower priority so the refresh doesn't fight foreground apps. -->
+  <key>Nice</key>
+  <integer>10</integer>
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>

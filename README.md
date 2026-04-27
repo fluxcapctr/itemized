@@ -1,80 +1,133 @@
 # Hospital-Prices
 
-Consumer-facing hospital price comparison tool. Working name only.
+Working name: **Itemized**. Domain in flight.
 
 ## What this is
 
-A research/build spike on whether you can build a "Zillow for medical procedures" by ingesting the CMS-mandated hospital price transparency Machine-Readable Files (MRFs) and putting a real UI on top.
-
-Premise: every US hospital is required to publish a machine-readable file of all standard charges, including negotiated rates with each insurer. The data is free, the formats are inconsistent, and no consumer-facing winner has emerged. Turquoise Health and Serif Health own the B2B side. The consumer slot is open.
+Consumer hospital price comparison tool. Built on CMS-mandated hospital Machine-Readable Files (MRFs) — every US hospital is required by federal law to publish their negotiated rates with every insurer for every procedure. The data is free, the formats are inconsistent, and no consumer-facing winner has emerged. Turquoise Health and Serif Health own the B2B side. The consumer slot is open.
 
 ## Where we are
 
-Status: **proof of concept complete** as of 2026-04-25.
+Status: **shippable preview** as of 2026-04-26.
 
 What's built:
-- Downloader for 7 hospital MRF files (Cedars-Sinai, UCLA, Providence St Joseph, Houston Methodist, Cleveland Clinic, NYU Langone Tisch, Advocate Christ)
-- Streaming parser that handles both JSON (CMS v2/v3 nested) and CSV (CMS v3 tall) formats
-- Working extraction for any CPT code across all 6 standard-format hospitals (NYU's wide format still needs a separate parser)
-- Verified output: 514 priced rows for knee/lower-extremity MRI (CPT 73721) extracted in 49 seconds across ~6.7M source rows
+- **96 hospitals across 13 metros**: 25 LA-area (full local depth), 71 in NYC, Chicago, Houston, Dallas, Philadelphia, Phoenix, Atlanta, Boston, Seattle, Cleveland, DC, SF Bay, Nashville, Denver.
+- **30 procedures**: imaging (brain MRI, knee MRI, lumbar MRI, CT abd/pelvis, ultrasound, mammogram, X-ray, DXA), labs (CMP, lipid, CBC, A1c, TSH, urinalysis), surgery (knee/hip replacement, knee arthroscopy, gallbladder, hernia, cataract), maternity (vaginal/cesarean delivery), procedural (colonoscopy, EGD), cardiac (EKG, echo), office visits.
+- **Streaming parsers** for CMS nested JSON (v2 + v3), tall CSV (v3), wide CSV (v3 with one column per payer), and zipped variants of all of the above.
+- **Cleanup pipeline**: drops case-rate / per-diem / sentinel rows, canonicalizes payer names with substring patterns (handles long-form like "Aetna Health of California, Inc. and Aetna Health Management LLC"), buckets Medicare/Medicaid via plan-name and Medicare-only payer detection, sanity-checks negotiated > 3× gross.
+- **CMS Hospital Care Compare ratings** (1-5 stars + safety/readmission/mortality subscores) joined to 89 of 96 hospitals by name. The 7 misses are mostly cancer-only specialty hospitals (MSK, MD Anderson, USC Norris) that CMS doesn't rate.
+- **Itemized.html UI** (React + Vanilla CSS): editorial visual identity, multi-procedure picker, LA-first layout with national context, personalization flow (insurance + deductible + coinsurance → out-of-pocket estimate), plan-by-plan breakdown in row-expand, CMS rating block per row, sort by price/rating/best value, fold-out for hospitals without a published rate for the current selection.
+- **Bills page** (Tier 1) with affiliate hooks for Goodbill bill negotiation.
+- **Lazy-loading**: per-procedure data files (~250KB each) instead of one 17MB blob. First paint downloads ~16KB index.
+- **Prod build script** (`npm run build:prod`) that compiles JSX, drops Babel CDN runtime, copies static assets to `ui/dist/` ready for Vercel deploy.
 
 Real numbers from this dataset:
-- Cash pay for the same procedure ranges from $378 (Cleveland Clinic) to $6,481 (Cedars-Sinai)
-- That's a 17x spread for an identical CPT code
-- Commercial insurance ranges go even wider ($60-$14,761)
+- Knee MRI cash spread: $74 (Jefferson Abington) → $32,963 (HCA Houston Kingwood) = **445×**.
+- Chest X-ray Aetna: $19 (Providence St Joseph) → $4,201 (Cedars-Sinai). Same insurance card.
+- Lab spreads (CMP, A1c, lipid panel) regularly clear 100×.
 
-## Next moves (in order)
+## What's not built yet
 
-1. **Multi-procedure extraction.** Pick 10 shoppable procedures (MRI brain, colonoscopy, mammogram, etc.) and run the extractor for all of them across all 6 hospitals. Confirm the price-spread story holds beyond knee MRI.
-2. **NYU wide-format parser.** ~1,979 columns, one per payer/plan. Separate code path. ~1 day of work.
-3. **Payer name normalization.** Same insurer shows up as "Blue Cross Blue Shield HMO," "BCBS Illinois," "Anthem BCBS," etc. Build a fuzzy-match or curated lookup table. This is the longest open task.
-4. **Database layer.** Pipe normalized rows into Postgres or SQLite. Stop re-parsing files for every query.
-5. **Consumer UI.** Search by procedure + zip code, return hospital comparison. Mobile-first.
+- Procedure-specific quality metrics (CMS publishes them; we use the hospital-wide composite for now).
+- Real geocoding / "near me by zip code" — we hardcode an LA-county zip range.
+- Database (everything is per-procedure JSON files; works fine for static hosting).
+- Actual deploy + domain DNS.
+- Bill-review self-service tool (Tier 2, deferred until affiliate revenue justifies it).
 
 ## Architecture
 
 ```
-raw-files/                              <-- gitignored, ~3.7GB on disk
-  cedars-sinai.json                     843MB
-  ucla-ronald-reagan.json               477MB
-  providence-st-joseph.json             215MB
-  houston-methodist.json                 69MB
-  cleveland-clinic.zip                   49MB compressed
-  cleveland-clinic-unzipped/*.csv       1.5GB
-  nyu-langone-tisch.csv                 460MB
-  advocate-christ.csv                   141MB
-  manifest.json
-  mri-73721-results.json                <-- generated extraction output
+raw-files/                              symlink to /Volumes/Extreme SSD/Hospital-Prices-raw-files
+  *.json | *.csv | *.zip                ~28GB across 96 hospital MRFs
+  *-unzipped/                           auto-extracted from .zip MRFs
+  results/{cpt}.json                    extractor output, one per CPT code
+  ratings.json                          CMS Care Compare overall + subscores
+                                        plus matched name and CMS facility ID
 
 scripts/
-  download-mrfs.mjs                     fetch all hospital files to raw-files/
-  extract-mri.mjs                       streaming extractor for CPT 73721
-  summarize-mri.mjs                     aggregate results into price comparison
+  download-mrfs.mjs                     parallel fetcher (3 concurrent, 60min/file timeout)
+  extract-mri.mjs                       streaming extractor (tall CSV + nested JSON)
+  extract-mri-wide.mjs                  separate parser for wide-format CSVs (NYU, HUP, etc.)
+  fetch-cms-ratings.mjs                 pulls Hospital Care Compare ratings from data.cms.gov
+  build-ui-data.mjs                     transforms extractor output into UI-ready JSON
+                                        (per-procedure files for lazy loading)
+  build-ui-prod.mjs                     compiles JSX, builds deploy-ready ui/dist/
+  summarize-mri.mjs                     prints per-CPT comparison tables to stdout
+  cpts.mjs                              shared CPT code list (used by extractors + UI builder)
+
+ui/
+  Itemized.html                         entry HTML, Bricolage Grotesque + Inter + JetBrains Mono
+  app.jsx                               React app (~1,000 lines)
+  tweaks-panel.jsx                      in-page tweaks panel for design iteration
+  data.real.js                          procedure index (16KB; hospitals lazy-loaded)
+  data/{cpt}.json                       per-procedure hospital data (~250KB each)
+  ratings.real.js                       CMS ratings (~85KB)
+  bills.html                            standalone affiliate page
+  data.js / ratings.js                  original mocked sample data (kept for design iteration)
+  dist/                                 generated by build:prod, deploy this
 ```
 
 ## How to run
 
 ```bash
 npm install
-node scripts/download-mrfs.mjs        # ~90 seconds, downloads ~2.3GB
-unzip raw-files/cleveland-clinic.zip -d raw-files/cleveland-clinic-unzipped/
-node scripts/extract-mri.mjs           # ~50 seconds, produces results.json
-node scripts/summarize-mri.mjs         # instant, prints comparison table
+
+# Download MRFs (slow first time, ~25GB total to external SSD)
+npm run download
+
+# Extract (re-runs incrementally; ~3-5 min for 30 procedures across 96 hospitals)
+npm run extract
+npm run extract:wide
+
+# Fetch CMS ratings (~30s)
+npm run ratings
+
+# Build UI data (~5s)
+npm run build:data
+
+# Build deploy-ready bundle (~2s)
+npm run build:prod
+
+# Or just summarize to stdout
+npm run summarize
 ```
+
+## Local dev
+
+The UI loads from CDN (React 18 + Babel-standalone for JSX) so dev needs an HTTP server, not file://:
+
+```bash
+cd ui && python3 -m http.server 8000
+# then http://localhost:8000/Itemized.html
+```
+
+For prod, use the precompiled bundle (no Babel CDN, faster paint):
+
+```bash
+npm run build:prod
+cd ui/dist && npx vercel --prod
+```
+
+## House rules
+
+- **No em dashes anywhere.** Periods or restructure.
+- **Streaming-first.** No `JSON.parse(readFileSync(...))` on a 4GB MRF. Use `stream-json` for JSON, `readline + csv-parse` for CSV.
+- **External SSD for raw data.** The internal drive can't hold ~28GB of MRFs comfortably. `raw-files/` is a symlink to `/Volumes/Extreme SSD/Hospital-Prices-raw-files`.
+- **Wide-format hospitals go in extract-mri-wide.mjs.** Don't try to make tall and wide one parser.
+- **Never take money from entities being compared.** Affiliate revenue from adjacent services (bill negotiation, direct-pay clinics) is fine; sponsored hospital rankings are not.
 
 ## Known issues / sharp edges
 
-- **Cedars-Sinai** is on CMS v2.0.0; everyone else is v3.0.0. Parser handles both because the field shape is similar enough, but a strict v3-only parser would miss Cedars.
-- **Cleveland Clinic** ships a 51MB zip that decompresses to 1.6GB CSV. Standard CSV parsers blow up. The extractor handles it via line-streaming with an early CPT-code filter before parsing.
-- **NYU Langone** uses a CMS-permitted but unusual "wide" format with ~1,979 columns. Currently skipped. Needs its own parser.
-- **Mayo Clinic** (not in this set) blocks all programmatic access via Akamai. Would require headless browser or manual download.
-- **Kaiser LA** (not in this set) publishes a 3-year-old non-CMS-format zip with only their own plan rates. Skip-or-special-case decision.
-- **Payer normalization is unsolved.** Comparing "Anthem PPO" at one hospital to "Blue Cross Anthem" at another requires a mapping table or fuzzy match that does not exist yet.
+- **Harbor-UCLA wide CSV** has unclosed quotes in the header that crash the wide parser. Currently skipped with a warning. Needs a CSV-aware multi-line header reader.
+- **Mayo Clinic, UW Medicine, Penn Medicine** (in some configurations) sit behind Akamai/Cloudflare 403 walls. WebFetch fails; manual browser download required.
+- **Cedars-Sinai's PET Scan items** include CPT 71045 (chest X-ray) in their `code_information` array, which leaks PET scan prices into chest X-ray comparisons. The 3× gross sanity filter catches the worst cases. A more principled fix would be to flag items with multiple unrelated CPTs as ambiguous at extraction time.
+- **Payer normalization** is substring-pattern based. Misses long-tail payer names that don't contain "Aetna" / "Cigna" / etc. The "no rate" fold-out at the bottom of each procedure shows hospitals where this hits.
+- **Pediatric and cancer specialty hospitals** (CHLA, Seattle Children's, CHOP, Texas Children's, Lurie, Boston Children's, Phoenix Children's, MSK, MD Anderson, USC Norris) don't have CMS overall ratings. The methodology depends on Medicare claims they don't generate. The UI handles this with a "Pediatric/specialty · not rated by CMS" treatment.
 
 ## Background research
 
-The full audit of all 10 sampled hospitals (formats, sizes, schemas, compliance issues) lives at:
+The full audit of the original 10 sampled hospitals lives at:
 `/Users/superhenri/Obsidian-Vaults/Mission Control/Research/Hospital-MRF-Audit-2026-04-25.md`
 
-The competitive scan that led to this build (why this market vs. the other 5 considered) lives at:
+The competitive scan that led to this build:
 `/Users/superhenri/Obsidian-Vaults/Mission Control/Research/Database-Sites-Opportunity-Scan-2026-04-25.md`

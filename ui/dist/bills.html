@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Itemized — Hospital bill review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --paper: #F2EEE3;
+    --paper-2: #E9E3D2;
+    --paper-3: #DED6BF;
+    --ink: #1A1814;
+    --ink-2: #3B362E;
+    --ink-3: #6F685B;
+    --ink-4: #A29B8C;
+    --rule-soft: #C9C0AB;
+    --signal: #6E3CFF;
+    --signal-2: #B6A0FF;
+    --signal-soft: #E7DEFF;
+    --peach: #F4C7B1;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+  body { font-size: 16px; line-height: 1.55; letter-spacing: -0.005em; }
+
+  .display { font-family: 'Bricolage Grotesque', 'Inter', sans-serif; font-weight: 700; letter-spacing: -0.035em; line-height: 0.96; }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  .accent { color: var(--signal); }
+  em { font-style: italic; color: var(--signal); font-weight: 600; }
+
+  /* Nav (same as main page) */
+  .nav { display: flex; justify-content: space-between; align-items: center; padding: 22px 32px; max-width: 1320px; margin: 0 auto; }
+  .wordmark { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 26px; letter-spacing: -0.04em; color: var(--ink); text-decoration: none; display: inline-flex; align-items: baseline; gap: 8px; }
+  .wordmark .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--signal); margin-left: 2px; transform: translateY(-2px); }
+  .wordmark .tag { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 500; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.14em; margin-left: 14px; transform: translateY(-3px); }
+  .nav-right { display: flex; align-items: center; gap: 20px; font-size: 13px; }
+  .nav-right a { color: var(--ink); text-decoration: none; opacity: 0.7; }
+  .nav-right a:hover { opacity: 1; }
+  .nav-right a.active { opacity: 1; font-weight: 500; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 100px; background: var(--ink); color: var(--paper); font-size: 13px; font-weight: 500; text-decoration: none; }
+  .pill .dot-mini { width: 6px; height: 6px; border-radius: 50%; background: var(--signal-2); }
+
+  /* Page layout */
+  .container { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+  .hero { padding: 24px 0 40px; }
+  .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.18em; margin-bottom: 18px; }
+  h1.title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; letter-spacing: -0.035em; line-height: 0.96; font-size: clamp(48px, 7vw, 88px); margin: 0 0 20px; }
+  .subhead { font-size: 18px; line-height: 1.5; color: var(--ink-2); max-width: 600px; }
+
+  .sec { padding: 40px 0 24px; }
+  h2.sh { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; letter-spacing: -0.025em; font-size: clamp(32px, 4.4vw, 48px); margin: 0 0 18px; line-height: 1.0; }
+  .sec p { font-size: 16px; line-height: 1.65; color: var(--ink-2); margin: 0 0 14px; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 24px 0 8px; }
+  .err-card { background: var(--paper-2); border-radius: 18px; padding: 22px; }
+  .err-card .num { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
+  .err-card .h { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 18px; line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.015em; }
+  .err-card .b { font-size: 14px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+
+  .path { background: var(--paper-2); border-radius: 24px; padding: 28px 28px 24px; margin-top: 18px; }
+  .path.signal { background: var(--signal); color: var(--paper); }
+  .path.signal .label, .path.signal .b, .path.signal .h { color: var(--paper); }
+  .path .label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 10px; }
+  .path .h { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 26px; letter-spacing: -0.02em; margin: 0 0 12px; line-height: 1.1; }
+  .path .b { font-size: 15px; line-height: 1.55; color: var(--ink-2); margin: 0 0 18px; }
+  .path .cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--ink); color: var(--paper);
+    padding: 12px 20px; border-radius: 100px;
+    text-decoration: none; font-weight: 500; font-size: 14px;
+  }
+  .path.signal .cta { background: var(--paper); color: var(--ink); }
+  .path .meta { display: block; margin-top: 12px; font-size: 12px; color: var(--ink-3); font-family: 'JetBrains Mono', monospace; }
+  .path.signal .meta { color: var(--signal-2); opacity: 0.85; }
+
+  .pricing-row { display: flex; gap: 8px 16px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--ink-3); margin: 4px 0 18px; font-family: 'JetBrains Mono', monospace; }
+  .pricing-row .dot { width: 4px; height: 4px; background: currentColor; border-radius: 50%; opacity: 0.5; }
+  .path.signal .pricing-row { color: var(--signal-soft); }
+
+  /* disclosure pill */
+  .disclosure { margin: 56px 0 80px; padding: 18px 22px; border-radius: 20px; border: 1px dashed var(--rule-soft); font-size: 13px; line-height: 1.55; color: var(--ink-3); }
+  .disclosure strong { color: var(--ink-2); }
+
+  /* footer */
+  .foot { max-width: 1320px; margin: 0 auto; padding: 40px 32px 60px; border-top: 1px solid var(--rule-soft); display: flex; justify-content: space-between; align-items: baseline; gap: 24px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); }
+  .foot a { color: var(--ink-2); }
+
+  @media (max-width: 700px) {
+    .container { padding: 0 18px; }
+    .nav { padding: 18px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/Itemized.html" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/Itemized.html#methodology">Methodology</a>
+    <a href="/Itemized.html#hospitals">Hospitals</a>
+    <a href="/bills.html" class="active">Got a bill?</a>
+    <a href="#" class="pill"><span class="dot-mini"></span>LA preview</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">HOSPITAL BILLS</div>
+    <h1 class="title">That bill doesn't match<br/>what they <em>published</em>.</h1>
+    <p class="subhead">Hospitals are required by federal law to publish what they charge — every CPT code, every insurance plan, the dollar amount. The bill in your mailbox has to line up with that file. When it doesn't, you can fight it.</p>
+  </section>
+
+  <section class="sec">
+    <h2 class="sh">How the math <em>breaks</em>.</h2>
+    <p>Three patterns account for almost every disputable charge:</p>
+
+    <div class="card-grid">
+      <div class="err-card">
+        <div class="num">01</div>
+        <div class="h">Duplicate or phantom charges</div>
+        <p class="b">A service billed twice. A service you didn't receive. A line item for "supplies" that doesn't match anything that happened in the room.</p>
+      </div>
+      <div class="err-card">
+        <div class="num">02</div>
+        <div class="h">Out-of-network components</div>
+        <p class="b">A radiologist or anesthesiologist quietly billed at non-contracted rates inside an in-network procedure. Your insurer pays partial; you get the balance.</p>
+      </div>
+      <div class="err-card">
+        <div class="num">03</div>
+        <div class="h">Code upcoding</div>
+        <p class="b">A more expensive CPT billed for the procedure you actually had. A 99214 billed for a visit that was clinically a 99213. The hospital's own MRF tells you the price difference.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sh">Two ways to <em>fight it</em>.</h2>
+    <p>One you do yourself for free. One a service does for a percentage of what they save you. Pick by how much time you have.</p>
+
+    <div class="path">
+      <div class="label">Path 01 · Do it yourself</div>
+      <div class="h">Free. Takes a few hours.</div>
+      <p class="b">Pull the hospital's MRF (linked from every hospital row on Itemized). Find your CPT codes. Compare line by line against your itemized bill. Write a dispute letter citing the published rate. Hospitals know they have to honor what they published.</p>
+      <span class="meta">A guide is in the works. For now, the hospital's MRF link on each row is your starting point.</span>
+    </div>
+
+    <div class="path signal">
+      <div class="label">Path 02 · Hand it to a service</div>
+      <div class="h">No savings, no fee.</div>
+      <p class="b">Bill negotiation services review your itemized bill, find the disputable charges, and negotiate with the hospital on your behalf. They take a percentage of what they save you. If they don't save anything, you don't pay.</p>
+      <div class="pricing-row">
+        <span>fee: % of savings</span><span class="dot"></span>
+        <span>no upfront cost</span><span class="dot"></span>
+        <span>weeks to resolve</span>
+      </div>
+      <a class="cta" href="/go/goodbill" rel="sponsored">Send your bill to Goodbill →</a>
+      <span class="meta">Goodbill is the partner we recommend. Why them: clean consumer brand, transparent pricing, focus on hospital and ER bills specifically.</span>
+    </div>
+  </section>
+
+  <section class="disclosure">
+    <strong>Honest about the money.</strong> We earn a referral fee when you use Goodbill through this page. We picked them because they're the cleanest of the bill-negotiation services we evaluated, and the model (percentage of savings, no fee otherwise) keeps their incentive aligned with yours. We don't take money from hospitals or insurers — that would compromise the data on every other page.
+  </section>
+
+</div>
+
+<footer class="foot">
+  <div>Itemized · LA preview · 2026-04-26</div>
+  <div><a href="/Itemized.html">← Back to comparison</a></div>
+</footer>
+
+</body>
+</html>

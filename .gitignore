@@ -1,9 +1,13 @@
 node_modules/
-raw-files/*.json
-raw-files/*.csv
-raw-files/*.zip
-raw-files/cleveland-clinic-unzipped/
+# raw-files is a symlink to /Volumes/Extreme SSD/Hospital-Prices-raw-files.
+# The actual MRF dumps and results live on the external drive.
+raw-files
+raw-files/
 .DS_Store
 .env
 .env.local
 *.log
+# Local Claude Code session state and per-machine launch settings.
+.claude/
+# /tmp report drops, scratch dirs.
+/tmp-reports/
