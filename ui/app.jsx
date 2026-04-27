@@ -122,7 +122,8 @@ function useQueryState() {
       if (v == null) p.delete(k);
       else p.set(k, v);
     });
-    const url = `${window.location.pathname}?${p.toString()}${window.location.hash}`;
+    const qs = p.toString();
+    const url = `${window.location.pathname}${qs ? `?${qs}` : ""}${window.location.hash}`;
     window.history.replaceState(null, "", url);
     setS(get());
   }, [get]);
