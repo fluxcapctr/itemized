@@ -1,0 +1,6 @@
+# itemized.health robots
+User-agent: *
+Allow: /
+Disallow: /api/
+
+Sitemap: https://itemized.health/sitemap.xml

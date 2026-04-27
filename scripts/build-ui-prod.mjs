@@ -101,6 +101,14 @@ async function main() {
     JSON.stringify(vercelConfig, null, 2),
   );
 
+  // 5) SEO landing pages (one per CPT) + sitemap.xml + robots.txt.
+  // Done last so it can read the freshly-copied per-procedure data files.
+  // Run as a child process so we get deterministic completion semantics
+  // (the SEO script does its own async work).
+  const { spawnSync } = await import("node:child_process");
+  const seoRun = spawnSync("node", [path.join(__dirname, "build-seo-pages.mjs")], { stdio: "inherit" });
+  if (seoRun.status !== 0) throw new Error("build-seo-pages.mjs failed");
+
   // Summary
   function totalSize(dir) {
     let total = 0;
