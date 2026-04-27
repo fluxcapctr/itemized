@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/",
-      "destination": "/Itemized.html"
+      "destination": "/Itemized"
     }
   ],
   "headers": [

@@ -81,7 +81,9 @@ async function main() {
   const vercelConfig = {
     cleanUrls: true,
     rewrites: [
-      { source: "/", destination: "/Itemized.html" },
+      // cleanUrls strips ".html", so rewriting to /Itemized.html collides
+      // with the redirect. Point at the cleaned form.
+      { source: "/", destination: "/Itemized" },
     ],
     headers: [
       {
