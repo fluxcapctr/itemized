@@ -466,6 +466,239 @@ ${faqHtml}
 </html>`;
 }
 
+// ── Per-(metro, procedure) page ─────────────────────────────────────────
+
+// Slug a metro string ("Los Angeles, CA") to a URL fragment ("los-angeles").
+// We drop the state since our 13+ metros don't currently collide.
+function metroSlug(metro) {
+  if (!metro) return "";
+  const city = metro.split(",")[0];
+  return slugify(city);
+}
+
+function renderMetroPage({ proc, procSlug, metro, hospitalsInMetro, asOf }) {
+  const procName = proc.label;
+  const procShort = proc.short;
+  const procCpt = proc.code;
+  const cityName = metro.split(",")[0];
+  const stateAbbr = (metro.split(",")[1] || "").trim();
+
+  // Sort the metro hospitals by cash price ascending; only those with a
+  // published cash price feed the headline numbers.
+  const ranked = hospitalsInMetro
+    .filter((h) => !h.all_missing && Number.isFinite(h.cash_pay_low))
+    .sort((a, b) => a.cash_pay_low - b.cash_pay_low);
+  const totalInMetro = hospitalsInMetro.filter((h) => !h.all_missing).length;
+  const totalWithCash = ranked.length;
+  const lowVal = ranked[0]?.cash_pay_low ?? null;
+  const highVal = ranked[ranked.length - 1]?.cash_pay_high ?? ranked[ranked.length - 1]?.cash_pay_low ?? null;
+  const spread = lowVal && highVal && lowVal > 0 ? Math.round(highVal / lowVal) : null;
+
+  const mSlug = metroSlug(metro);
+  const slug = `${procSlug}/in/${mSlug}`;
+  const canonical = `${SITE_ORIGIN}/procedure/${slug}`;
+  const parentCanonical = `${SITE_ORIGIN}/procedure/${procSlug}`;
+
+  const title = `${procName} cost in ${cityName}${stateAbbr ? `, ${stateAbbr}` : ""}. Compare ${totalInMetro} hospitals. Itemized.`;
+  const descLow = lowVal ? fmtMoney(lowVal) : "see range";
+  const descHigh = highVal ? fmtMoney(highVal) : "varies";
+  const description = `${procName} cost in ${cityName}${stateAbbr ? `, ${stateAbbr}` : ""}. Cash-pay range: ${descLow} to ${descHigh} across ${totalInMetro} ${cityName}-area hospitals. Real CMS-mandated price transparency data.`;
+
+  // ── JSON-LD ────────────────────────────────────────────────────────
+  const medicalProcedureSchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalProcedure",
+    name: procName,
+    code: { "@type": "MedicalCode", codeValue: procCpt, codingSystem: "CPT" },
+    description: `${procName} pricing at hospitals in the ${cityName} metro area.`,
+    url: canonical,
+  };
+  const aggregateOfferSchema = lowVal && highVal ? {
+    "@context": "https://schema.org",
+    "@type": "AggregateOffer",
+    name: `${procName} cash-pay price range in ${cityName}`,
+    priceCurrency: "USD",
+    lowPrice: Math.round(lowVal),
+    highPrice: Math.round(highVal),
+    offerCount: totalWithCash,
+    description: `Cash-pay prices for ${procName.toLowerCase()} at ${totalWithCash} ${cityName}-area hospitals.`,
+    url: canonical,
+  } : null;
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Procedures", item: SITE_ORIGIN + "/procedure" },
+      { "@type": "ListItem", position: 3, name: procName, item: parentCanonical },
+      { "@type": "ListItem", position: 4, name: cityName, item: canonical },
+    ],
+  };
+  const ldBlocks = [medicalProcedureSchema, aggregateOfferSchema, breadcrumbSchema].filter(Boolean);
+
+  const tableRows = ranked.length
+    ? ranked.map(renderHospitalRow).join("")
+    : `<tr><td colspan="3" class="empty">No ${escHtml(cityName)}-area hospital published a cash price for ${escHtml(procName.toLowerCase())} as of ${escHtml(asOf)}.</td></tr>`;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${escHtml(title)}</title>
+  <meta name="description" content="${escAttr(description)}">
+  <link rel="canonical" href="${escAttr(canonical)}">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escAttr(title)}">
+  <meta property="og:description" content="${escAttr(description)}">
+  <meta property="og:url" content="${escAttr(canonical)}">
+  <meta property="og:site_name" content="Itemized">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --signal-soft:#ECE6FE; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 920px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+    h1.display, h2.display { font-family: var(--display-font); letter-spacing: -0.02em; line-height: 1.05; }
+    h1.display { font-size: clamp(36px, 5.5vw, 56px); margin: 0 0 16px; font-weight: 700; }
+    h2.display { font-size: clamp(24px, 3vw, 36px); margin: 40px 0 14px; font-weight: 700; }
+    .accent { color: var(--signal); }
+    .lede { font-size: 18px; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+    .lede strong { color: var(--ink); }
+    .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin: 24px 0 32px; }
+    .pair-card { background: var(--paper-2); border-radius: 24px; padding: 24px; }
+    .pair-card.lo { background: var(--signal-soft); }
+    .pair-card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 8px; }
+    .pair-card .num { font-family: var(--display-font); font-size: clamp(34px, 4vw, 50px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .pair-card .num .cur { font-size: 0.6em; vertical-align: 0.18em; margin-right: 2px; color: var(--ink-3); }
+    .pair-card .who { margin-top: 12px; font-size: 14px; color: var(--ink-2); }
+    .pair-card .who .h { font-weight: 600; }
+    .pair-card .who .m { color: var(--ink-3); font-size: 13px; }
+    .pair .vs { display: flex; align-items: center; justify-content: center; font-family: var(--display-font); font-size: 18px; color: var(--ink-3); }
+    table.hospitals { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    table.hospitals th, table.hospitals td { padding: 14px 8px; text-align: left; border-bottom: 1px solid var(--rule-soft); }
+    table.hospitals th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 500; }
+    table.hospitals td.rank { width: 36px; color: var(--ink-3); font-family: 'JetBrains Mono',monospace; font-size: 14px; }
+    table.hospitals td.name .hname { font-weight: 600; font-size: 16px; }
+    table.hospitals td.name .hmetro { color: var(--ink-3); font-size: 13px; margin-top: 2px; }
+    table.hospitals td.price { text-align: right; font-family: var(--display-font); font-size: 18px; font-weight: 600; }
+    table.hospitals td.empty { text-align: center; color: var(--ink-3); padding: 24px 8px; font-style: italic; }
+    .cta { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 28px 24px; margin: 32px 0; }
+    .cta h2 { color: var(--paper); margin: 0 0 12px; font-family: var(--display-font); font-size: 26px; letter-spacing: -0.02em; }
+    .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; }
+    .cta a:hover { background: #6E55EA; }
+    .body-prose { max-width: 64ch; }
+    .body-prose p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+    footer .foot-disc { margin-top: 8px; font-style: italic; }
+    footer a { color: var(--ink-2); }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+  </style>
+
+${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/procedure">Procedures</a> &nbsp;·&nbsp; <a href="${escAttr(parentCanonical)}">${escHtml(procName)}</a> &nbsp;·&nbsp; ${escHtml(cityName)}
+  </div>
+
+  <h1 class="display">${escHtml(procName)} cost in <span class="accent">${escHtml(cityName)}</span>.</h1>
+  <p class="lede">
+    What ${escHtml(procName.toLowerCase())} costs at <strong>${totalInMetro} ${escHtml(cityName)}-area ${totalInMetro === 1 ? "hospital" : "hospitals"}</strong>, pulled directly from each hospital's federally-mandated price transparency file. Cash-pay range: <strong>${escHtml(fmtMoney(lowVal))}</strong> to <strong>${escHtml(fmtMoney(highVal))}</strong>${spread ? ` (${spread}× spread)` : ""}. CPT code <strong>${escHtml(procCpt)}</strong>.
+  </p>
+
+  ${(lowVal != null && highVal != null && ranked.length > 1) ? `
+  <section>
+    <div class="pair">
+      <div class="pair-card lo">
+        <div class="lbl">Cheapest in ${escHtml(cityName)}</div>
+        <div class="num"><span class="cur">$</span>${escHtml(Math.round(lowVal).toLocaleString("en-US"))}</div>
+        <div class="who">
+          <div class="h">${escHtml(ranked[0].name)}</div>
+          <div class="m">${escHtml(metro)}</div>
+        </div>
+      </div>
+      <div class="vs">vs.</div>
+      <div class="pair-card hi">
+        <div class="lbl">Most expensive in ${escHtml(cityName)}</div>
+        <div class="num"><span class="cur">$</span>${escHtml(Math.round(highVal).toLocaleString("en-US"))}</div>
+        <div class="who">
+          <div class="h">${escHtml(ranked[ranked.length - 1].name)}</div>
+          <div class="m">${escHtml(metro)}</div>
+        </div>
+      </div>
+    </div>
+  </section>` : ""}
+
+  <h2 class="display">All ${escHtml(cityName)}-area hospitals.</h2>
+  <table class="hospitals">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Hospital</th>
+        <th style="text-align:right">Cash price</th>
+      </tr>
+    </thead>
+    <tbody>${tableRows}
+    </tbody>
+  </table>
+
+  <div class="cta">
+    <h2>See plan-specific prices for your insurance.</h2>
+    <p>Pick your insurance plan, see what each ${escHtml(cityName)}-area hospital negotiated. Estimated out-of-pocket included.</p>
+    <a href="/?p=${escAttr(procCpt)}">Compare ${escHtml(procShort.toLowerCase())} prices  →</a>
+  </div>
+
+  <h2 class="display">${escHtml(procName)}, nationally.</h2>
+  <div class="body-prose">
+    <p>The ${escHtml(cityName)} numbers above only tell part of the story. The same ${escHtml(procName.toLowerCase())} can vary 10× across US metros, and even within ${escHtml(cityName)} the published prices span ${spread ? `${spread} times` : "many times"} from cheapest to most expensive.</p>
+    <p>For the national comparison set, see the <a href="${escAttr(parentCanonical)}">${escHtml(procName)} overview page</a>, which covers ${escHtml(procName.toLowerCase())} prices at every hospital in our dataset.</p>
+  </div>
+
+  <h2 class="display">What to ask before you book.</h2>
+  <div class="body-prose">
+    <p><strong>Is this the all-in price?</strong> Hospitals often quote the facility fee and bill the radiologist, anesthesiologist, or specialist separately. Ask for the bundled total.</p>
+    <p><strong>Cash-pay vs. insurance?</strong> Don't assume insurance is cheaper. For high-deductible plans, cash pay often beats the negotiated rate, especially for elective imaging.</p>
+    <p><strong>Financial assistance?</strong> Federally-tax-exempt hospitals must have a financial-assistance policy. It can knock 50-100% off the bill for households below specific income thresholds.</p>
+  </div>
+
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). Last refresh: ${escHtml(asOf)}.</div>
+    <div class="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>`;
+}
+
 // ── Procedure index (hub page at /procedure) ───────────────────────────
 
 function renderProcedureIndex({ procedures, hospitalsByProc, asOf }) {
@@ -638,6 +871,7 @@ async function main() {
   ];
 
   let written = 0;
+  let metroPagesWritten = 0;
   for (const proc of data.procedures) {
     let base = slugify(proc.label);
     // Collision guard: if two procedures slugify to the same string,
@@ -657,6 +891,38 @@ async function main() {
       priority: "0.8",
       changefreq: "weekly",
     });
+
+    // Per-metro pages for this procedure. Group hospitals (with data) by
+    // metro and write a page for each metro that has at least one hospital
+    // with a published cash price for this procedure.
+    const metroBuckets = new Map();
+    for (const h of hospitals) {
+      if (h.all_missing || !h.metro) continue;
+      if (!metroBuckets.has(h.metro)) metroBuckets.set(h.metro, []);
+      metroBuckets.get(h.metro).push(h);
+    }
+    for (const [metro, list] of metroBuckets) {
+      const hasCash = list.some((h) => Number.isFinite(h.cash_pay_low));
+      if (!hasCash) continue; // skip metros where no hospital has a cash price for this CPT
+      const mSlug = metroSlug(metro);
+      if (!mSlug) continue;
+      const metroDir = path.join(procDir, slug, "in");
+      fs.mkdirSync(metroDir, { recursive: true });
+      const metroHtml = renderMetroPage({
+        proc,
+        procSlug: slug,
+        metro,
+        hospitalsInMetro: list,
+        asOf: data.as_of,
+      });
+      fs.writeFileSync(path.join(metroDir, `${mSlug}.html`), metroHtml);
+      metroPagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/procedure/${slug}/in/${mSlug}`,
+        priority: "0.7",
+        changefreq: "monthly",
+      });
+    }
   }
 
   // Procedure index hub at /procedure (catalog of all CPTs).
@@ -671,6 +937,7 @@ async function main() {
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), renderRobots());
 
   console.log(`SEO: wrote ${written} procedure pages + index -> ui/dist/procedure/`);
+  console.log(`SEO: wrote ${metroPagesWritten} per-metro pages -> ui/dist/procedure/{slug}/in/{metro}.html`);
   console.log(`SEO: sitemap.xml (${sitemapUrls.length} urls), robots.txt`);
   console.log(`SEO: a sample slug -> ${SITE_ORIGIN}/procedure/${[...slugMap.keys()][0]}`);
 }
