@@ -1,5 +1,11 @@
 {
   "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/Itemized.html"
+    }
+  ],
   "headers": [
     {
       "source": "/data/(.*)",

@@ -75,8 +75,14 @@ async function main() {
   }
 
   // 4) vercel.json for SPA-friendly defaults (optional)
+  // Root rewrite: the app entry is Itemized.html (capital I, brand-y name),
+  // but visitors hit "/" by default. Rewrite "/" -> "/Itemized.html" so the
+  // landing URL works without a redirect.
   const vercelConfig = {
     cleanUrls: true,
+    rewrites: [
+      { source: "/", destination: "/Itemized.html" },
+    ],
     headers: [
       {
         source: "/data/(.*)",
