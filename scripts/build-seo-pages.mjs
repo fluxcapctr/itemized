@@ -68,6 +68,18 @@ function loadIndex() {
   return sandbox.window.ITEMIZED_DATA;
 }
 
+// Read window.ITEMIZED_RATINGS from the ratings.real.js bundle.
+function loadRatings() {
+  const fp = path.join(UI_DIR, "ratings.real.js");
+  if (!fs.existsSync(fp)) return { ratings: {} };
+  const txt = fs.readFileSync(fp, "utf8");
+  const sandbox = { window: {} };
+  // eslint-disable-next-line no-new-func
+  const fn = new Function("window", txt);
+  fn(sandbox.window);
+  return sandbox.window.ITEMIZED_RATINGS || { ratings: {} };
+}
+
 function loadProcHospitals(code) {
   const fp = path.join(UI_DIR, "data", `${code}.json`);
   if (!fs.existsSync(fp)) return [];
@@ -828,6 +840,518 @@ ${rows}
 </html>`;
 }
 
+// ── Hospital pages ──────────────────────────────────────────────────────
+
+// Build a Hospital JSON-LD blob from the hospital row + (optional) rating.
+function hospitalSchema(h, rating, url) {
+  const cityState = (h.metro || "").split(",");
+  const city = (cityState[0] || "").trim();
+  const state = (cityState[1] || "").trim();
+  const obj = {
+    "@context": "https://schema.org",
+    "@type": "Hospital",
+    name: h.name,
+    url,
+  };
+  if (h.address) {
+    obj.address = {
+      "@type": "PostalAddress",
+      streetAddress: h.address,
+      addressLocality: city || undefined,
+      addressRegion: state || undefined,
+      postalCode: h.zip || undefined,
+      addressCountry: "US",
+    };
+  }
+  if (h.phone) obj.telephone = h.phone;
+  if (h.lat != null && h.lon != null) {
+    obj.geo = { "@type": "GeoCoordinates", latitude: h.lat, longitude: h.lon };
+  }
+  if (rating && rating.matched && rating.overall_rating != null) {
+    obj.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: rating.overall_rating,
+      bestRating: 5,
+      worstRating: 1,
+      ratingCount: 1,
+      reviewAspect: "CMS Hospital Care Compare",
+    };
+  }
+  return obj;
+}
+
+// Render the hospital overview page at /hospital/{slug}.
+// Lists every procedure where this hospital has a published cash price.
+function renderHospitalIndex({ hospital, procRows, rating, asOf }) {
+  // procRows is an array of { proc, slug, cash_pay_low, cash_pay_high } sorted alphabetically.
+  const slug = hospital.id;
+  const canonical = `${SITE_ORIGIN}/hospital/${slug}`;
+  const cityState = hospital.metro || "";
+  const city = (cityState.split(",")[0] || "").trim();
+
+  const totalProcs = procRows.length;
+  const cashRows = procRows.filter((r) => Number.isFinite(r.cash_pay_low));
+  const minCash = cashRows.length ? Math.min(...cashRows.map((r) => r.cash_pay_low)) : null;
+  const maxCash = cashRows.length ? Math.max(...cashRows.map((r) => r.cash_pay_high || r.cash_pay_low)) : null;
+
+  const title = `${hospital.name} prices. ${totalProcs} procedures. Itemized.`;
+  const description = `Cash-pay and insurance prices for ${totalProcs} procedures at ${hospital.name}${city ? ` in ${city}` : ""}. Real CMS-mandated price transparency data. Last refreshed ${asOf}.`;
+
+  const ldBlocks = [hospitalSchema(hospital, rating, canonical), {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Hospitals", item: SITE_ORIGIN + "/hospital" },
+      { "@type": "ListItem", position: 3, name: hospital.name, item: canonical },
+    ],
+  }];
+
+  const ratingBadge = rating && rating.matched && rating.overall_rating != null
+    ? `<span class="rating-badge">${rating.overall_rating}/5 CMS rating</span>`
+    : "";
+
+  const procRowsHtml = procRows.map((r) => {
+    const range = Number.isFinite(r.cash_pay_low)
+      ? (r.cash_pay_high && r.cash_pay_high !== r.cash_pay_low
+          ? `${fmtMoney(r.cash_pay_low)}<span class="dash"> to </span>${fmtMoney(r.cash_pay_high)}`
+          : fmtMoney(r.cash_pay_low))
+      : `<span class="dash">no cash price published</span>`;
+    return `        <li class="proc-row">
+          <a class="proc-link" href="/hospital/${escAttr(slug)}/${escAttr(r.slug)}">
+            <span class="proc-name">${escHtml(r.proc.label)}</span>
+            <span class="proc-cpt">CPT ${escHtml(r.proc.code)}</span>
+            <span class="proc-range">${range}</span>
+          </a>
+        </li>`;
+  }).join("\n");
+
+  const ratingDetailsHtml = rating && rating.matched && rating.overall_rating != null ? `
+  <h2 class="display">CMS quality rating.</h2>
+  <div class="body-prose">
+    <p><strong>${rating.overall_rating}/5 stars</strong> on CMS Hospital Care Compare. Based on ~50 measures of safety, mortality, readmission, patient experience, and timeliness. ${rating.cms_compare_url ? `<a href="${escAttr(rating.cms_compare_url)}" rel="nofollow noopener" target="_blank">View on Care Compare ↗</a>` : ""}</p>
+  </div>` : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${escHtml(title)}</title>
+  <meta name="description" content="${escAttr(description)}">
+  <link rel="canonical" href="${escAttr(canonical)}">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escAttr(title)}">
+  <meta property="og:description" content="${escAttr(description)}">
+  <meta property="og:url" content="${escAttr(canonical)}">
+  <meta property="og:site_name" content="Itemized">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --signal-soft:#ECE6FE; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+    h1.display { font-family: var(--display-font); font-size: clamp(36px, 5vw, 56px); margin: 0 0 8px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    h2.display { font-family: var(--display-font); font-size: 24px; margin: 32px 0 12px; font-weight: 700; letter-spacing: -0.01em; }
+    .accent { color: var(--signal); }
+    .lede { font-size: 18px; color: var(--ink-2); max-width: 60ch; margin: 0 0 24px; }
+    .h-meta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 14px; color: var(--ink-3); margin: 8px 0 24px; }
+    .h-meta .h-meta-item { display: flex; align-items: center; gap: 6px; }
+    .rating-badge { background: var(--signal-soft); color: var(--signal); font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 13px; }
+    .proc-list { list-style: none; padding: 0; margin: 0; }
+    .proc-link { display: grid; grid-template-columns: 2fr 90px 1.4fr; align-items: center; gap: 16px; padding: 14px 16px; text-decoration: none; color: var(--ink); border-radius: 12px; transition: background 120ms ease; }
+    .proc-link:hover { background: var(--paper-2); }
+    .proc-name { font-weight: 600; font-size: 15px; }
+    .proc-cpt { font-family: 'JetBrains Mono',monospace; font-size: 12px; color: var(--ink-3); }
+    .proc-range { font-family: var(--display-font); font-weight: 600; font-size: 15px; color: var(--ink-2); }
+    .proc-range .dash { color: var(--ink-3); margin: 0 4px; font-weight: 500; }
+    .body-prose { max-width: 64ch; }
+    .body-prose p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    .cta { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 28px 24px; margin: 32px 0; }
+    .cta h2 { color: var(--paper); margin: 0 0 12px; font-family: var(--display-font); font-size: 24px; letter-spacing: -0.02em; }
+    .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+    @media (max-width: 720px) { .proc-link { grid-template-columns: 1fr 80px; } .proc-range { grid-column: span 2; text-align: left; } }
+  </style>
+
+${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/hospital">Hospitals</a> &nbsp;·&nbsp; ${escHtml(hospital.name)}
+  </div>
+
+  <h1 class="display">${escHtml(hospital.name)}<br/><span class="accent">prices</span>.</h1>
+  <div class="h-meta">
+    ${hospital.metro ? `<span class="h-meta-item">📍 ${escHtml(hospital.metro)}</span>` : ""}
+    ${hospital.system ? `<span class="h-meta-item">${escHtml(hospital.system)}</span>` : ""}
+    ${ratingBadge}
+  </div>
+
+  <p class="lede">
+    ${totalProcs > 0 ? `Cash-pay and insurance prices for <strong>${totalProcs} procedures</strong> at ${escHtml(hospital.name)}, pulled from the federally-mandated machine-readable file the hospital is required to publish.` : `${escHtml(hospital.name)} is in our dataset, but no procedures from our shoppable set had a published cash price as of the last refresh.`}
+    ${minCash != null ? ` Cash-pay range across these procedures: <strong>${fmtMoney(minCash)}</strong> to <strong>${fmtMoney(maxCash)}</strong>.` : ""}
+  </p>
+
+  ${totalProcs > 0 ? `
+  <h2 class="display">Procedure prices.</h2>
+  <ul class="proc-list">
+${procRowsHtml}
+  </ul>` : ""}
+
+  <div class="cta">
+    <h2>Compare ${escHtml(hospital.name)} to peers.</h2>
+    <p>See how each procedure here stacks up against other hospitals in ${escHtml(city || "your area")} and nationally. Pick your insurance, see your specific rate.</p>
+    <a href="/?p=73721">Open the comparison  →</a>
+  </div>
+
+  ${ratingDetailsHtml}
+
+  <h2 class="display">About this data.</h2>
+  <div class="body-prose">
+    <p>The prices above are pulled directly from ${escHtml(hospital.name)}'s machine-readable file (MRF), required under the Hospital Price Transparency Rule (45 CFR 180.50). We download the file, parse the rows for our shoppable CPT set, and publish the dollar amounts as the hospital published them. No surveys, no estimates.</p>
+    <p>Cash-pay rates are what an uninsured patient would be charged. Insurance-negotiated rates vary by payer and plan; pick a payer in the comparison tool to see plan-specific numbers.</p>
+  </div>
+
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). Last refresh: ${escHtml(asOf)}.</div>
+    <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>`;
+}
+
+// Render a hospital+procedure page at /hospital/{slug}/{procedure-slug}.
+function renderHospitalProcedurePage({ hospital, hospitalSlug, proc, procSlug, asOf, rating, peerHospitals }) {
+  const canonical = `${SITE_ORIGIN}/hospital/${hospitalSlug}/${procSlug}`;
+  const hospitalUrl = `${SITE_ORIGIN}/hospital/${hospitalSlug}`;
+  const procedureUrl = `${SITE_ORIGIN}/procedure/${procSlug}`;
+  const cityState = hospital.metro || "";
+  const city = (cityState.split(",")[0] || "").trim();
+
+  const cashLow = hospital.cash_pay_low;
+  const cashHigh = hospital.cash_pay_high;
+  const grossLow = hospital.gross_low;
+
+  // Peer comparison: where does this hospital rank among hospitals with cash for this proc?
+  const peerCashes = peerHospitals
+    .filter((h) => Number.isFinite(h.cash_pay_low))
+    .map((h) => h.cash_pay_low)
+    .sort((a, b) => a - b);
+  const peerMedian = peerCashes.length ? peerCashes[Math.floor(peerCashes.length / 2)] : null;
+  let positionLabel = null;
+  let positionDelta = null;
+  if (Number.isFinite(cashLow) && peerMedian) {
+    const ratio = cashLow / peerMedian;
+    if (ratio <= 0.7) positionLabel = "significantly cheaper than median";
+    else if (ratio <= 0.9) positionLabel = "cheaper than median";
+    else if (ratio < 1.1) positionLabel = "around the national median";
+    else if (ratio < 1.5) positionLabel = "more expensive than median";
+    else positionLabel = "significantly more expensive than median";
+    positionDelta = Math.round(((cashLow - peerMedian) / peerMedian) * 100);
+  }
+
+  const title = `${proc.label} at ${hospital.name}. Cash price ${fmtMoney(cashLow)}. Itemized.`;
+  const description = `${proc.label} (CPT ${proc.code}) at ${hospital.name}${city ? ` in ${city}` : ""}: cash-pay price ${fmtMoney(cashLow)}${cashHigh && cashHigh !== cashLow ? ` to ${fmtMoney(cashHigh)}` : ""}${peerMedian ? `, ${positionLabel || "compared to peers"}` : ""}. Real CMS-mandated data.`;
+
+  const offerSchema = Number.isFinite(cashLow) ? {
+    "@context": "https://schema.org",
+    "@type": "Offer",
+    name: `${proc.label} at ${hospital.name} (cash-pay)`,
+    priceCurrency: "USD",
+    price: Math.round(cashLow),
+    priceSpecification: {
+      "@type": "PriceSpecification",
+      price: Math.round(cashLow),
+      priceCurrency: "USD",
+    },
+    offeredBy: { "@type": "Hospital", name: hospital.name, url: hospitalUrl },
+    itemOffered: { "@type": "MedicalProcedure", name: proc.label, code: { "@type": "MedicalCode", codeValue: proc.code, codingSystem: "CPT" } },
+    url: canonical,
+  } : null;
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Hospitals", item: SITE_ORIGIN + "/hospital" },
+      { "@type": "ListItem", position: 3, name: hospital.name, item: hospitalUrl },
+      { "@type": "ListItem", position: 4, name: proc.label, item: canonical },
+    ],
+  };
+  const ldBlocks = [hospitalSchema(hospital, rating, hospitalUrl), offerSchema, breadcrumbSchema].filter(Boolean);
+
+  // Insurance rate summary table.
+  const insuredRows = (hospital.rates_by_payer || [])
+    .filter((rp) => rp.plans && rp.plans.length)
+    .map((rp) => {
+      const rates = rp.plans.map((p) => p.rate).filter((r) => Number.isFinite(r));
+      if (!rates.length) return null;
+      const lo = Math.min(...rates);
+      const hi = Math.max(...rates);
+      const range = lo === hi ? fmtMoney(lo) : `${fmtMoney(lo)} – ${fmtMoney(hi)}`;
+      return `<tr><td class="payer">${escHtml(rp.canonical_payer)}</td><td class="price">${range}</td></tr>`;
+    })
+    .filter(Boolean)
+    .join("");
+
+  const ratingBadge = rating && rating.matched && rating.overall_rating != null
+    ? `<span class="rating-badge">${rating.overall_rating}/5 CMS rating</span>`
+    : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${escHtml(title)}</title>
+  <meta name="description" content="${escAttr(description)}">
+  <link rel="canonical" href="${escAttr(canonical)}">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escAttr(title)}">
+  <meta property="og:description" content="${escAttr(description)}">
+  <meta property="og:url" content="${escAttr(canonical)}">
+  <meta property="og:site_name" content="Itemized">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --signal-soft:#ECE6FE; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    .container { max-width: 920px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+    h1.display { font-family: var(--display-font); font-size: clamp(32px, 4.5vw, 48px); margin: 0 0 12px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+    h2.display { font-family: var(--display-font); font-size: 24px; margin: 32px 0 12px; font-weight: 700; letter-spacing: -0.01em; }
+    .accent { color: var(--signal); }
+    .h-meta { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; font-size: 14px; color: var(--ink-3); margin: 0 0 24px; }
+    .rating-badge { background: var(--signal-soft); color: var(--signal); font-weight: 600; padding: 4px 10px; border-radius: 999px; font-size: 13px; }
+    .price-card { background: var(--signal-soft); border-radius: 24px; padding: 28px 24px; margin: 16px 0 24px; }
+    .price-card .lbl { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 8px; }
+    .price-card .num { font-family: var(--display-font); font-size: clamp(48px, 6vw, 72px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .price-card .num .cur { font-size: 0.55em; vertical-align: 0.2em; margin-right: 4px; color: var(--ink-3); }
+    .price-card .pos { margin-top: 12px; font-size: 14px; color: var(--ink-2); }
+    .price-card .pos .delta { font-weight: 600; color: var(--signal); }
+    .body-prose { max-width: 64ch; }
+    .body-prose p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    table.payers { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    table.payers th, table.payers td { padding: 12px 8px; text-align: left; border-bottom: 1px solid var(--rule-soft); }
+    table.payers th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 500; }
+    table.payers td.payer { font-weight: 600; font-size: 15px; }
+    table.payers td.price { text-align: right; font-family: var(--display-font); font-weight: 600; font-size: 15px; }
+    .cta { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 28px 24px; margin: 32px 0; }
+    .cta h2 { color: var(--paper); margin: 0 0 12px; font-family: var(--display-font); font-size: 24px; letter-spacing: -0.02em; }
+    .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+  </style>
+
+${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/hospital">Hospitals</a> &nbsp;·&nbsp; <a href="${escAttr(hospitalUrl)}">${escHtml(hospital.name)}</a> &nbsp;·&nbsp; ${escHtml(proc.label)}
+  </div>
+
+  <h1 class="display">${escHtml(proc.label)} at <span class="accent">${escHtml(hospital.name)}</span>.</h1>
+  <div class="h-meta">
+    ${hospital.metro ? `<span>📍 ${escHtml(hospital.metro)}</span>` : ""}
+    ${ratingBadge}
+    <span>CPT ${escHtml(proc.code)}</span>
+  </div>
+
+  ${Number.isFinite(cashLow) ? `
+  <div class="price-card">
+    <div class="lbl">Cash-pay price</div>
+    <div class="num"><span class="cur">$</span>${escHtml(Math.round(cashLow).toLocaleString("en-US"))}${cashHigh && cashHigh !== cashLow ? ` <span style="font-size:0.5em;color:var(--ink-3);font-weight:500">to $${escHtml(Math.round(cashHigh).toLocaleString("en-US"))}</span>` : ""}</div>
+    ${positionLabel ? `<div class="pos">${escHtml(hospital.name)} is <span class="delta">${escHtml(positionLabel)}</span>${positionDelta != null ? ` (${positionDelta > 0 ? "+" : ""}${positionDelta}%)` : ""} for ${escHtml(proc.label.toLowerCase())}.</div>` : ""}
+    ${grossLow ? `<div class="pos" style="margin-top:6px;color:var(--ink-3);font-size:13px">Chargemaster (gross): ${fmtMoney(grossLow)}${hospital.gross_high && hospital.gross_high !== grossLow ? ` – ${fmtMoney(hospital.gross_high)}` : ""}</div>` : ""}
+  </div>` : `<p class="lede">${escHtml(hospital.name)} did not publish a cash-pay price for ${escHtml(proc.label.toLowerCase())} as of the last refresh.</p>`}
+
+  ${insuredRows ? `
+  <h2 class="display">Insurance rates.</h2>
+  <p class="body-prose"><span style="color:var(--ink-3);font-size:14px">Each row is the range of rates ${escHtml(hospital.name)} negotiated with that payer's plans. Your specific rate depends on your plan.</span></p>
+  <table class="payers">
+    <thead><tr><th>Payer</th><th style="text-align:right">Range</th></tr></thead>
+    <tbody>${insuredRows}</tbody>
+  </table>` : ""}
+
+  <div class="cta">
+    <h2>See ${escHtml(hospital.name)} vs. nearby hospitals.</h2>
+    <p>Open the comparison filtered to ${escHtml(proc.label.toLowerCase())}. Add your insurance, your zip, see exactly what you'd pay.</p>
+    <a href="/?p=${escAttr(proc.code)}">Compare prices  →</a>
+  </div>
+
+  <h2 class="display">About this price.</h2>
+  <div class="body-prose">
+    <p>This price comes directly from ${escHtml(hospital.name)}'s machine-readable file (MRF), which the Hospital Price Transparency Rule (45 CFR 180.50) requires every US hospital to publish. We download it, parse the row for CPT ${escHtml(proc.code)}, and show you the dollar amount as published.</p>
+    <p>The cash-pay number is what an uninsured patient would be charged. Insurance-negotiated rates vary by payer and plan — see the table above for the range, or use the comparison tool for plan-specific numbers.</p>
+    <p>For a national view of ${escHtml(proc.label.toLowerCase())} prices, see the <a href="${escAttr(procedureUrl)}">${escHtml(proc.label)} overview</a>.</p>
+  </div>
+
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). Last refresh: ${escHtml(asOf)}.</div>
+    <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>`;
+}
+
+// Render the hospital index hub at /hospital.
+function renderHospitalsHub({ hospitalSummaries, asOf }) {
+  // hospitalSummaries: [{ hospital, procCount, rating }] sorted alphabetically.
+  const total = hospitalSummaries.length;
+  const title = `All hospitals. ${total} US hospitals with prices. Itemized.`;
+  const description = `Browse ${total} US hospitals with published cash-pay and insurance prices for shoppable procedures. CMS-mandated price transparency data.`;
+  const canonical = SITE_ORIGIN + "/hospital";
+
+  // Group by metro for browse-by-city navigation.
+  const byMetro = new Map();
+  for (const s of hospitalSummaries) {
+    const m = s.hospital.metro || "Unknown";
+    if (!byMetro.has(m)) byMetro.set(m, []);
+    byMetro.get(m).push(s);
+  }
+  const metroBlocks = [...byMetro.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([metro, list]) => {
+      const items = list.map((s) => {
+        const rb = s.rating && s.rating.matched && s.rating.overall_rating != null
+          ? `<span class="proc-cpt">${s.rating.overall_rating}/5★</span>`
+          : "";
+        return `        <li class="proc-row">
+          <a class="proc-link" href="/hospital/${escAttr(s.hospital.id)}">
+            <span class="proc-name">${escHtml(s.hospital.name)}</span>
+            ${rb}
+            <span class="proc-range">${s.procCount} procedures</span>
+          </a>
+        </li>`;
+      }).join("\n");
+      return `      <section class="cat-block">
+        <h2 class="display">${escHtml(metro)}</h2>
+        <ul class="proc-list">
+${items}
+        </ul>
+      </section>`;
+    })
+    .join("\n");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${escHtml(title)}</title>
+  <meta name="description" content="${escAttr(description)}">
+  <link rel="canonical" href="${escAttr(canonical)}">
+  <meta name="robots" content="index,follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${escAttr(title)}">
+  <meta property="og:description" content="${escAttr(description)}">
+  <meta property="og:url" content="${escAttr(canonical)}">
+  <meta property="og:site_name" content="Itemized">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    .container { max-width: 1080px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    h1.display { font-family: var(--display-font); font-size: clamp(40px, 6vw, 64px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    h2.display { font-family: var(--display-font); font-size: 24px; margin: 32px 0 12px; font-weight: 700; letter-spacing: -0.01em; }
+    .accent { color: var(--signal); }
+    .lede { font-size: 18px; color: var(--ink-2); max-width: 60ch; margin: 0 0 32px; }
+    .proc-list { list-style: none; padding: 0; margin: 0; }
+    .proc-link { display: grid; grid-template-columns: 2fr 80px 110px; align-items: center; gap: 16px; padding: 12px 16px; text-decoration: none; color: var(--ink); border-radius: 12px; transition: background 120ms ease; }
+    .proc-link:hover { background: var(--paper-2); }
+    .proc-name { font-weight: 600; font-size: 15px; }
+    .proc-cpt { font-family: 'JetBrains Mono',monospace; font-size: 12px; color: var(--ink-3); }
+    .proc-range { font-size: 13px; color: var(--ink-3); text-align: right; }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 64px; color: var(--ink-3); font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 class="display"><span class="accent">${total} hospitals.</span><br/>Real prices. Real procedures.</h1>
+  <p class="lede">Every US hospital we have prices for. Click through to see all the procedures we have published cash-pay and insurance rates for at each. Last refreshed ${asOf}.</p>
+
+${metroBlocks}
+
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). Last refresh: ${escHtml(asOf)}.</div>
+  </footer>
+</main>
+
+</body>
+</html>`;
+}
+
 // ── Sitemap + robots ────────────────────────────────────────────────────
 
 function renderSitemap(urls) {
@@ -859,8 +1383,11 @@ Sitemap: ${SITE_ORIGIN}/sitemap.xml
 
 async function main() {
   const data = loadIndex();
+  const ratings = loadRatings();
   const procDir = path.join(DIST_DIR, "procedure");
+  const hospDir = path.join(DIST_DIR, "hospital");
   fs.mkdirSync(procDir, { recursive: true });
+  fs.mkdirSync(hospDir, { recursive: true });
 
   const slugMap = new Map();
   const hospitalsByProc = new Map();
@@ -933,11 +1460,99 @@ async function main() {
   });
   fs.writeFileSync(path.join(procDir, "index.html"), indexHtml);
 
+  // ── Per-hospital pages ────────────────────────────────────────────────
+  // Build a map of hospital_id -> hospital row (taking the first occurrence
+  // we see across procedures; the hospital fields like address/lat/lon
+  // don't depend on procedure).
+  const hospitalById = new Map();
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    for (const h of list) {
+      if (!hospitalById.has(h.id)) hospitalById.set(h.id, h);
+    }
+  }
+  // Build a map of hospital_id -> [{ proc, slug, cash_pay_low, cash_pay_high }]
+  // for every procedure where this hospital published a row.
+  const procsByHospital = new Map();
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    for (const h of list) {
+      if (h.all_missing) continue;
+      if (!procsByHospital.has(h.id)) procsByHospital.set(h.id, []);
+      procsByHospital.get(h.id).push({
+        proc,
+        slug: proc._slug,
+        cash_pay_low: h.cash_pay_low,
+        cash_pay_high: h.cash_pay_high,
+      });
+    }
+  }
+
+  let hospPagesWritten = 0;
+  let hospProcPagesWritten = 0;
+  const hospitalSummaries = [];
+  for (const [hid, hospital] of hospitalById) {
+    const procRows = (procsByHospital.get(hid) || [])
+      .sort((a, b) => a.proc.label.localeCompare(b.proc.label));
+    const rating = ratings.ratings?.[hid] || null;
+
+    // Hospital overview at /hospital/{id}.
+    const hospHtml = renderHospitalIndex({ hospital, procRows, rating, asOf: data.as_of });
+    const hospPath = path.join(hospDir, hid);
+    fs.mkdirSync(hospPath, { recursive: true });
+    fs.writeFileSync(path.join(hospPath, "index.html"), hospHtml);
+    hospPagesWritten++;
+    sitemapUrls.push({
+      loc: `${SITE_ORIGIN}/hospital/${hid}`,
+      priority: "0.7",
+      changefreq: "monthly",
+    });
+    hospitalSummaries.push({ hospital, procCount: procRows.length, rating });
+
+    // One page per (hospital, procedure) combo where the hospital actually
+    // has a procedure row (skip all_missing). We need the per-procedure
+    // hospital row (with rates_by_payer, gross_low, etc.), not the
+    // master hospital record.
+    for (const r of procRows) {
+      const procList = hospitalsByProc.get(r.proc.code) || [];
+      const hForThisProc = procList.find((x) => x.id === hid);
+      if (!hForThisProc || hForThisProc.all_missing) continue;
+      const html = renderHospitalProcedurePage({
+        hospital: hForThisProc,
+        hospitalSlug: hid,
+        proc: r.proc,
+        procSlug: r.slug,
+        asOf: data.as_of,
+        rating,
+        peerHospitals: procList.filter((x) => !x.all_missing),
+      });
+      fs.writeFileSync(path.join(hospPath, `${r.slug}.html`), html);
+      hospProcPagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/hospital/${hid}/${r.slug}`,
+        priority: "0.6",
+        changefreq: "monthly",
+      });
+    }
+  }
+
+  // Hospital index hub at /hospital.
+  hospitalSummaries.sort((a, b) => a.hospital.name.localeCompare(b.hospital.name));
+  const hospHubHtml = renderHospitalsHub({ hospitalSummaries, asOf: data.as_of });
+  fs.writeFileSync(path.join(hospDir, "index.html"), hospHubHtml);
+  sitemapUrls.push({
+    loc: `${SITE_ORIGIN}/hospital`,
+    priority: "0.9",
+    changefreq: "weekly",
+  });
+
   fs.writeFileSync(path.join(DIST_DIR, "sitemap.xml"), renderSitemap(sitemapUrls));
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), renderRobots());
 
   console.log(`SEO: wrote ${written} procedure pages + index -> ui/dist/procedure/`);
   console.log(`SEO: wrote ${metroPagesWritten} per-metro pages -> ui/dist/procedure/{slug}/in/{metro}.html`);
+  console.log(`SEO: wrote ${hospPagesWritten} hospital overview pages -> ui/dist/hospital/{id}/`);
+  console.log(`SEO: wrote ${hospProcPagesWritten} per-(hospital, procedure) pages -> ui/dist/hospital/{id}/{procedure}.html`);
   console.log(`SEO: sitemap.xml (${sitemapUrls.length} urls), robots.txt`);
   console.log(`SEO: a sample slug -> ${SITE_ORIGIN}/procedure/${[...slugMap.keys()][0]}`);
 }
