@@ -204,7 +204,11 @@ function StarBlock({ hospitalId, compact, isPediatric }) {
 
 // ── components ──────────────────────────────────────────────────────────────
 
-function Hero({ proc, mode }) {
+function Hero({ proc, mode, userMetroLabel, localCount, procedureCount }) {
+  // Defaults so the hero still renders cleanly before App passes these down.
+  if (!userMetroLabel) userMetroLabel = "Los Angeles";
+  if (localCount == null) localCount = 0;
+  if (procedureCount == null) procedureCount = 0;
   const h = proc.headline;
   // Find the rating for the cheapest hospital — used to add quality framing to the lede.
   // Only hospitals that publish a cash rate factor into the headline (some hospitals
@@ -237,9 +241,9 @@ function Hero({ proc, mode }) {
   return (
     <section className="hero">
       <div className="hero-meta">
-        <span className="city-chip"><span className="pin"></span>Los Angeles preview</span>
+        <span className="city-chip"><span className="pin"></span>{userMetroLabel}</span>
         <span className="mono" style={{fontSize: 11, letterSpacing: "0.14em", textTransform: "uppercase", color: "var(--ink-3)"}}>
-          25 LA-area hospitals · 30 procedures · CMS-mandated MRF data
+          {localCount} {userMetroLabel}-area {localCount === 1 ? "hospital" : "hospitals"} · {procedureCount} procedures · CMS-mandated MRF data
         </span>
       </div>
 
@@ -356,7 +360,7 @@ function PersonalizationForm({ plan, setPlan, payers, onReset, coverage, totalLo
               <option value="">— Select —</option>
               {payers.map(p => {
                 const n = coverage?.[p.id] ?? 0;
-                const suffix = totalLocal != null ? ` (${n} of ${totalLocal} LA hospitals)` : "";
+                const suffix = totalLocal != null ? ` (${n} of ${totalLocal} nearby hospitals)` : "";
                 return <option key={p.id} value={p.id}>{p.label}{suffix}</option>;
               })}
               <option value="__cash__">I'm paying cash</option>
@@ -788,9 +792,6 @@ function FAQ() {
         <h2 className="display">
           Questions you should <span className="accent">ask us</span>.
         </h2>
-        <div className="sec-sub">
-          The ones most likely to feel weird about a price comparison site, addressed up front. If yours isn't here, ask.
-        </div>
       </div>
       <div className="faq-list">
         {items.map((it, i) => (
@@ -802,36 +803,6 @@ function FAQ() {
             <div className="faq-a">{it.a}</div>
           </details>
         ))}
-      </div>
-    </div>
-  );
-}
-
-function CoverageCallout({ data, proc }) {
-  // Derive the LA hospital list from whichever procedure is loaded.
-  // The set of `is_local` hospitals is the same across procedures, but
-  // hospitals[] is per-procedure (lazy-loaded).
-  const live = (proc?.hospitals || []).filter(h => h.is_local);
-  return (
-    <div id="hospitals" className="coverage">
-      <div>
-        <h3>25 LA-area hospitals.<br/>And we're not done.</h3>
-        <p>This is a preview, not the finished product. We started with the LA hospitals whose MRFs were cleanest and whose 73721 row passed our filter. Expanding coverage is a research-and-extract pass, not a UI pass.</p>
-      </div>
-      <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap: 24}}>
-        <div className="live">
-          <div className="col-h">In this preview</div>
-          {live.map(h => (
-            <div key={h.id} className="row"><span className="dot"></span>{h.name.replace(" Medical Center","").replace("Ronald Reagan UCLA","UCLA Reagan")}</div>
-          ))}
-        </div>
-        <div className="soon">
-          <div className="col-h">Adding before launch</div>
-          {data.coming_soon_la.slice(0, 5).map(name => (
-            <div key={name} className="row soon-row"><span className="dot"></span>{name}</div>
-          ))}
-          <div className="row soon-row" style={{justifyContent:"center", fontStyle:"italic"}}>+ {data.coming_soon_la.length - 5} more</div>
-        </div>
       </div>
     </div>
   );
@@ -1025,13 +996,30 @@ function App() {
     return arr;
   }
 
+  // Derive the user's metro from their zip's lat/lon. We use the metro of
+  // the closest hospital across all our metros, provided it's within ~75 mi.
+  // If no zip entered (or no nearby metro), default to "Los Angeles, CA"
+  // because LA is the densest preview set and the safest default.
+  const userMetro = useMemo(() => {
+    if (!userGeo) return "Los Angeles, CA";
+    let best = null;
+    for (const h of proc.hospitals) {
+      if (h.lat == null || h.lon == null) continue;
+      const d = haversineMiles(userGeo.lat, userGeo.lon, h.lat, h.lon);
+      if (!best || d < best.d) best = { d, metro: h.metro };
+    }
+    return best && best.d < 75 ? best.metro : "Los Angeles, CA";
+  }, [userGeo, proc]);
+  // City portion of metro, used in headlines: "Los Angeles" / "Boston" / etc.
+  const userMetroLabel = useMemo(() => userMetro.split(",")[0], [userMetro]);
+
   const localHospitals = useMemo(() =>
-    sortHospitals(proc.hospitals.filter(h => h.is_local && !h.all_missing)),
-    [proc, mode, plan, tweaks.sortMode]);
+    sortHospitals(proc.hospitals.filter(h => h.metro === userMetro && !h.all_missing)),
+    [proc, mode, plan, tweaks.sortMode, userMetro]);
 
   const nationalHospitals = useMemo(() =>
-    sortHospitals(proc.hospitals.filter(h => !h.is_local && !h.all_missing)),
-    [proc, mode, plan, tweaks.sortMode]);
+    sortHospitals(proc.hospitals.filter(h => h.metro !== userMetro && !h.all_missing)),
+    [proc, mode, plan, tweaks.sortMode, userMetro]);
 
   const cheapestLocalId = localHospitals[0]?.id;
   const cheapestOverallId = useMemo(() => {
@@ -1051,11 +1039,11 @@ function App() {
   const payerLabel = data.supported_payers.find(p => p.id === plan.payer)?.label || plan.payer;
   const payersForForm = data.supported_payers;
 
-  // Coverage count per payer across LA-area hospitals: how many local hospitals
-  // publish a rate for this payer for the selected procedure. Drives the
-  // "Aetna (19 of 25 LA hospitals)" hint in the dropdown.
+  // Coverage count per payer across the user's-metro hospitals: how many
+  // local hospitals publish a rate for this payer for the selected procedure.
+  // Drives the "Aetna (19 of 25 nearby hospitals)" hint in the dropdown.
   const localPayerCoverage = useMemo(() => {
-    const localHosp = proc.hospitals.filter(h => h.is_local && !h.all_missing);
+    const localHosp = proc.hospitals.filter(h => h.metro === userMetro && !h.all_missing);
     const out = {};
     for (const p of data.supported_payers) {
       out[p.id] = localHosp.filter(h => {
@@ -1064,9 +1052,9 @@ function App() {
       }).length;
     }
     return out;
-  }, [proc, data.supported_payers]);
+  }, [proc, data.supported_payers, userMetro]);
   const totalLocalHospitals = useMemo(
-    () => proc.hospitals.filter(h => h.is_local && !h.all_missing).length,
+    () => proc.hospitals.filter(h => h.metro === userMetro && !h.all_missing).length,
     [proc]
   );
 
@@ -1100,7 +1088,10 @@ function App() {
   return (
     <>
       <div className="container">
-        <Hero proc={proc} mode={tweaks.headlineMode} />
+        <Hero proc={proc} mode={tweaks.headlineMode}
+              userMetroLabel={userMetroLabel}
+              localCount={totalLocalHospitals}
+              procedureCount={procedures.length} />
 
         <ProcedurePicker
           procedures={procedures}
@@ -1132,7 +1123,7 @@ function App() {
           <div className="sec-sub">
             {mode === "personalized" && plan.payer && !["__cash__","__other__"].includes(plan.payer)
               ? <>Estimated out-of-pocket for <strong>{proc.short.toLowerCase()}</strong> on <strong>{payerLabel}</strong>, {plan.deductibleStatus === "met" ? "with deductible already met" : plan.deductibleStatus === "not_met" ? `with $${fmt(plan.deductibleLeft)} deductible left` : "with deductible status unknown"}, at {plan.coinsurance}% coinsurance.</>
-              : <>Cash-pay range for <strong>{proc.short.toLowerCase()}</strong> at the LA-area hospitals whose MRFs we've parsed.</>}
+              : <>Cash-pay range for <strong>{proc.short.toLowerCase()}</strong> at the {userMetroLabel}-area hospitals whose MRFs we've parsed.</>}
           </div>
         </div>
         <SortSelector value={tweaks.sortMode || "price"} onChange={v => setTweak("sortMode", v)} />
@@ -1205,22 +1196,28 @@ function App() {
           <>
             <div className="sec">
               <h2 className="display">
-                How LA <span className="accent">compares</span> nationally.
+                How {userMetroLabel} <span className="accent">compares</span> nationally.
               </h2>
               <div className="sec-sub">
-                The same {proc.short.toLowerCase()} at hospitals in 7 other metros. Lower visual weight on purpose — these aren't "near you." But they're how you know the LA numbers aren't the only numbers.
+                The same {proc.short.toLowerCase()} at hospitals in other metros. Lower visual weight on purpose — these aren't "near you." But they're how you know the {userMetroLabel} numbers aren't the only numbers.
               </div>
             </div>
             {(() => {
               const natWith = nationalHospitals.filter(hasRateForCurrentSelection);
               const natWithout = nationalHospitals.filter(h => !hasRateForCurrentSelection(h));
-              const noRateLabel = mode === "cash"
-                ? "didn't publish a cash price for this procedure"
-                : `didn't publish a ${payerLabel} rate for this procedure`;
+              // Cap the national/compare section at 5 visible hospitals to keep
+              // the page short. Anything beyond 5 (with or without a rate)
+              // collapses into a "show more" fold.
+              const natWithTop = natWith.slice(0, 5);
+              const natWithRest = natWith.slice(5);
+              const natRest = [...natWithRest, ...natWithout];
+              const restLabel = natRest.length === 1
+                ? "more national hospital"
+                : "more national hospitals";
               return (
                 <>
                   <div className="cards national">
-                    {natWith.map((h, idx) => (
+                    {natWithTop.map((h, idx) => (
                       <HospitalCard
                         key={h.id} h={h} idx={idx}
                         isCheapest={h.id === cheapestOverallId}
@@ -1232,16 +1229,16 @@ function App() {
                       />
                     ))}
                   </div>
-                  {natWithout.length > 0 && (
+                  {natRest.length > 0 && (
                     <details className="no-rate-fold">
                       <summary>
-                        <span className="count">{natWithout.length}</span> national {natWithout.length === 1 ? "hospital" : "hospitals"} {noRateLabel}
+                        <span className="count">{natRest.length}</span> {restLabel}
                         <span className="hint">— show</span>
                       </summary>
                       <div className="cards national muted">
-                        {natWithout.map((h, idx) => (
+                        {natRest.map((h, idx) => (
                           <HospitalCard
-                            key={h.id} h={h} idx={natWith.length + idx}
+                            key={h.id} h={h} idx={natWithTop.length + idx}
                             isCheapest={false}
                             mode={mode} plan={plan} payerLabel={payerLabel}
                             isLocal={false}
@@ -1260,8 +1257,6 @@ function App() {
         )}
 
         <div style={{height: 80}} />
-
-        {tweaks.showCoverage && <CoverageCallout data={data} proc={proc} />}
 
         {tweaks.showMethodology && <MethodologyCards data={data} />}
 
@@ -1304,7 +1299,6 @@ function App() {
         <TweakToggle label="Compact rows" value={tweaks.compactRows} onChange={v => setTweak("compactRows", v)} />
         <TweakToggle label="Sticky picker" value={tweaks.stickyPicker} onChange={v => setTweak("stickyPicker", v)} />
         <TweakToggle label="National context" value={tweaks.showNational} onChange={v => setTweak("showNational", v)} />
-        <TweakToggle label="Coverage callout" value={tweaks.showCoverage} onChange={v => setTweak("showCoverage", v)} />
         <TweakToggle label="Methodology cards" value={tweaks.showMethodology} onChange={v => setTweak("showMethodology", v)} />
       </TweaksPanel>
     </>

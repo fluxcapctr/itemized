@@ -444,9 +444,11 @@
   .source-line { margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 18px; letter-spacing: 0.02em; }
   .source-line a { color: var(--ink-2); text-decoration: underline; text-decoration-color: var(--rule-soft); text-underline-offset: 3px; }
 
-  /* National-context section: visually de-emphasized */
-  .cards.national .card { background: transparent; border: 0; border-radius: 0; padding: 16px 0; border-bottom: 1px solid var(--rule-soft); }
-  .cards.national .card:hover { background: var(--paper-2); border-radius: 16px; padding-left: 16px; padding-right: 16px; }
+  /* National-context section: visually de-emphasized.
+     Hover changes only background and corner radius (no padding shift),
+     so the row content never jumps sideways on hover. */
+  .cards.national .card { background: transparent; border: 0; border-radius: 0; padding: 16px; border-bottom: 1px solid var(--rule-soft); transition: background 120ms ease, border-radius 120ms ease; }
+  .cards.national .card:hover { background: var(--paper-2); border-radius: 16px; }
   .cards.national .card .rank { width: 36px; height: 36px; font-size: 14px; background: transparent; color: var(--ink-3); }
   .cards.national .card .name { font-size: 15px; font-weight: 500; }
   .cards.national .card .price-cell .pri-num { font-size: 24px; }
@@ -948,9 +950,7 @@
   <div class="nav-right">
     <a href="#methodology">Methodology</a>
     <a href="#faq">FAQ</a>
-    <a href="#hospitals">Hospitals</a>
     <a href="/bills.html">Got a bill?</a>
-    <a href="#" class="pill"><span class="dot-mini"></span>LA preview</a>
   </div>
 </nav>
 
