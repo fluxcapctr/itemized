@@ -59,7 +59,7 @@ async function main() {
 
   // 3) Copy static files (bills.html, data files)
   console.log("copying static files...");
-  for (const file of ["bills.html", "data.real.js", "ratings.real.js", "hcahps.real.js"]) {
+  for (const file of ["bills.html", "data.real.js", "ratings.real.js", "hcahps.real.js", "search-index.real.js"]) {
     const src = path.join(UI_DIR, file);
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, path.join(DIST_DIR, file));

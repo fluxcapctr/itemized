@@ -130,6 +130,142 @@ function useQueryState() {
   return [s, set];
 }
 
+// ── Search ──────────────────────────────────────────────────────────────────
+// Combined fuzzy-match across procedures, hospitals, and glossary terms.
+// Index is shipped at build time as window.ITEMIZED_SEARCH (~27KB).
+function searchScore(query, ...fields) {
+  const q = query.toLowerCase().trim();
+  if (!q) return 0;
+  let best = 0;
+  for (const f of fields) {
+    if (!f) continue;
+    const lower = String(f).toLowerCase();
+    if (lower === q) best = Math.max(best, 100);
+    else if (lower.startsWith(q)) best = Math.max(best, 80);
+    else if (lower.includes(q)) best = Math.max(best, 50);
+    else {
+      const words = lower.split(/[\s/-]+/);
+      if (words.some(w => w.startsWith(q))) best = Math.max(best, 60);
+    }
+  }
+  return best;
+}
+
+function SearchBox() {
+  const idx = window.ITEMIZED_SEARCH;
+  // Pre-populate from ?q= so Google sitelinks search box landings work.
+  const initialQuery = (() => {
+    try {
+      const u = new URLSearchParams(window.location.search);
+      return u.get("q") || "";
+    } catch { return ""; }
+  })();
+  const [query, setQuery] = useState(initialQuery);
+  const [open, setOpen] = useState(initialQuery.length > 0);
+  const [highlight, setHighlight] = useState(0);
+  const inputRef = useRef(null);
+  const listRef = useRef(null);
+
+  // Keyboard shortcut: Cmd-K / Ctrl-K to focus the search box.
+  useEffect(() => {
+    const handler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+      if (e.key === "Escape") {
+        setOpen(false);
+        inputRef.current?.blur();
+      }
+    };
+    document.addEventListener("keydown", handler);
+    return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  const matches = useMemo(() => {
+    const q = query.trim();
+    if (q.length < 2 || !idx) return [];
+    const out = [];
+    for (const p of idx.procedures || []) {
+      const s = searchScore(q, p.label, p.short, p.code);
+      if (s > 0) out.push({ kind: "Procedure", title: p.label, sub: `CPT ${p.code}`, url: `/procedure/${p.slug}`, score: s });
+    }
+    for (const h of idx.hospitals || []) {
+      const s = searchScore(q, h.name, h.metro, h.system);
+      if (s > 0) out.push({ kind: "Hospital", title: h.name, sub: h.metro || "", url: `/hospital/${h.id}`, score: s });
+    }
+    for (const g of idx.glossary || []) {
+      const s = searchScore(q, g.term, g.short);
+      if (s > 0) out.push({ kind: "Glossary", title: g.term, sub: g.short, url: `/glossary/${g.slug}`, score: s });
+    }
+    return out.sort((a, b) => b.score - a.score).slice(0, 12);
+  }, [query, idx]);
+
+  function onKeyDown(e) {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setHighlight(h => Math.min(h + 1, matches.length - 1));
+      setOpen(true);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setHighlight(h => Math.max(h - 1, 0));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      const m = matches[highlight];
+      if (m) window.location.href = m.url;
+    }
+  }
+
+  // Reset highlight as the result list changes.
+  useEffect(() => { setHighlight(0); }, [matches.length]);
+
+  const showDropdown = open && query.trim().length >= 2;
+
+  return (
+    <div className="search-box">
+      <div className="search-input-wrap">
+        <span className="search-icon" aria-hidden="true">🔎</span>
+        <input
+          ref={inputRef}
+          type="text"
+          className="search-input"
+          value={query}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onBlur={() => setTimeout(() => setOpen(false), 180)}
+          onKeyDown={onKeyDown}
+          placeholder="Search procedures, hospitals, cities…"
+          aria-label="Search Itemized"
+          autoComplete="off"
+          spellCheck="false"
+        />
+        <span className="search-kbd">⌘K</span>
+      </div>
+      {showDropdown && (
+        <div className="search-dropdown" ref={listRef}>
+          {matches.length === 0 ? (
+            <div className="search-empty">No matches. Try a CPT code, hospital name, or city.</div>
+          ) : (
+            matches.map((m, i) => (
+              <a
+                key={m.kind + m.url}
+                href={m.url}
+                className={`search-match ${i === highlight ? "active" : ""}`}
+                onMouseEnter={() => setHighlight(i)}
+                onMouseDown={(e) => { e.preventDefault(); window.location.href = m.url; }}
+              >
+                <span className={`match-kind kind-${m.kind.toLowerCase()}`}>{m.kind}</span>
+                <span className="match-title">{m.title}</span>
+                {m.sub && <span className="match-sub">{m.sub}</span>}
+              </a>
+            ))
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Rating helpers ──────────────────────────────────────────────────────────
 function getRating(hospitalId) {
   const r = (window.ITEMIZED_RATINGS && window.ITEMIZED_RATINGS.ratings) || {};
@@ -1133,6 +1269,8 @@ function App() {
   return (
     <>
       <div className="container">
+        <SearchBox />
+
         <Hero proc={proc} mode={tweaks.headlineMode}
               userMetroLabel={userMetroLabel}
               localCount={totalLocalHospitals}
