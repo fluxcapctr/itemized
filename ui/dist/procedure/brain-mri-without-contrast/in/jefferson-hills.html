@@ -65,7 +65,9 @@
     footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
     footer .foot-disc { margin-top: 8px; font-style: italic; }
     footer a { color: var(--ink-2); }
-    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+    @media (max-width: 880px) { .nav { flex-wrap: wrap; gap: 12px 16px; } .nav .wordmark .tag { display: none; } .nav-right { gap: 14px; flex-wrap: wrap; } }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; } table.hospitals { font-size: 13px; } table.hospitals th, table.hospitals td { padding: 10px 6px; } table.hospitals td.name .hname { font-size: 14px; } table.hospitals td.price { font-size: 16px; } }
+    @media (max-width: 520px) { .container { padding: 16px; } .crumb { font-size: 11px; word-break: break-word; } h1.display { font-size: clamp(28px, 8vw, 40px) !important; } h2.display { font-size: clamp(22px, 6vw, 32px) !important; } }
   </style>
 
   <script type="application/ld+json">{

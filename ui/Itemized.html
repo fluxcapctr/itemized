@@ -1102,10 +1102,51 @@
   .picker-cell, .pf-step, .meth-card .ast { border-radius: calc(var(--corner) * 0.75); }
   @media (max-width: 880px) {
     .container { padding: 0 18px; }
-    .nav { padding: 18px 18px; }
+    .nav { padding: 18px 18px; flex-wrap: wrap; gap: 12px 16px; }
     .sec { padding: 48px 0 12px; }
     .hero { padding: 16px 0 40px; }
-    h1.hero-h { font-size: clamp(48px, 12vw, 80px); }
+    h1.hero-h { font-size: clamp(40px, 11vw, 64px); }
+    /* Hide the wordmark tagline; logo + nav already crowd the bar. */
+    .wordmark .tag { display: none; }
+    .nav-right { gap: 14px; flex-wrap: wrap; }
+  }
+
+  /* Phone-specific tweaks: hospital cards stack instead of grid;
+     hero h1 wraps on slashes; overflow-protect long labels. */
+  @media (max-width: 640px) {
+    h1.hero-h, h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; }
+    h1.hero-h { font-size: clamp(34px, 10vw, 56px); line-height: 1.05; }
+    .pair { grid-template-columns: 1fr; }
+    .pair .vs { display: none; }
+    /* Cards: at phone width, drop the grid and stack everything. The
+       hospital row reads top-to-bottom: rank inline with name, system
+       beneath, rating line, metro, then price block. */
+    .card {
+      display: block;
+      padding: 16px 18px;
+    }
+    .card > * { width: 100%; }
+    .card .rank { display: inline-flex; vertical-align: middle; margin-right: 12px; width: 40px; height: 40px; font-size: 16px; }
+    .card .name { display: inline-block; vertical-align: middle; width: calc(100% - 56px); min-width: 0; }
+    /* Let the hospital name wrap rather than ellipsis-truncate. */
+    .card .name .name-line { white-space: normal; flex-wrap: wrap; }
+    .card .name .name-text { white-space: normal; overflow: visible; text-overflow: clip; }
+    .card .metro { font-size: 13px; margin-top: 10px; }
+    .card .price-cell {
+      align-items: flex-start; text-align: left;
+      margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--rule-soft);
+    }
+    .card .price-cell .pri-num { font-size: 28px; }
+    .card.cheapest .price-cell { border-top-color: rgba(91, 63, 224, 0.18); }
+    /* Sticky picker eats too much screen on phones; let it scroll. */
+    .picker-shell.sticky { position: relative; }
+  }
+
+  @media (max-width: 420px) {
+    h1.hero-h { font-size: clamp(28px, 9vw, 40px); }
+    .hero-meta { flex-wrap: wrap; gap: 8px; }
+    .sort-tabs { flex-wrap: wrap; gap: 6px; }
   }
 
 </style>

@@ -583,9 +583,21 @@ function renderPage({ proc, slug, hospitals, asOf }) {
     footer .foot-disc { margin-top: 8px; font-style: italic; }
     footer a { color: var(--ink-2); }
 
+    @media (max-width: 880px) {
+      .nav { flex-wrap: wrap; gap: 12px 16px; }
+      .nav .wordmark .tag { display: none; }
+      .nav-right { gap: 14px; flex-wrap: wrap; }
+    }
     @media (max-width: 720px) {
       .pair { grid-template-columns: 1fr; }
       .pair .vs { transform: rotate(90deg); }
+      h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; }
+      table.hospitals { font-size: 13px; }
+      table.hospitals th, table.hospitals td { padding: 10px 6px; }
+    }
+    @media (max-width: 520px) {
+      .container { padding: 16px; }
+      h1.display { font-size: clamp(28px, 8vw, 40px) !important; }
     }
   </style>
 
@@ -839,7 +851,9 @@ function renderMetroPage({ proc, procSlug, metro, hospitalsInMetro, asOf }) {
     footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
     footer .foot-disc { margin-top: 8px; font-style: italic; }
     footer a { color: var(--ink-2); }
-    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+    @media (max-width: 880px) { .nav { flex-wrap: wrap; gap: 12px 16px; } .nav .wordmark .tag { display: none; } .nav-right { gap: 14px; flex-wrap: wrap; } }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; } table.hospitals { font-size: 13px; } table.hospitals th, table.hospitals td { padding: 10px 6px; } table.hospitals td.name .hname { font-size: 14px; } table.hospitals td.price { font-size: 16px; } }
+    @media (max-width: 520px) { .container { padding: 16px; } .crumb { font-size: 11px; word-break: break-word; } h1.display { font-size: clamp(28px, 8vw, 40px) !important; } h2.display { font-size: clamp(22px, 6vw, 32px) !important; } }
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
@@ -1032,7 +1046,9 @@ ${links}
     .proc-range { font-family: var(--display-font); font-weight: 600; font-size: 15px; color: var(--ink-2); }
     .proc-range .dash { color: var(--ink-3); margin: 0 4px; font-weight: 500; }
     .proc-count { font-size: 12px; color: var(--ink-3); text-align: right; }
-    @media (max-width: 720px) { .proc-link { grid-template-columns: 1fr 80px; row-gap: 4px; } .proc-range, .proc-count { grid-column: span 2; text-align: left; } }
+    @media (max-width: 880px) { .nav { flex-wrap: wrap; gap: 12px 16px; } .nav .wordmark .tag { display: none; } .nav-right { gap: 14px; flex-wrap: wrap; } }
+    @media (max-width: 720px) { .proc-link { grid-template-columns: 1fr 80px; row-gap: 4px; } .proc-range, .proc-count { grid-column: span 2; text-align: left; } h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; } }
+    @media (max-width: 520px) { .container { padding: 16px; } h1.display { font-size: clamp(28px, 8vw, 40px) !important; } }
     footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 64px; color: var(--ink-3); font-size: 13px; }
   </style>
 </head>
@@ -1207,7 +1223,9 @@ function renderHospitalIndex({ hospital, procRows, rating, asOf, hcahpsForHospit
     .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
     .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 16px; }
     footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
-    @media (max-width: 720px) { .proc-link { grid-template-columns: 1fr 80px; } .proc-range { grid-column: span 2; text-align: left; } }
+    @media (max-width: 880px) { .nav { flex-wrap: wrap; gap: 12px 16px; } .nav .wordmark .tag { display: none; } .nav-right { gap: 14px; flex-wrap: wrap; } }
+    @media (max-width: 720px) { .proc-link { grid-template-columns: 1fr 80px; } .proc-range { grid-column: span 2; text-align: left; } h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; } }
+    @media (max-width: 520px) { .container { padding: 16px; } h1.display { font-size: clamp(28px, 8vw, 40px) !important; } }
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
@@ -1687,7 +1705,31 @@ function renderShellHead({ title, description, canonical, ldBlocks, type = "webs
     .site-foot .foot-rule strong { color: var(--ink-2); }
     .site-foot .foot-rule .foot-disc { margin-top: 6px; font-style: italic; color: var(--ink-3); }
     .site-foot .foot-rule .foot-disc a { color: var(--ink-2); text-decoration: none; }
-    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } .site-foot .foot-cols { grid-template-columns: 1fr; gap: 32px; } }
+    /* ── Mobile fixes for the shared SEO-page shell ─────────────────── */
+    @media (max-width: 880px) {
+      .nav { flex-wrap: wrap; gap: 12px 16px; }
+      .nav .wordmark .tag { display: none; }
+      .nav-right { gap: 14px; flex-wrap: wrap; }
+    }
+    @media (max-width: 720px) {
+      .pair { grid-template-columns: 1fr; }
+      .pair .vs { transform: rotate(90deg); }
+      .site-foot .foot-cols { grid-template-columns: 1fr; gap: 32px; }
+      h1.display, h2.display { overflow-wrap: anywhere; word-break: break-word; }
+      table.hospitals { font-size: 13px; }
+      table.hospitals th, table.hospitals td { padding: 10px 6px; }
+      table.hospitals td.name .hname { font-size: 14px; }
+      table.hospitals td.price { font-size: 16px; }
+    }
+    @media (max-width: 520px) {
+      .container { padding: 16px; }
+      .crumb { font-size: 11px; word-break: break-word; }
+      h1.display { font-size: clamp(28px, 8vw, 40px) !important; }
+      h2.display { font-size: clamp(22px, 6vw, 32px) !important; }
+      /* Hospital-procedure table: show only top hospitals as a tight list. */
+      table.hospitals td.rank { width: 24px; padding-right: 0; }
+      table.hospitals td.name .hmetro { font-size: 12px; }
+    }
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
