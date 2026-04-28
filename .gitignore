@@ -11,3 +11,5 @@ raw-files/
 .claude/
 # /tmp report drops, scratch dirs.
 /tmp-reports/
+.vercel
+.env*.local
