@@ -51,10 +51,13 @@ export default async function handler(req) {
   const userAgent = req.headers.get("user-agent") || "";
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "";
 
-  const url = process.env.KV_REST_API_URL;
-  const token = process.env.KV_REST_API_TOKEN;
+  // Vercel renamed "Vercel KV" into the Upstash marketplace integration.
+  // Old projects auto-inject KV_REST_API_*; new Upstash connections inject
+  // UPSTASH_REDIS_REST_*. Support either.
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
   if (!url || !token) {
-    console.log("[subscribe] KV not configured. Email:", email, "source:", source);
+    console.log("[subscribe] KV/Upstash not configured. Email:", email, "source:", source);
     return jsonResponse({ ok: true, stored: false });
   }
 
