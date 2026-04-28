@@ -95,6 +95,114 @@ function loadRatings() {
   return sandbox.window.ITEMIZED_RATINGS || { ratings: {} };
 }
 
+// Read window.ITEMIZED_HCAHPS from the hcahps.real.js bundle.
+function loadHcahps() {
+  const fp = path.join(UI_DIR, "hcahps.real.js");
+  if (!fs.existsSync(fp)) return { measures: [], benchmarks: {}, hospitals: {} };
+  const txt = fs.readFileSync(fp, "utf8");
+  const sandbox = { window: {} };
+  // eslint-disable-next-line no-new-func
+  new Function("window", txt)(sandbox.window);
+  return sandbox.window.ITEMIZED_HCAHPS || { measures: [], benchmarks: {}, hospitals: {} };
+}
+
+// Format an HCAHPS value with its unit ("75%" or "3/5").
+function fmtHcahps(value, kind) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return kind === "stars" ? `${value}/5` : `${value}%`;
+}
+
+// Render a Patient Experience panel for a single hospital. Shows the 9
+// measures + delta from the network benchmark.
+function renderHcahpsBlock(hcahpsForHospital, hcahpsMeta) {
+  if (!hcahpsForHospital || !hcahpsMeta?.measures?.length) return "";
+  const sample = hcahpsForHospital.sample_size;
+  const period = hcahpsForHospital.period_end || hcahpsMeta.period;
+  const rows = hcahpsMeta.measures.map((m) => {
+    const v = hcahpsForHospital.measures?.[m.short];
+    const bench = hcahpsMeta.benchmarks?.[m.short]?.mean;
+    let deltaCell = "—";
+    if (Number.isFinite(v) && Number.isFinite(bench)) {
+      const diff = m.kind === "stars" ? (v - bench).toFixed(1) : Math.round(v - bench);
+      const sign = diff > 0 ? "+" : "";
+      const klass = diff > 0 ? "delta-up" : (diff < 0 ? "delta-down" : "delta-flat");
+      const unit = m.kind === "stars" ? "" : "pp";
+      deltaCell = `<span class="${klass}">${sign}${diff}${unit}</span>`;
+    }
+    return `      <tr>
+        <td class="hc-label">${escHtml(m.label)}</td>
+        <td class="hc-val">${escHtml(fmtHcahps(v, m.kind))}</td>
+        <td class="hc-bench">${escHtml(fmtHcahps(bench, m.kind))}</td>
+        <td class="hc-delta">${deltaCell}</td>
+      </tr>`;
+  }).join("\n");
+  return `
+  <h2 class="display">Patient experience.</h2>
+  <p style="font-size:14px;color:var(--ink-3);margin:0 0 12px">CMS HCAHPS patient survey, period ending ${escHtml(period || "—")}${sample ? ` · ${sample.toLocaleString("en-US")} completed surveys` : ""}.</p>
+  <table class="hospitals hcahps">
+    <thead>
+      <tr>
+        <th>Measure</th>
+        <th style="text-align:right">This hospital</th>
+        <th style="text-align:right">Network avg</th>
+        <th style="text-align:right">Δ</th>
+      </tr>
+    </thead>
+    <tbody>
+${rows}
+    </tbody>
+  </table>
+  <style>
+    table.hospitals.hcahps td.hc-label { font-weight: 500; color: var(--ink-2); font-size: 14px; }
+    table.hospitals.hcahps td.hc-val { text-align: right; font-family: var(--display-font); font-weight: 700; font-size: 16px; color: var(--ink); }
+    table.hospitals.hcahps td.hc-bench { text-align: right; color: var(--ink-3); font-size: 14px; }
+    table.hospitals.hcahps td.hc-delta { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+    .delta-up { color: #2F7D5C; font-weight: 600; }
+    .delta-down { color: #B7421C; font-weight: 600; }
+    .delta-flat { color: var(--ink-3); }
+  </style>`;
+}
+
+// Side-by-side HCAHPS table for the comparison page.
+function renderHcahpsCompareBlock(aHc, bHc, hcahpsMeta, aName, bName) {
+  if ((!aHc && !bHc) || !hcahpsMeta?.measures?.length) return "";
+  const rows = hcahpsMeta.measures.map((m) => {
+    const av = aHc?.measures?.[m.short];
+    const bv = bHc?.measures?.[m.short];
+    let aClass = "", bClass = "";
+    if (Number.isFinite(av) && Number.isFinite(bv)) {
+      if (av > bv) aClass = "win";
+      else if (bv > av) bClass = "win";
+    }
+    return `      <tr>
+        <td class="hc-label">${escHtml(m.label)}</td>
+        <td class="hc-val ${aClass}">${escHtml(fmtHcahps(av, m.kind))}</td>
+        <td class="hc-val ${bClass}">${escHtml(fmtHcahps(bv, m.kind))}</td>
+      </tr>`;
+  }).join("\n");
+  const period = (aHc?.period_end || bHc?.period_end || hcahpsMeta.period || "—");
+  return `
+  <h2 class="display">Patient experience.</h2>
+  <p style="font-size:14px;color:var(--ink-3);margin:0 0 12px">CMS HCAHPS patient survey, period ending ${escHtml(period)}. Bold = higher score.</p>
+  <table class="hospitals hcahps">
+    <thead>
+      <tr>
+        <th>Measure</th>
+        <th style="text-align:right">${escHtml(aName.split(" ")[0])}</th>
+        <th style="text-align:right">${escHtml(bName.split(" ")[0])}</th>
+      </tr>
+    </thead>
+    <tbody>
+${rows}
+    </tbody>
+  </table>
+  <style>
+    table.hospitals.hcahps td.hc-label { font-weight: 500; color: var(--ink-2); font-size: 14px; }
+    table.hospitals.hcahps td.hc-val { text-align: right; font-family: var(--display-font); font-weight: 600; font-size: 16px; color: var(--ink-2); }
+    table.hospitals.hcahps td.hc-val.win { color: var(--signal); font-weight: 700; }
+  </style>`;
+}
+
 function loadProcHospitals(code) {
   const fp = path.join(UI_DIR, "data", `${code}.json`);
   if (!fs.existsSync(fp)) return [];
@@ -897,7 +1005,7 @@ function hospitalSchema(h, rating, url) {
 
 // Render the hospital overview page at /hospital/{slug}.
 // Lists every procedure where this hospital has a published cash price.
-function renderHospitalIndex({ hospital, procRows, rating, asOf }) {
+function renderHospitalIndex({ hospital, procRows, rating, asOf, hcahpsForHospital, hcahpsMeta }) {
   // procRows is an array of { proc, slug, cash_pay_low, cash_pay_high } sorted alphabetically.
   const slug = hospital.id;
   const canonical = `${SITE_ORIGIN}/hospital/${slug}`;
@@ -1047,6 +1155,8 @@ ${procRowsHtml}
 
   ${ratingDetailsHtml}
 
+  ${renderHcahpsBlock(hcahpsForHospital, hcahpsMeta)}
+
   <h2 class="display">About this data.</h2>
   <div class="body-prose">
     <p>The prices above are pulled directly from ${escHtml(hospital.name)}'s machine-readable file (MRF), required under the Hospital Price Transparency Rule (45 CFR 180.50). We download the file, parse the rows for our shoppable CPT set, and publish the dollar amounts as the hospital published them. No surveys, no estimates.</p>
@@ -1064,7 +1174,7 @@ ${procRowsHtml}
 }
 
 // Render a hospital+procedure page at /hospital/{slug}/{procedure-slug}.
-function renderHospitalProcedurePage({ hospital, hospitalSlug, proc, procSlug, asOf, rating, peerHospitals }) {
+function renderHospitalProcedurePage({ hospital, hospitalSlug, proc, procSlug, asOf, rating, peerHospitals, hcahpsForHospital, hcahpsMeta }) {
   const canonical = `${SITE_ORIGIN}/hospital/${hospitalSlug}/${procSlug}`;
   const hospitalUrl = `${SITE_ORIGIN}/hospital/${hospitalSlug}`;
   const procedureUrl = `${SITE_ORIGIN}/procedure/${procSlug}`;
@@ -1244,6 +1354,8 @@ ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, 
     <p>Open the comparison filtered to ${escHtml(proc.label.toLowerCase())}. Add your insurance, your zip, see exactly what you'd pay.</p>
     <a href="/?p=${escAttr(proc.code)}">Compare prices  →</a>
   </div>
+
+  ${renderHcahpsBlock(hcahpsForHospital, hcahpsMeta)}
 
   <h2 class="display">About this price.</h2>
   <div class="body-prose">
@@ -1904,7 +2016,7 @@ ${GLOSSARY.filter((g) => g.slug !== term.slug).slice(0, 10).map((g) => `    <a h
 
 // Render a head-to-head comparison page covering all common procedures
 // between two hospitals in the same metro.
-function renderComparisonPage({ a, b, ratings, hospitalsByProc, procedures, asOf }) {
+function renderComparisonPage({ a, b, ratings, hospitalsByProc, procedures, asOf, hcahps }) {
   const aSlug = a.id;
   const bSlug = b.id;
   const slug = `${aSlug}-vs-${bSlug}`;
@@ -2014,6 +2126,8 @@ ${tableRows}
     table.hospitals td.price .none { color: var(--ink-3); font-weight: 400; }
     table.hospitals td.winner { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
   </style>
+
+  ${renderHcahpsCompareBlock(hcahps?.hospitals?.[aSlug], hcahps?.hospitals?.[bSlug], hcahps, a.name, b.name)}
 
   <div class="cta">
     <h2>Add your insurance.</h2>
@@ -2222,6 +2336,127 @@ ${items}
 ` + renderShellFoot({ asOf });
 }
 
+// ── /compare hub with two-dropdown picker ──────────────────────────────
+function renderCompareHub({ generatedPairs, hospitalsForPicker, asOf }) {
+  const canonical = `${SITE_ORIGIN}/compare`;
+  const total = generatedPairs.length;
+  const title = `Compare hospitals head-to-head. ${total} pre-built comparisons. Itemized.`;
+  const description = `Compare any two US hospitals side-by-side: prices for ${42} procedures, CMS quality ratings, HCAHPS patient experience scores. ${total} pre-built head-to-head comparisons; or pick your own pair.`;
+
+  const ldBlocks = [{
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Compare hospitals", item: canonical },
+    ],
+  }];
+
+  // Build optgroup options grouped by metro for the picker.
+  const byMetro = new Map();
+  for (const h of hospitalsForPicker) {
+    const m = h.metro || "Other";
+    if (!byMetro.has(m)) byMetro.set(m, []);
+    byMetro.get(m).push(h);
+  }
+  const groups = [...byMetro.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  const optionsHtml = groups.map(([metro, list]) => {
+    const opts = list.sort((a, b) => a.name.localeCompare(b.name)).map((h) =>
+      `      <option value="${escAttr(h.id)}">${escHtml(h.name)}</option>`).join("\n");
+    return `    <optgroup label="${escAttr(metro)}">\n${opts}\n    </optgroup>`;
+  }).join("\n");
+
+  // The "popular pairs" callout shows pre-built pairs grouped by metro.
+  const pairsByMetro = new Map();
+  for (const p of generatedPairs) {
+    const m = p.a.metro || "Other";
+    if (!pairsByMetro.has(m)) pairsByMetro.set(m, []);
+    pairsByMetro.get(m).push(p);
+  }
+  const featuredMetros = [...pairsByMetro.entries()]
+    .sort((a, b) => b[1].length - a[1].length)
+    .slice(0, 6);
+  const featuredHtml = featuredMetros.map(([metro, pairs]) => {
+    const links = pairs.slice(0, 8).map((p) =>
+      `        <a href="/compare/${escAttr(p.slug)}">${escHtml(p.a.name)} <span style="color:var(--ink-3);font-weight:400">vs</span> ${escHtml(p.b.name)}</a>`).join("\n");
+    return `      <section class="cat-block">
+        <h2 class="display">${escHtml(metro)}</h2>
+        <div class="grid">
+${links}
+        </div>
+      </section>`;
+  }).join("\n");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; Compare hospitals
+  </div>
+
+  <h1 class="display">Compare any two <span class="accent">hospitals</span>.</h1>
+  <p class="lede">Pick two US hospitals, see them side-by-side: cash-pay prices for every procedure both publish, CMS quality rating, HCAHPS patient experience scores, network averages.</p>
+
+  <div style="background:var(--paper-2);border-radius:24px;padding:28px 24px;margin:24px 0">
+    <div style="font-family:var(--display-font);font-size:18px;font-weight:600;margin-bottom:14px">Pick your pair</div>
+    <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center" id="pickerRow">
+      <select id="hospA" style="padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;background:var(--paper);border:1px solid var(--rule-soft);border-radius:12px;width:100%;color:var(--ink);appearance:menulist">
+        <option value="">Hospital A…</option>
+${optionsHtml}
+      </select>
+      <span style="font-family:var(--display-font);color:var(--ink-3);font-size:18px">vs.</span>
+      <select id="hospB" style="padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;background:var(--paper);border:1px solid var(--rule-soft);border-radius:12px;width:100%;color:var(--ink);appearance:menulist">
+        <option value="">Hospital B…</option>
+${optionsHtml}
+      </select>
+    </div>
+    <button id="pickerGo" type="button" style="margin-top:14px;background:var(--ink);color:var(--paper);border:0;padding:14px 22px;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;width:100%">Compare →</button>
+    <div id="pickerMsg" style="margin-top:10px;font-size:13px;color:var(--ink-3);text-align:center;min-height:18px"></div>
+  </div>
+
+${featuredHtml}
+
+  <div class="cta">
+    <h2>${total} pre-built comparisons.</h2>
+    <p>For metros with multiple hospitals in our dataset, every pairing of the top hospitals already has a dedicated comparison page indexed by Google. Use the picker above for any pair, or click through the featured metros.</p>
+    <a href="/procedure">Browse procedures  →</a>
+  </div>
+
+<script>
+  // Compare-page picker. The build emits comparison pages for top 8
+  // hospitals per metro in procedure-coverage order. The picker normalizes
+  // alphabetically and tries both URL orderings (we generated only one
+  // direction). If the page 404s the user gets a friendly nudge.
+  (function () {
+    var existing = ${JSON.stringify(generatedPairs.map((p) => p.slug))};
+    var existingSet = new Set(existing);
+    var a = document.getElementById('hospA');
+    var b = document.getElementById('hospB');
+    var go = document.getElementById('pickerGo');
+    var msg = document.getElementById('pickerMsg');
+
+    function buildSlugs(x, y) {
+      // Try both orderings since we only generated one direction.
+      return [x + '-vs-' + y, y + '-vs-' + x];
+    }
+    function update() {
+      msg.textContent = '';
+      if (!a.value || !b.value) return;
+      if (a.value === b.value) { msg.textContent = 'Pick two different hospitals.'; return; }
+    }
+    a.addEventListener('change', update);
+    b.addEventListener('change', update);
+
+    go.addEventListener('click', function () {
+      if (!a.value || !b.value) { msg.textContent = 'Pick both hospitals.'; return; }
+      if (a.value === b.value) { msg.textContent = 'Pick two different hospitals.'; return; }
+      var candidates = buildSlugs(a.value, b.value);
+      var match = candidates.find(function (s) { return existingSet.has(s); });
+      if (match) { window.location.href = '/compare/' + match; return; }
+      msg.innerHTML = 'No pre-built comparison for that pair yet. <a href="/hospital/' + a.value + '" style="color:var(--signal)">Open ' + (a.options[a.selectedIndex].text) + '</a> and <a href="/hospital/' + b.value + '" style="color:var(--signal)">' + (b.options[b.selectedIndex].text) + '</a> instead.';
+    });
+  })();
+</script>
+` + renderShellFoot({ asOf });
+}
+
 // ── Sitemap + robots ────────────────────────────────────────────────────
 
 function renderSitemap(urls) {
@@ -2254,6 +2489,7 @@ Sitemap: ${SITE_ORIGIN}/sitemap.xml
 async function main() {
   const data = loadIndex();
   const ratings = loadRatings();
+  const hcahps = loadHcahps();
   const procDir = path.join(DIST_DIR, "procedure");
   const hospDir = path.join(DIST_DIR, "hospital");
   fs.mkdirSync(procDir, { recursive: true });
@@ -2368,7 +2604,8 @@ async function main() {
     const rating = ratings.ratings?.[hid] || null;
 
     // Hospital overview at /hospital/{id}.
-    const hospHtml = renderHospitalIndex({ hospital, procRows, rating, asOf: data.as_of });
+    const hcForHosp = hcahps.hospitals?.[hid] || null;
+    const hospHtml = renderHospitalIndex({ hospital, procRows, rating, asOf: data.as_of, hcahpsForHospital: hcForHosp, hcahpsMeta: hcahps });
     const hospPath = path.join(hospDir, hid);
     fs.mkdirSync(hospPath, { recursive: true });
     fs.writeFileSync(path.join(hospPath, "index.html"), hospHtml);
@@ -2396,6 +2633,8 @@ async function main() {
         asOf: data.as_of,
         rating,
         peerHospitals: procList.filter((x) => !x.all_missing),
+        hcahpsForHospital: hcForHosp,
+        hcahpsMeta: hcahps,
       });
       fs.writeFileSync(path.join(hospPath, `${r.slug}.html`), html);
       hospProcPagesWritten++;
@@ -2526,6 +2765,7 @@ async function main() {
   const compareDir = path.join(DIST_DIR, "compare");
   fs.mkdirSync(compareDir, { recursive: true });
   let comparePagesWritten = 0;
+  const generatedPairs = [];
   // Group hospitals by metro and rank each metro's hospitals by procedure
   // coverage (# procedures with data).
   const byMetroSet = new Map();
@@ -2546,11 +2786,12 @@ async function main() {
         const a = top[i].h;
         const b = top[j].h;
         const html = renderComparisonPage({
-          a, b, ratings, hospitalsByProc, procedures: data.procedures, asOf: data.as_of,
+          a, b, ratings, hcahps, hospitalsByProc, procedures: data.procedures, asOf: data.as_of,
         });
         const slug = `${a.id}-vs-${b.id}`;
         fs.writeFileSync(path.join(compareDir, `${slug}.html`), html);
         comparePagesWritten++;
+        generatedPairs.push({ a, b, slug });
         sitemapUrls.push({
           loc: `${SITE_ORIGIN}/compare/${slug}`,
           priority: "0.6", changefreq: "monthly",
@@ -2558,6 +2799,16 @@ async function main() {
       }
     }
   }
+
+  // /compare hub with picker.
+  const hospitalsForPicker = [...hospitalById.values()];
+  fs.writeFileSync(path.join(compareDir, "index.html"), renderCompareHub({
+    generatedPairs, hospitalsForPicker, asOf: data.as_of,
+  }));
+  sitemapUrls.push({
+    loc: `${SITE_ORIGIN}/compare`,
+    priority: "0.85", changefreq: "weekly",
+  });
 
   // ── Tier 2: top 10 cheapest listicle pages ───────────────────────────
   // For each (procedure, metro) where >= 5 hospitals have a published cash

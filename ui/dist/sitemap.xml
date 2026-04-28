@@ -53089,6 +53089,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://itemized.health/compare</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://itemized.health/list/cheapest-brain-mri-without-contrast-los-angeles</loc>
     <lastmod>2026-04-28</lastmod>
     <changefreq>monthly</changefreq>

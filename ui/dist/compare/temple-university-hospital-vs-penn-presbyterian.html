@@ -378,6 +378,71 @@
     table.hospitals td.winner { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
   </style>
 
+  
+  <h2 class="display">Patient experience.</h2>
+  <p style="font-size:14px;color:var(--ink-3);margin:0 0 12px">CMS HCAHPS patient survey, period ending 03/31/2025. Bold = higher score.</p>
+  <table class="hospitals hcahps">
+    <thead>
+      <tr>
+        <th>Measure</th>
+        <th style="text-align:right">Temple</th>
+        <th style="text-align:right">Penn</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="hc-label">HCAHPS overall star rating</td>
+        <td class="hc-val ">3/5</td>
+        <td class="hc-val ">3/5</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Would definitely recommend</td>
+        <td class="hc-val ">64%</td>
+        <td class="hc-val win">73%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Hospital rating 9 or 10 of 10</td>
+        <td class="hc-val ">65%</td>
+        <td class="hc-val win">72%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Nurses always communicated well</td>
+        <td class="hc-val ">75%</td>
+        <td class="hc-val win">84%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Doctors always communicated well</td>
+        <td class="hc-val ">78%</td>
+        <td class="hc-val win">79%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Given clear info about recovery</td>
+        <td class="hc-val ">85%</td>
+        <td class="hc-val win">88%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Room and bathroom always clean</td>
+        <td class="hc-val win">67%</td>
+        <td class="hc-val ">62%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Staff always explained meds</td>
+        <td class="hc-val ">59%</td>
+        <td class="hc-val win">67%</td>
+      </tr>
+      <tr>
+        <td class="hc-label">Quiet at night, always</td>
+        <td class="hc-val ">47%</td>
+        <td class="hc-val win">53%</td>
+      </tr>
+    </tbody>
+  </table>
+  <style>
+    table.hospitals.hcahps td.hc-label { font-weight: 500; color: var(--ink-2); font-size: 14px; }
+    table.hospitals.hcahps td.hc-val { text-align: right; font-family: var(--display-font); font-weight: 600; font-size: 16px; color: var(--ink-2); }
+    table.hospitals.hcahps td.hc-val.win { color: var(--signal); font-weight: 700; }
+  </style>
+
   <div class="cta">
     <h2>Add your insurance.</h2>
     <p>Cash-pay is one number. With your insurance plan, the actual price differs. Pick your insurer in the comparison tool to see plan-specific rates at both hospitals.</p>

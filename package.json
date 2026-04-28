@@ -9,6 +9,7 @@
     "extract": "node scripts/extract-mri.mjs",
     "extract:wide": "node scripts/extract-mri-wide.mjs",
     "ratings": "node scripts/fetch-cms-ratings.mjs",
+    "hcahps": "node scripts/fetch-hcahps.mjs",
     "build:data": "node scripts/build-ui-data.mjs",
     "build:prod": "node scripts/build-ui-prod.mjs",
     "summarize": "node scripts/summarize-mri.mjs"
