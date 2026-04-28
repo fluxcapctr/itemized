@@ -133,8 +133,9 @@
 <nav class="nav">
   <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
   <div class="nav-right">
-    <a href="/#methodology">Methodology</a>
-    <a href="/#faq">FAQ</a>
+    <a href="/procedure">Procedures</a>
+    <a href="/hospital">Hospitals</a>
+    <a href="/compare">Compare</a>
     <a href="/bills.html">Got a bill?</a>
   </div>
 </nav>
@@ -369,9 +370,37 @@
     <p>Cash-pay rates are often <em>cheaper</em> than the negotiated rate, especially for high-deductible plans. Worth comparing both — the <a href="https://itemized.health/procedure/office-visit-established-patient-level-3">Office visit, established patient, level 3 overview</a> shows the cash-pay column alongside.</p>
   </div>
 
-  <footer>
-    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). Last refresh: 2026-04-27.</div>
-    <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+  <footer style="margin-top:64px;padding:48px 0 32px;border-top:1px solid var(--rule-soft);color:var(--ink-3);font-size:13px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;margin-bottom:32px">
+      <div>
+        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Compare</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <a href="/procedure" style="color:var(--ink-2);text-decoration:none">All procedures</a>
+          <a href="/hospital" style="color:var(--ink-2);text-decoration:none">All hospitals</a>
+          <a href="/compare" style="color:var(--ink-2);text-decoration:none">Head-to-head</a>
+          <a href="/system" style="color:var(--ink-2);text-decoration:none">Hospital systems</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Resources</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <a href="/bills.html" style="color:var(--ink-2);text-decoration:none">Got a bill?</a>
+          <a href="/guide/dispute-medical-bill" style="color:var(--ink-2);text-decoration:none">Dispute-bill guide</a>
+          <a href="/glossary" style="color:var(--ink-2);text-decoration:none">Glossary</a>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">About</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <a href="/#methodology" style="color:var(--ink-2);text-decoration:none">Methodology</a>
+          <a href="/#faq" style="color:var(--ink-2);text-decoration:none">FAQ</a>
+        </div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--rule-soft);padding-top:20px">
+      <strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). CMS HCAHPS patient survey (dgck-syfz). Last refresh: 2026-04-27.
+      <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+    </div>
   </footer>
 </main>
 
