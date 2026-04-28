@@ -126,10 +126,12 @@
     .step ul { margin: 12px 0; padding-left: 20px; }
     .step li { margin: 8px 0; color: var(--ink-2); font-size: 15px; }
 
+    .letter-wrap { position: relative; margin: 16px 0 24px; }
     pre.letter {
       background: var(--paper-3);
       border-radius: 12px;
       padding: 24px;
+      padding-top: 56px;
       font-family: 'JetBrains Mono', monospace;
       font-size: 13px;
       line-height: 1.6;
@@ -137,8 +139,19 @@
       overflow-x: auto;
       white-space: pre-wrap;
       word-wrap: break-word;
-      margin: 16px 0 24px;
+      margin: 0;
     }
+    .copy-btn {
+      position: absolute; top: 12px; right: 12px;
+      background: var(--ink); color: var(--paper);
+      border: 0; padding: 8px 14px; border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 13px;
+      font-weight: 600; cursor: pointer;
+      transition: background 120ms ease, transform 120ms ease;
+    }
+    .copy-btn:hover { background: var(--ink-2); }
+    .copy-btn.copied { background: var(--signal); }
+    .copy-btn:active { transform: scale(0.96); }
 
     .check-list { list-style: none; padding: 0; margin: 16px 0; }
     .check-list li { padding: 10px 0 10px 32px; position: relative; font-size: 15px; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); }
@@ -211,6 +224,7 @@
       <li><a href="#step-5">Step 5. Write the dispute letter (1 hour)</a></li>
       <li><a href="#letter-template">Dispute letter template</a></li>
       <li><a href="#step-6">Step 6. Send, follow up, escalate</a></li>
+      <li><a href="#negotiate">Other ways to lower the bill (even if charges are correct)</a></li>
       <li><a href="#when-to-give-up">When to skip this and use a service</a></li>
     </ul>
   </div>
@@ -318,7 +332,9 @@
 
   <h2 id="letter-template">Dispute letter template.</h2>
   <p>Copy, paste, fill in the bracketed fields. Print, sign, mail certified.</p>
-  <pre class="letter">[Your name]
+  <div class="letter-wrap">
+    <button type="button" class="copy-btn" id="copyLetterBtn" aria-label="Copy letter to clipboard">Copy</button>
+  <pre class="letter" id="disputeLetter">[Your name]
 [Your address]
 [Your phone]
 [Your email]
@@ -387,6 +403,7 @@ Enclosures:
   - Copy of itemized bill
   - Comparison table referencing MRF rates
   - Copy of insurance EOB</pre>
+  </div>
 
   <div class="step">
     <span class="step-tag">Step 06</span>
@@ -402,6 +419,38 @@ Enclosures:
     </ul>
     <p>The escalation step alone resolves the dispute in most cases. Hospitals don't want regulatory complaints on their record.</p>
   </div>
+
+  <h2 id="negotiate">Other ways to lower the bill (even if the charges are correct).</h2>
+  <p>The dispute path above is for charges that exceed the published rate or are otherwise incorrect. But hospitals will routinely lower bills <em>even when the charges match the MRF</em>, especially for self-pay patients. Most people don't know to ask. The reps in billing process these requests every day. They have authority to grant discounts, set up payment plans, and approve financial-assistance applications without escalating to a manager.</p>
+
+  <h3>Ask for a self-pay or prompt-pay discount.</h3>
+  <p>Call billing and say: "I'd like to ask about a self-pay discount if I pay the full balance now." Most hospitals offer <strong>10-30% off</strong> for prompt payment, sometimes higher for the uninsured. They'd rather collect 70 cents on the dollar today than chase you for months and eventually sell the debt to collections at 5-10 cents.</p>
+  <p>Get the discount in writing before you pay. Ask them to email or fax confirmation of the new balance.</p>
+
+  <h3>Apply for financial assistance / charity care.</h3>
+  <p>Federal law (IRS Section 501(r), updated 2022) requires every nonprofit hospital to publish a financial-assistance policy and grant aid to households below specific income thresholds. Most policies cover <strong>50-100% of the bill</strong> for households under <strong>200-400% of the Federal Poverty Level</strong> (the cutoff varies by hospital). For 2026, that's roughly $30K-$60K for a single person, $60K-$125K for a family of four.</p>
+  <p>Even if your income is above the cutoff, the same policy often grants partial discounts for higher-income households with high medical-debt-to-income ratios. The application is usually one page plus your most recent tax return or pay stubs.</p>
+  <p>Say: "I'd like to apply for financial assistance under your Section 501(r) charity-care policy. Can you email me the application?" If the rep doesn't know what you're talking about (some don't), ask for the "financial assistance policy" or "patient financial counselor."</p>
+
+  <div class="callout">
+    <div class="lbl">For-profit hospitals</div>
+    <p>For-profit hospitals (HCA, Tenet, Community Health Systems, etc.) aren't required to have a 501(r) policy, but most still offer self-pay discounts and payment plans. The negotiation lever is just slightly weaker. Ask anyway.</p>
+  </div>
+
+  <h3>Set up a 0% payment plan.</h3>
+  <p>Every hospital has one. Usually 12-24 months, no interest, no credit check. The default if you can't pay in a lump sum. Set this up <strong>before</strong> the bill goes 90+ days past due, because that's when hospitals start sending accounts to collections, which trashes your credit. A payment plan keeps the account "in good standing" while you pay it down.</p>
+  <p>Ask: "What's the longest payment plan you can offer with no interest?" Some hospitals will go 36+ months. The longer the plan, the smaller the monthly payment, the easier it is to actually pay it off.</p>
+
+  <h3>Settle for a lump sum on old bills.</h3>
+  <p>If the bill is large and 90+ days old, call and offer a <strong>30-50% lump sum to close the account</strong>. Hospitals will often take it because the alternative is selling the debt to collections at 5-10 cents on the dollar. They net more from your offer.</p>
+  <p>Get the settlement in writing before you wire the money. Ask for: "a written agreement that the lump-sum payment of $X resolves the account in full and that no further collection activity will occur."</p>
+
+  <h3>The actual phone script.</h3>
+  <div class="callout">
+    <div class="lbl">Use this verbatim</div>
+    <p>"Hi, I'm calling about account [#]. The balance is $[amount]. I'd like to ask about three things: a self-pay discount, your financial-assistance policy, and a no-interest payment plan if neither of the first two work. What's the process?"</p>
+  </div>
+  <p>That call alone resolves a meaningful number of bills without ever needing to dispute. The reps process these calls all day. Most are sympathetic. Stay polite, get specifics in writing, follow up if they say they'll "look into it."</p>
 
   <h2 id="when-to-give-up">When to skip this and use a service.</h2>
   <p>Be honest with yourself. The DIY path takes 2-3 hours plus 30-60 days of waiting. If your bill is small (under $500), the hourly value of doing this yourself probably isn't there. If it's complex (10+ disputable lines, multiple providers), a bill-negotiation service does it more efficiently than you will.</p>
@@ -422,6 +471,53 @@ Enclosures:
     <div class="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/">itemized.health</a></div>
   </footer>
 </main>
+
+<script>
+  // Copy button for the dispute letter template.
+  (function () {
+    var btn = document.getElementById("copyLetterBtn");
+    var pre = document.getElementById("disputeLetter");
+    if (!btn || !pre) return;
+    var resetTimer = null;
+    function flash(label, ok) {
+      btn.textContent = label;
+      btn.classList.toggle("copied", !!ok);
+      if (resetTimer) clearTimeout(resetTimer);
+      resetTimer = setTimeout(function () {
+        btn.textContent = "Copy";
+        btn.classList.remove("copied");
+      }, 1800);
+    }
+    btn.addEventListener("click", function () {
+      var text = pre.innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(
+          function () { flash("Copied", true); },
+          function () { fallbackCopy(text); }
+        );
+      } else {
+        fallbackCopy(text);
+      }
+    });
+    // Older-browser fallback using a hidden textarea + execCommand.
+    function fallbackCopy(text) {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "absolute";
+        ta.style.left = "-9999px";
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        flash("Copied", true);
+      } catch (e) {
+        flash("Copy failed", false);
+      }
+    }
+  })();
+</script>
 
 </body>
 </html>
