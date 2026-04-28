@@ -65,6 +65,16 @@ async function main() {
       fs.copyFileSync(src, path.join(DIST_DIR, file));
     }
   }
+  // Copy ui/guide/* into ui/dist/guide/* for static long-form pages.
+  const guideSrcDir = path.join(UI_DIR, "guide");
+  if (fs.existsSync(guideSrcDir)) {
+    const guideDistDir = path.join(DIST_DIR, "guide");
+    fs.mkdirSync(guideDistDir, { recursive: true });
+    for (const f of fs.readdirSync(guideSrcDir)) {
+      fs.copyFileSync(path.join(guideSrcDir, f), path.join(guideDistDir, f));
+    }
+    console.log(`  guide/ — ${fs.readdirSync(guideSrcDir).length} static guides`);
+  }
   // Per-procedure files in data/
   const dataSrcDir = path.join(UI_DIR, "data");
   if (fs.existsSync(dataSrcDir)) {

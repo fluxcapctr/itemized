@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>How to dispute a medical bill using the hospital's price transparency file. Itemized.</title>
+  <meta name="description" content="A step-by-step guide for disputing an inflated hospital bill using the federally-mandated price transparency file. Free, takes 2-3 hours, includes a dispute-letter template.">
+  <link rel="canonical" href="https://itemized.health/guide/dispute-medical-bill">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="How to dispute a medical bill (the DIY playbook). Itemized.">
+  <meta property="og:description" content="Step-by-step: pull the hospital's MRF, match the CPTs on your bill, write the dispute letter. Free, 2-3 hours, template included.">
+  <meta property="og:url" content="https://itemized.health/guide/dispute-medical-bill">
+  <meta property="og:site_name" content="Itemized">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to dispute a medical bill (the DIY playbook).">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "How to dispute a medical bill using the hospital's price transparency file",
+    "description": "A step-by-step guide for disputing an inflated hospital bill using the federally-mandated machine-readable file (MRF) that every US hospital is required to publish.",
+    "totalTime": "PT3H",
+    "estimatedCost": { "@type": "MonetaryAmount", "currency": "USD", "value": "0" },
+    "tool": [
+      { "@type": "HowToTool", "name": "Itemized hospital bill" },
+      { "@type": "HowToTool", "name": "The hospital's MRF link from itemized.health" },
+      { "@type": "HowToTool", "name": "Your insurance card and EOB" }
+    ],
+    "step": [
+      { "@type": "HowToStep", "name": "Get the itemized bill", "text": "Request the itemized version of the bill if you only have a summary. Federal law requires the hospital to provide it free." },
+      { "@type": "HowToStep", "name": "Find the MRF", "text": "Open the hospital's row on itemized.health and click through to its machine-readable file (MRF). Or visit the hospital's cms-hpt.txt file directly." },
+      { "@type": "HowToStep", "name": "Match each CPT", "text": "For every line on your bill, find the matching CPT code in the MRF. Note the published cash-pay rate AND the negotiated rate for your insurer." },
+      { "@type": "HowToStep", "name": "Identify discrepancies", "text": "Flag charges that exceed the published rate, CPT codes that don't match the procedure you had (upcoding), and out-of-network professional fees from in-network facilities (surprise billing)." },
+      { "@type": "HowToStep", "name": "Write the dispute letter", "text": "Cite 45 CFR 180.50 (Hospital Price Transparency Rule) and the No Surprises Act. Include the published rates from the MRF and your line-by-line discrepancies. Use the template below." },
+      { "@type": "HowToStep", "name": "Send and escalate", "text": "Mail certified to the hospital billing department, CC the compliance officer. Set a 30-day follow-up. If unresolved, escalate to your state AG, the CFPB, or the Patient Advocate Foundation." }
+    ],
+    "url": "https://itemized.health/guide/dispute-medical-bill"
+  }
+  </script>
+
+  <style>
+    :root {
+      --paper: #F5F1EA;
+      --paper-2: #EFEAE1;
+      --paper-3: #E5DECF;
+      --ink: #0F0E0C;
+      --ink-2: #2A2925;
+      --ink-3: #6B675F;
+      --rule-soft: rgba(15, 14, 12, 0.10);
+      --signal: #5B3FE0;
+      --signal-soft: #ECE6FE;
+      --warn: #C44A1A;
+      --warn-soft: #FCE2D5;
+      --display-font: 'Bricolage Grotesque', system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    .container { max-width: 760px; margin: 0 auto; padding: 24px; }
+    .nav {
+      max-width: 1280px; margin: 0 auto; padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--rule-soft);
+    }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .nav-right a:hover { color: var(--ink); }
+
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+
+    h1 { font-family: var(--display-font); font-size: clamp(36px, 5.5vw, 56px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    h2 { font-family: var(--display-font); font-size: clamp(26px, 3.5vw, 36px); margin: 56px 0 14px; font-weight: 700; letter-spacing: -0.01em; }
+    h3 { font-family: var(--display-font); font-size: 20px; margin: 32px 0 8px; font-weight: 600; }
+    .accent { color: var(--signal); }
+
+    .lede { font-size: 19px; color: var(--ink-2); margin: 0 0 24px; max-width: 60ch; }
+    .lede strong { color: var(--ink); }
+
+    .meta-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; font-size: 13px; color: var(--ink-3); margin: 0 0 32px; padding-bottom: 24px; border-bottom: 1px solid var(--rule-soft); }
+    .meta-row .pill { background: var(--paper-2); padding: 4px 10px; border-radius: 999px; font-weight: 500; color: var(--ink-2); }
+
+    p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    p strong { color: var(--ink); }
+    a { color: var(--signal); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: var(--ink); }
+
+    .callout {
+      background: var(--signal-soft); border-radius: 16px;
+      padding: 20px 24px; margin: 24px 0;
+    }
+    .callout .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--signal); font-weight: 600; margin-bottom: 6px; }
+    .callout p { margin: 0; }
+
+    .warn {
+      background: var(--warn-soft); border-radius: 16px;
+      padding: 20px 24px; margin: 24px 0;
+    }
+    .warn .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--warn); font-weight: 700; margin-bottom: 6px; }
+    .warn p { margin: 0; }
+
+    .step {
+      background: var(--paper-2); border-radius: 24px;
+      padding: 28px 28px; margin: 24px 0;
+    }
+    .step .step-tag { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; color: var(--ink-3); background: var(--paper); padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; }
+    .step h2 { margin: 0 0 8px; font-size: 28px; }
+    .step .time { font-size: 13px; color: var(--ink-3); margin-bottom: 16px; }
+    .step ul { margin: 12px 0; padding-left: 20px; }
+    .step li { margin: 8px 0; color: var(--ink-2); font-size: 15px; }
+
+    pre.letter {
+      background: var(--paper-3);
+      border-radius: 12px;
+      padding: 24px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--ink);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      margin: 16px 0 24px;
+    }
+
+    .check-list { list-style: none; padding: 0; margin: 16px 0; }
+    .check-list li { padding: 10px 0 10px 32px; position: relative; font-size: 15px; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); }
+    .check-list li:before { content: "□"; position: absolute; left: 0; top: 8px; font-size: 22px; color: var(--ink-3); font-family: monospace; }
+    .check-list li:last-child { border-bottom: 0; }
+
+    .toc { background: var(--paper-2); border-radius: 16px; padding: 20px 24px; margin: 24px 0; }
+    .toc-h { font-family: var(--display-font); font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin: 6px 0; font-size: 14px; }
+    .toc li a { color: var(--ink-2); text-decoration: none; }
+    .toc li a:hover { color: var(--signal); text-decoration: underline; }
+
+    .cta-box {
+      background: var(--ink); color: var(--paper);
+      border-radius: 24px; padding: 28px 24px;
+      margin: 40px 0;
+    }
+    .cta-box h2 { color: var(--paper); margin: 0 0 12px; font-size: 24px; }
+    .cta-box p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta-box a {
+      display: inline-block; background: var(--signal); color: var(--paper);
+      padding: 14px 22px; border-radius: 12px; text-decoration: none;
+      font-weight: 600; font-size: 15px;
+    }
+    .cta-box a:hover { background: #6E55EA; }
+
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 64px; color: var(--ink-3); font-size: 13px; }
+    footer .foot-disc { margin-top: 8px; font-style: italic; }
+    footer a { color: var(--ink-2); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/bills.html">Got a bill?</a> &nbsp;·&nbsp; DIY guide
+  </div>
+
+  <h1>How to <span class="accent">dispute</span> a medical bill.</h1>
+  <p class="lede">
+    Federal law requires every US hospital to publish a machine-readable file (MRF) showing the cash-pay and insurance-negotiated rates for every procedure. If your bill exceeds those published rates, you have a strong basis to dispute it. Here's the playbook, end to end.
+  </p>
+
+  <div class="meta-row">
+    <span class="pill">Time: 2-3 hours</span>
+    <span class="pill">Cost: $0</span>
+    <span class="pill">Tools: a printer, certified mail, an itemized bill</span>
+    <span class="pill">Difficulty: medium</span>
+  </div>
+
+  <div class="toc">
+    <div class="toc-h">What's in this guide</div>
+    <ul>
+      <li><a href="#what-you-need">What you need before you start</a></li>
+      <li><a href="#step-1">Step 1. Get the itemized bill (15 min)</a></li>
+      <li><a href="#step-2">Step 2. Find the hospital's MRF (5 min)</a></li>
+      <li><a href="#step-3">Step 3. Match each CPT code to its published rate (45 min)</a></li>
+      <li><a href="#step-4">Step 4. Identify the disputable charges (15 min)</a></li>
+      <li><a href="#step-5">Step 5. Write the dispute letter (1 hour)</a></li>
+      <li><a href="#letter-template">Dispute letter template</a></li>
+      <li><a href="#step-6">Step 6. Send, follow up, escalate</a></li>
+      <li><a href="#when-to-give-up">When to skip this and use a service</a></li>
+    </ul>
+  </div>
+
+  <h2 id="what-you-need">What you need before you start.</h2>
+  <p>You need three things in front of you before you start. If you're missing any of them, get them first. The dispute is much weaker without all three.</p>
+
+  <ul class="check-list">
+    <li><strong>The itemized bill.</strong> Not the summary, not the EOB. The line-by-line bill that shows every CPT/HCPCS code, every facility fee, every drug, every supply. If you only have a summary, you can request the itemized version under federal law (more in Step 1).</li>
+    <li><strong>The hospital's MRF.</strong> Linked from every hospital row on Itemized, or available at <code>{hospital-domain}/cms-hpt.txt</code> (every hospital is required to host one). Step 2 walks you through finding it.</li>
+    <li><strong>Your insurance card + EOB.</strong> The Explanation of Benefits from your insurer tells you what they paid and what they left to you. You need both to identify out-of-network surprise charges and incorrect cost-sharing.</li>
+  </ul>
+
+  <div class="callout">
+    <div class="lbl">Federal rights you'll be using</div>
+    <p>Three laws back you up: the <strong>Hospital Price Transparency Rule</strong> (45 CFR 180.50, in effect since 2021), which requires hospitals to publish their rates; the <strong>No Surprises Act</strong> (2022), which protects you from out-of-network surprise billing; and the <strong>Fair Debt Collection Practices Act</strong>, which limits how aggressively a hospital can collect on a disputed bill.</p>
+  </div>
+
+  <div class="step">
+    <span class="step-tag">Step 01</span>
+    <h2 id="step-1">Get the itemized bill.</h2>
+    <div class="time">15 minutes</div>
+    <p>Most hospitals send a "summary" bill by default. It shows totals, not line items, and it's much harder to dispute because you can't see what you're being charged for.</p>
+    <p><strong>Call the hospital's billing department</strong> and say exactly this: "I'd like to request a fully itemized bill with CPT and HCPCS codes for every charge. I understand this is required to be provided free of charge under federal regulations." They will mail or email it within 7-10 business days.</p>
+    <p>If they push back, cite the federal requirement (42 CFR 482.13 plus the Patient's Bill of Rights at most hospitals). Don't pay anything until you have the itemized version.</p>
+    <div class="warn">
+      <div class="lbl">If a collector is calling</div>
+      <p>Send a written request to the collector for "validation of debt" under the FDCPA. They have to stop collection activity until they validate. That buys you time to dispute.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-tag">Step 02</span>
+    <h2 id="step-2">Find the hospital's MRF.</h2>
+    <div class="time">5 minutes</div>
+    <p>The MRF is a JSON or CSV file the hospital is required to publish. There are two ways to find it:</p>
+    <p><strong>Easier:</strong> open Itemized, search the procedure you had, find the hospital's row, and click the link in the row-expand. Itemized has already parsed and normalized the prices, so this is the path of least resistance.</p>
+    <p><strong>Direct:</strong> visit <code>{hospital-website}/cms-hpt.txt</code>. For example, <code>cedars-sinai.org/cms-hpt.txt</code>. That file lists the URL of the current MRF. Follow the link, download the file. The raw file is large (often hundreds of MB) and requires technical skill to parse, which is why we built Itemized.</p>
+    <div class="callout">
+      <div class="lbl">What's in the MRF</div>
+      <p>For every procedure (CPT, HCPCS, MS-DRG, or hospital chargemaster code), the file lists: the chargemaster price, the cash-pay/self-pay price, and the negotiated rate for every insurance plan the hospital contracts with. Required disclosure under 45 CFR 180.50.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-tag">Step 03</span>
+    <h2 id="step-3">Match each CPT code to its published rate.</h2>
+    <div class="time">45 minutes</div>
+    <p>For every line on your bill, find the same code in the MRF. Make a spreadsheet (or just a piece of paper) with these four columns:</p>
+    <ul>
+      <li><strong>CPT/HCPCS code</strong> from the bill</li>
+      <li><strong>Description</strong> from the bill</li>
+      <li><strong>Amount billed</strong></li>
+      <li><strong>Published rate</strong> from the MRF (cash-pay AND your insurer's negotiated rate)</li>
+    </ul>
+    <p>This is the most tedious step. Expect 30-60 codes on a typical hospital bill. For each one:</p>
+    <ul>
+      <li>Search the MRF for the exact CPT/HCPCS code (5 digits for CPT, alphanumeric for HCPCS).</li>
+      <li>Note the cash-pay rate. This is the price an uninsured patient would pay.</li>
+      <li>Note the negotiated rate for your insurer (e.g., Aetna PPO, BCBS HMO, etc.).</li>
+      <li>If a code is on the bill but NOT in the MRF, flag it. The hospital may be required to publish a rate for any code they bill for, depending on the procedure type.</li>
+    </ul>
+    <p>If your hospital is in our dataset, you can save 80% of this work by using the comparison tool on Itemized. Search the procedure, find your hospital's row, expand it. The plan-by-plan negotiated rates are right there.</p>
+  </div>
+
+  <div class="step">
+    <span class="step-tag">Step 04</span>
+    <h2 id="step-4">Identify the disputable charges.</h2>
+    <div class="time">15 minutes</div>
+    <p>Three categories of disputable charges in roughly the order you'll find them:</p>
+
+    <h3>4a. Charge exceeds the published rate</h3>
+    <p>If you were billed $4,200 for a CPT 73721 (knee MRI) but the hospital's MRF shows their cash-pay rate is $1,800 and their Aetna PPO rate is $1,400, you have a clear discrepancy. The hospital must, at minimum, justify the difference. They usually can't, because they're required to honor what they published.</p>
+
+    <h3>4b. Code upcoding</h3>
+    <p>Compare the CPT codes on your bill against what your doctor's notes describe. A 99214 (a 25-30 minute "moderate complexity" visit) billed for what was clinically a 99213 (a 15-20 minute "low complexity" visit) is a 30-40% overcharge for office visits. Look at the time you actually spent and the complexity of the discussion.</p>
+    <p>Imaging studies are also frequently upcoded. A standard CT abdomen (74176) billed as a CT abdomen+pelvis with contrast (74178) is a 2-3× overcharge. The radiology report should specify exactly what was scanned.</p>
+
+    <h3>4c. Surprise out-of-network charges</h3>
+    <p>If you went to an in-network facility, the No Surprises Act (2022) generally protects you from out-of-network bills from radiologists, anesthesiologists, pathologists, ER physicians, and other facility-based providers. If a non-emergency provider was out-of-network and you didn't sign a written notice and consent form at least 72 hours before the procedure, the bill is likely disputable.</p>
+    <p>Symptoms: a separate bill from a doctor or group you don't recognize, with a higher patient responsibility than the EOB shows.</p>
+
+    <div class="callout">
+      <div class="lbl">Common bill errors</div>
+      <p><strong>Duplicate charges</strong> for the same procedure on the same day. <strong>Charges for services you didn't receive</strong> (test cancellations that still got billed). <strong>Drug overcharges</strong> at 5-10× retail pharmacy prices. <strong>Room-and-board billed on a discharge day</strong> when you went home before midnight. All disputable.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-tag">Step 05</span>
+    <h2 id="step-5">Write the dispute letter.</h2>
+    <div class="time">1 hour</div>
+    <p>Tone: formal, factual, citing federal law, not adversarial. Hospitals process these. The reps reading your letter aren't out to get you. They want to close the file.</p>
+    <p>Include these sections, in this order:</p>
+    <ul>
+      <li><strong>Identifying info:</strong> your name, account number, date of service, billing date.</li>
+      <li><strong>Reason for dispute:</strong> "I believe the following charges exceed the published rates in your machine-readable file as required under 45 CFR 180.50."</li>
+      <li><strong>Itemized comparison:</strong> a table with each disputed line, the amount billed, the published rate, and the difference.</li>
+      <li><strong>Specific requests:</strong> "I request that the bill be corrected to reflect the published rates, that any payments already made beyond the published rate be refunded, and that the corrected bill be re-submitted to my insurer for processing."</li>
+      <li><strong>Deadline:</strong> 30 days for a written response.</li>
+      <li><strong>What you'll do if unresolved:</strong> "If unresolved, I will file complaints with the Centers for Medicare and Medicaid Services (the agency enforcing 45 CFR 180.50), my state attorney general, and the Consumer Financial Protection Bureau."</li>
+    </ul>
+    <p>Use the template below as a starting point. Adapt the specifics. Don't copy verbatim — letters that read like form letters get ignored.</p>
+  </div>
+
+  <h2 id="letter-template">Dispute letter template.</h2>
+  <p>Copy, paste, fill in the bracketed fields. Print, sign, mail certified.</p>
+  <pre class="letter">[Your name]
+[Your address]
+[Your phone]
+[Your email]
+
+[Date]
+
+[Hospital billing department address]
+Attn: Patient Financial Services / Billing Manager
+CC: Compliance Officer
+
+Re: Dispute of charges
+Account number: [account #]
+Patient: [patient name]
+Date of service: [date]
+Billing date: [bill date]
+
+Dear Sir or Madam,
+
+I am writing to formally dispute portions of the bill referenced above.
+On review, several charges appear to exceed the rates [Hospital name]
+publishes in its machine-readable file (MRF) as required under the
+Hospital Price Transparency Rule (45 CFR 180.50).
+
+The MRF I reviewed is located at:
+[URL of the hospital's MRF]
+
+The disputed charges are as follows:
+
+CPT/HCPCS  | Description       | Billed     | Published rate | Difference
+-----------+-------------------+------------+----------------+-----------
+[code]     | [description]     | $[amount]  | $[rate]        | $[diff]
+[code]     | [description]     | $[amount]  | $[rate]        | $[diff]
+[code]     | [description]     | $[amount]  | $[rate]        | $[diff]
+
+Total disputed amount: $[sum]
+
+I request the following:
+
+1. That [Hospital name] correct the bill to reflect the rates published
+   in the MRF.
+2. That any payments already remitted beyond the published rate be
+   refunded.
+3. That the corrected bill be re-submitted to my insurance carrier for
+   processing as appropriate.
+4. That all collection activity on the disputed amount be suspended
+   while this dispute is reviewed, per the Fair Debt Collection
+   Practices Act.
+
+I request a written response within 30 days of receipt of this letter.
+
+If this dispute is not resolved within 30 days, I intend to file
+formal complaints with:
+  - The Centers for Medicare and Medicaid Services
+    (https://www.cms.gov/hospital-price-transparency)
+  - The Office of the Attorney General, [your state]
+  - The Consumer Financial Protection Bureau
+
+Thank you for your prompt attention to this matter.
+
+Sincerely,
+
+[Your signature]
+[Your printed name]
+
+Enclosures:
+  - Copy of itemized bill
+  - Comparison table referencing MRF rates
+  - Copy of insurance EOB</pre>
+
+  <div class="step">
+    <span class="step-tag">Step 06</span>
+    <h2 id="step-6">Send, follow up, escalate.</h2>
+    <div class="time">5 minutes per step</div>
+    <p><strong>Send.</strong> Mail certified, return receipt requested. Pay the $4 for tracking. Keep the green slip. Email a copy to the billing department too if you have an address.</p>
+    <p><strong>Wait 30 days.</strong> Most hospitals respond within two weeks. Some take the full 30. If you hear nothing in 30 days, send a follow-up letter referencing the original (same content, "this is my second request").</p>
+    <p><strong>Escalate (if needed).</strong> Three places to file:</p>
+    <ul>
+      <li><strong>CMS Hospital Price Transparency complaint:</strong> <a href="https://www.cms.gov/hospital-price-transparency" rel="nofollow noopener" target="_blank">cms.gov/hospital-price-transparency</a>. CMS can fine hospitals that don't comply with the disclosure rule. They take complaints seriously.</li>
+      <li><strong>Your state attorney general:</strong> google "[your state] attorney general consumer complaint." Most states have an online form. Healthcare billing complaints get prioritized.</li>
+      <li><strong>Consumer Financial Protection Bureau:</strong> <a href="https://www.consumerfinance.gov/complaint/" rel="nofollow noopener" target="_blank">consumerfinance.gov/complaint</a>. The CFPB handles medical-debt collection complaints and forwards them to the hospital with a deadline to respond.</li>
+    </ul>
+    <p>The escalation step alone resolves the dispute in most cases. Hospitals don't want regulatory complaints on their record.</p>
+  </div>
+
+  <h2 id="when-to-give-up">When to skip this and use a service.</h2>
+  <p>Be honest with yourself. The DIY path takes 2-3 hours plus 30-60 days of waiting. If your bill is small (under $500), the hourly value of doing this yourself probably isn't there. If it's complex (10+ disputable lines, multiple providers), a bill-negotiation service does it more efficiently than you will.</p>
+  <p>Bill-negotiation services charge a percentage of what they save you (typically 25-35%). If they don't save anything, you don't pay. The math: if your bill is $5,000 and they save you $2,000, you pay them ~$500. You net $1,500 vs. spending three hours yourself for $2,000.</p>
+  <p>The service we recommend is Goodbill. We earn a referral fee when you use them, which we disclose on the <a href="/bills.html">Got a bill?</a> page. We picked them because their pricing is transparent (percentage of savings, no fee otherwise) and they specialize in hospital and ER bills.</p>
+
+  <div class="cta-box">
+    <h2>Want help instead of doing it yourself?</h2>
+    <p>Goodbill reviews your itemized bill, finds the disputable charges, and negotiates with the hospital. You pay them a percentage of what they save you. If they don't save anything, you don't pay.</p>
+    <a href="/bills.html">See the bill-help options →</a>
+  </div>
+
+  <h2>One final thing.</h2>
+  <p>This guide assumes you're disputing a hospital bill that's already arrived. If you have a procedure scheduled and you want to negotiate the price <em>before</em> you go in, the playbook is different. Call the hospital's pricing department, reference their MRF rate for your CPT, and ask whether you qualify for the cash-pay rate (you usually do, even if you have insurance). Doing it before the procedure is dramatically easier than after.</p>
+
+  <footer>
+    <div><strong>Disclaimer:</strong> This guide is general information. It is not medical, financial, or legal advice. The Hospital Price Transparency Rule (45 CFR 180.50), No Surprises Act, and FDCPA apply broadly to most hospitals and most situations, but specific outcomes depend on your circumstances. If your dispute is large or complex, consult a healthcare-billing advocate or attorney.</div>
+    <div class="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>

@@ -1395,6 +1395,7 @@ async function main() {
     { loc: SITE_ORIGIN + "/", priority: "1.0", changefreq: "weekly" },
     { loc: SITE_ORIGIN + "/procedure", priority: "0.9", changefreq: "weekly" },
     { loc: SITE_ORIGIN + "/bills", priority: "0.7", changefreq: "monthly" },
+    { loc: SITE_ORIGIN + "/guide/dispute-medical-bill", priority: "0.85", changefreq: "monthly" },
   ];
 
   let written = 0;
