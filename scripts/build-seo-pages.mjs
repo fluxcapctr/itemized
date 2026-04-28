@@ -2581,9 +2581,15 @@ ${featuredHtml}
     // Filter "other" select to only show options whose data-cluster
     // matches the cluster of the chosen value in "selected". If selected
     // is empty, restore the full list.
+    //
+    // Crucially: preserve "other"'s current selection if it's still valid
+    // in the filtered list. Otherwise the second pick wipes the first one.
     function filterPartner(selected, other, originalHtml) {
       if (!selected.value) {
+        // Reset other to full list, preserving its current selection.
+        var prev = other.value;
         other.innerHTML = originalHtml;
+        if (prev) other.value = prev;
         return;
       }
       var chosenOption = selected.options[selected.selectedIndex];
@@ -2596,8 +2602,13 @@ ${featuredHtml}
       groups.forEach(function (g) {
         if (g.label !== cluster) g.parentNode.removeChild(g);
       });
-      // If user had previously chosen a hospital in another cluster, clear.
-      if (prevValue && other.value !== prevValue) other.value = '';
+      // Restore prevValue if the option still exists in the filtered set.
+      // Hospital ids are kebab-case slugs (cedars-sinai etc), no escaping
+      // needed for the attribute selector.
+      if (prevValue) {
+        var stillExists = other.querySelector('option[value="' + prevValue + '"]');
+        if (stillExists) other.value = prevValue;
+      }
     }
 
     a.addEventListener('change', function () {
