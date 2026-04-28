@@ -101,8 +101,11 @@ async function main() {
         headers: [{ key: "Cache-Control", value: "public, max-age=300, s-maxage=300" }],
       },
       {
+        // Short cache on the JS bundle so deploys propagate fast.
+        // Vercel's edge still serves the latest after each deploy; the
+        // browser TTL just controls how long stale copies stick around.
         source: "/(app|tweaks-panel)\\.js",
-        headers: [{ key: "Cache-Control", value: "public, max-age=3600" }],
+        headers: [{ key: "Cache-Control", value: "public, max-age=300, must-revalidate" }],
       },
     ],
   };
