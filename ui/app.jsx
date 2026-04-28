@@ -1268,9 +1268,14 @@ function App() {
 
   return (
     <>
-      <div className="container">
-        <SearchBox />
+      {/* Search box renders into the nav via portal so it sits in the
+          upper-right of the static Itemized.html shell. */}
+      {(() => {
+        const mount = typeof document !== "undefined" && document.getElementById("nav-search-mount");
+        return mount ? ReactDOM.createPortal(<SearchBox />, mount) : null;
+      })()}
 
+      <div className="container">
         <Hero proc={proc} mode={tweaks.headlineMode}
               userMetroLabel={userMetroLabel}
               localCount={totalLocalHospitals}
