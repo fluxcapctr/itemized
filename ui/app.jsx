@@ -762,10 +762,6 @@ function FAQ() {
       a: "Hospitals are required to publish the rate they've negotiated with each insurer, but enforcement is uneven. Some hospitals only publish rates for the plans they actually contract with at scale. Others publish a partial list. We can't show you a rate the hospital didn't publish.",
     },
     {
-      q: "Why are some prices clearly wrong?",
-      a: "Some hospitals publish data that's clearly garbage — $100,000 for a blood test, $0.01 cash prices for surgery, charges attributed to procedure codes that don't match the description. We filter the worst offenders (sentinels under $1, negotiated rates above 3× the gross charge, methodology codes like \"case rate\" that signal the price isn't procedure-specific). What's left is what they published. Some of it is still imperfect.",
-    },
-    {
       q: "Why don't HMO and PPO show as separate options in the dropdown?",
       a: "We aggregate by canonical insurer (Aetna, Cigna, etc.) at the top level. Click any hospital row to expand and see the plan-by-plan breakdown — every individual plan name and rate the hospital published.",
     },
@@ -780,10 +776,6 @@ function FAQ() {
     {
       q: "Are you taking money from any of these hospitals or insurers?",
       a: "No. That would compromise the data. We earn a referral fee from Goodbill (the bill-negotiation service we recommend on the \"Got a bill?\" page), and we expect to add affiliates from direct-pay imaging clinics in the future. The line we hold: revenue can come from adjacent services the user is already looking for, never from the entities being compared.",
-    },
-    {
-      q: "Why isn't this an app?",
-      a: "Because the data is mostly stable (negotiated rates change quarterly, not hourly), the comparison is essentially a sortable table, and a static website ships in five minutes and works on any phone without an install. If we add features that genuinely require an app, we'll consider it. Most healthcare apps are apps because someone wanted to charge for one.",
     },
   ];
   return (
