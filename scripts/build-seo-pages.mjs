@@ -22,6 +22,21 @@ const UI_DIR = path.join(REPO, "ui");
 const DIST_DIR = path.join(UI_DIR, "dist");
 const SITE_ORIGIN = "https://itemized.health";
 
+// US state abbreviation -> full name. Used for state-level rollup pages.
+const STATE_NAMES = {
+  AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California",
+  CO: "Colorado", CT: "Connecticut", DE: "Delaware", DC: "District of Columbia",
+  FL: "Florida", GA: "Georgia", HI: "Hawaii", ID: "Idaho", IL: "Illinois",
+  IN: "Indiana", IA: "Iowa", KS: "Kansas", KY: "Kentucky", LA: "Louisiana",
+  ME: "Maine", MD: "Maryland", MA: "Massachusetts", MI: "Michigan", MN: "Minnesota",
+  MS: "Mississippi", MO: "Missouri", MT: "Montana", NE: "Nebraska", NV: "Nevada",
+  NH: "New Hampshire", NJ: "New Jersey", NM: "New Mexico", NY: "New York",
+  NC: "North Carolina", ND: "North Dakota", OH: "Ohio", OK: "Oklahoma", OR: "Oregon",
+  PA: "Pennsylvania", RI: "Rhode Island", SC: "South Carolina", SD: "South Dakota",
+  TN: "Tennessee", TX: "Texas", UT: "Utah", VT: "Vermont", VA: "Virginia",
+  WA: "Washington", WV: "West Virginia", WI: "Wisconsin", WY: "Wyoming",
+};
+
 // ── Helpers ─────────────────────────────────────────────────────────────
 
 function slugify(text) {
@@ -1352,6 +1367,539 @@ ${metroBlocks}
 </html>`;
 }
 
+// ── Tier-1 SEO expansion: state, insurer, system, glossary ─────────────
+
+function stateAbbrFromMetro(metro) {
+  if (!metro) return null;
+  const parts = metro.split(",");
+  if (parts.length < 2) return null;
+  const abbr = parts[1].trim().toUpperCase();
+  return STATE_NAMES[abbr] ? abbr : null;
+}
+
+function payerSlugify(label) {
+  // Insurer labels can be "Blue Cross Blue Shield" / "Anthem BCBS" / "United
+  // HealthCare". Normalize to a clean URL slug.
+  return slugify(label);
+}
+
+function renderShellHead({ title, description, canonical, ldBlocks, type = "website" }) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>${escHtml(title)}</title>
+  <meta name="description" content="${escAttr(description)}">
+  <link rel="canonical" href="${escAttr(canonical)}">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="${escAttr(type)}">
+  <meta property="og:title" content="${escAttr(title)}">
+  <meta property="og:description" content="${escAttr(description)}">
+  <meta property="og:url" content="${escAttr(canonical)}">
+  <meta property="og:site_name" content="Itemized">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --paper-3:#E5DECF; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --signal-soft:#ECE6FE; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 920px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+    h1.display { font-family: var(--display-font); font-size: clamp(36px, 5.5vw, 56px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    h2.display { font-family: var(--display-font); font-size: clamp(24px, 3vw, 36px); margin: 40px 0 14px; font-weight: 700; letter-spacing: -0.01em; }
+    h3 { font-family: var(--display-font); font-size: 20px; margin: 24px 0 8px; font-weight: 600; }
+    .accent { color: var(--signal); }
+    .lede { font-size: 18px; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+    .lede strong { color: var(--ink); }
+    p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    a { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--ink); }
+    table.hospitals { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    table.hospitals th, table.hospitals td { padding: 14px 8px; text-align: left; border-bottom: 1px solid var(--rule-soft); }
+    table.hospitals th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 500; }
+    table.hospitals td.rank { width: 36px; color: var(--ink-3); font-family: 'JetBrains Mono',monospace; font-size: 14px; }
+    table.hospitals td.name .hname { font-weight: 600; font-size: 16px; }
+    table.hospitals td.name .hname a { color: var(--ink); text-decoration: none; }
+    table.hospitals td.name .hname a:hover { color: var(--signal); }
+    table.hospitals td.name .hmetro { color: var(--ink-3); font-size: 13px; margin-top: 2px; }
+    table.hospitals td.price { text-align: right; font-family: var(--display-font); font-size: 18px; font-weight: 600; }
+    .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin: 24px 0 32px; }
+    .pair-card { background: var(--paper-2); border-radius: 24px; padding: 24px; }
+    .pair-card.lo { background: var(--signal-soft); }
+    .pair-card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 8px; }
+    .pair-card .num { font-family: var(--display-font); font-size: clamp(34px, 4vw, 50px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .pair-card .num .cur { font-size: 0.6em; vertical-align: 0.18em; margin-right: 2px; color: var(--ink-3); }
+    .pair-card .who { margin-top: 12px; font-size: 14px; color: var(--ink-2); }
+    .pair-card .who .h { font-weight: 600; }
+    .pair-card .who .m { color: var(--ink-3); font-size: 13px; }
+    .pair .vs { display: flex; align-items: center; justify-content: center; font-family: var(--display-font); font-size: 18px; color: var(--ink-3); }
+    .cta { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 28px 24px; margin: 32px 0; }
+    .cta h2 { color: var(--paper); margin: 0 0 12px; font-family: var(--display-font); font-size: 24px; letter-spacing: -0.02em; }
+    .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 15px; }
+    .cta a:hover { background: #6E55EA; }
+    .body-prose { max-width: 64ch; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 16px 0 32px; }
+    .grid a { display: block; background: var(--paper-2); border-radius: 14px; padding: 14px 16px; color: var(--ink); text-decoration: none; transition: background 120ms ease; }
+    .grid a:hover { background: var(--paper-3); }
+    .grid a strong { display: block; font-size: 15px; font-weight: 600; }
+    .grid a span { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: block; font-family: 'JetBrains Mono', monospace; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+    .pill-row a { background: var(--paper-2); padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
+    .pill-row a:hover { background: var(--paper-3); color: var(--ink); }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+  </style>
+
+${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+`;
+}
+
+function renderShellFoot({ asOf }) {
+  return `
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). Last refresh: ${escHtml(asOf)}.</div>
+    <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>`;
+}
+
+// ── State page ─────────────────────────────────────────────────────────
+function renderStatePage({ proc, procSlug, stateAbbr, stateName, hospitals, asOf }) {
+  const ranked = hospitals
+    .filter((h) => !h.all_missing && Number.isFinite(h.cash_pay_low))
+    .sort((a, b) => a.cash_pay_low - b.cash_pay_low);
+  const totalWithData = hospitals.filter((h) => !h.all_missing).length;
+  const lowVal = ranked[0]?.cash_pay_low ?? null;
+  const highVal = ranked[ranked.length - 1]?.cash_pay_high ?? ranked[ranked.length - 1]?.cash_pay_low ?? null;
+  const stateSlug = slugify(stateName);
+  const canonical = `${SITE_ORIGIN}/state/${stateSlug}/${procSlug}`;
+  const procedureCanonical = `${SITE_ORIGIN}/procedure/${procSlug}`;
+
+  const title = `${proc.label} cost in ${stateName}. Compare ${totalWithData} hospitals. Itemized.`;
+  const description = `${proc.label} cost in ${stateName}. Cash-pay range ${lowVal ? fmtMoney(lowVal) : "see range"} to ${highVal ? fmtMoney(highVal) : "varies"} across ${totalWithData} hospitals. Real CMS-mandated price transparency data.`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "MedicalProcedure",
+      name: proc.label,
+      code: { "@type": "MedicalCode", codeValue: proc.code, codingSystem: "CPT" },
+      description: `${proc.label} pricing at hospitals across ${stateName}.`,
+      url: canonical,
+    },
+    lowVal && highVal ? {
+      "@context": "https://schema.org", "@type": "AggregateOffer",
+      name: `${proc.label} cash-pay price range in ${stateName}`,
+      priceCurrency: "USD", lowPrice: Math.round(lowVal), highPrice: Math.round(highVal),
+      offerCount: ranked.length, url: canonical,
+    } : null,
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Procedures", item: SITE_ORIGIN + "/procedure" },
+        { "@type": "ListItem", position: 3, name: proc.label, item: procedureCanonical },
+        { "@type": "ListItem", position: 4, name: stateName, item: canonical },
+      ],
+    },
+  ].filter(Boolean);
+
+  // Group rows by metro for visual scanning.
+  const byMetro = new Map();
+  for (const h of ranked) {
+    const m = h.metro || "Unknown";
+    if (!byMetro.has(m)) byMetro.set(m, []);
+    byMetro.get(m).push(h);
+  }
+  const metroBlocks = [...byMetro.entries()]
+    .sort((a, b) => a[0].localeCompare(b[0]))
+    .map(([metro, list]) => {
+      const rows = list.map((h, i) => `
+        <tr>
+          <td class="rank">${i + 1}</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/${escAttr(h.id)}/${escAttr(procSlug)}">${escHtml(h.name)}</a></div>
+            <div class="hmetro">${escHtml(h.metro)}</div>
+          </td>
+          <td class="price">${fmtMoney(h.cash_pay_low)}${h.cash_pay_high && h.cash_pay_high !== h.cash_pay_low ? ` to ${fmtMoney(h.cash_pay_high)}` : ""}</td>
+        </tr>`).join("");
+      return `
+  <h3>${escHtml(metro)}</h3>
+  <table class="hospitals"><tbody>${rows}</tbody></table>`;
+    }).join("");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/procedure">Procedures</a> &nbsp;·&nbsp; <a href="${escAttr(procedureCanonical)}">${escHtml(proc.label)}</a> &nbsp;·&nbsp; ${escHtml(stateName)}
+  </div>
+
+  <h1 class="display">${escHtml(proc.label)} cost in <span class="accent">${escHtml(stateName)}</span>.</h1>
+  <p class="lede">
+    Cash-pay range for ${escHtml(proc.label.toLowerCase())} across <strong>${totalWithData} hospitals</strong> in ${escHtml(stateName)}: <strong>${escHtml(lowVal != null ? fmtMoney(lowVal) : "—")}</strong> to <strong>${escHtml(highVal != null ? fmtMoney(highVal) : "—")}</strong>. CPT code ${escHtml(proc.code)}. Pulled from each hospital's federally-mandated price transparency file.
+  </p>
+
+  ${lowVal != null && highVal != null && ranked.length > 1 ? `
+  <div class="pair">
+    <div class="pair-card lo">
+      <div class="lbl">Cheapest in ${escHtml(stateName)}</div>
+      <div class="num"><span class="cur">$</span>${escHtml(Math.round(lowVal).toLocaleString("en-US"))}</div>
+      <div class="who"><div class="h">${escHtml(ranked[0].name)}</div><div class="m">${escHtml(ranked[0].metro)}</div></div>
+    </div>
+    <div class="vs">vs.</div>
+    <div class="pair-card hi">
+      <div class="lbl">Most expensive in ${escHtml(stateName)}</div>
+      <div class="num"><span class="cur">$</span>${escHtml(Math.round(highVal).toLocaleString("en-US"))}</div>
+      <div class="who"><div class="h">${escHtml(ranked[ranked.length - 1].name)}</div><div class="m">${escHtml(ranked[ranked.length - 1].metro)}</div></div>
+    </div>
+  </div>` : ""}
+
+  <h2 class="display">Hospitals in ${escHtml(stateName)}, by metro.</h2>
+  ${metroBlocks}
+
+  <div class="cta">
+    <h2>See plan-specific prices for your insurance.</h2>
+    <p>Pick your insurance plan and zip, see exactly what each ${escHtml(stateName)} hospital negotiated. Estimated out-of-pocket included.</p>
+    <a href="/?p=${escAttr(proc.code)}">Compare ${escHtml(proc.short.toLowerCase())} prices  →</a>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+// ── Insurer-specific procedure page ────────────────────────────────────
+function renderInsurerPage({ proc, procSlug, payer, payerSlug, hospitals, asOf }) {
+  // Look up each hospital's negotiated rate range for this insurer for this procedure.
+  const rows = [];
+  for (const h of hospitals) {
+    if (h.all_missing) continue;
+    const rp = (h.rates_by_payer || []).find((p) => p.canonical_payer === payer.id);
+    if (!rp || !rp.plans || !rp.plans.length) continue;
+    const rates = rp.plans.map((p) => p.rate).filter((r) => Number.isFinite(r));
+    if (!rates.length) continue;
+    const lo = Math.min(...rates);
+    const hi = Math.max(...rates);
+    rows.push({ h, lo, hi });
+  }
+  rows.sort((a, b) => a.lo - b.lo);
+  const top = rows.slice(0, 50);
+  const totalCovered = rows.length;
+  const lowVal = rows[0]?.lo ?? null;
+  const highVal = rows[rows.length - 1]?.hi ?? null;
+
+  const canonical = `${SITE_ORIGIN}/with/${payerSlug}/${procSlug}`;
+  const procedureCanonical = `${SITE_ORIGIN}/procedure/${procSlug}`;
+
+  const title = `${proc.label} with ${payer.label}. Negotiated rates at ${totalCovered} hospitals. Itemized.`;
+  const description = `${proc.label} cost with ${payer.label}: negotiated rates ${lowVal ? fmtMoney(lowVal) : "—"} to ${highVal ? fmtMoney(highVal) : "—"} across ${totalCovered} US hospitals. Plan-by-plan from CMS-mandated transparency files.`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "MedicalProcedure",
+      name: proc.label,
+      code: { "@type": "MedicalCode", codeValue: proc.code, codingSystem: "CPT" },
+      url: canonical,
+    },
+    lowVal && highVal ? {
+      "@context": "https://schema.org", "@type": "AggregateOffer",
+      name: `${proc.label} negotiated rates with ${payer.label}`,
+      priceCurrency: "USD", lowPrice: Math.round(lowVal), highPrice: Math.round(highVal),
+      offerCount: totalCovered, url: canonical,
+    } : null,
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Procedures", item: SITE_ORIGIN + "/procedure" },
+        { "@type": "ListItem", position: 3, name: proc.label, item: procedureCanonical },
+        { "@type": "ListItem", position: 4, name: payer.label, item: canonical },
+      ],
+    },
+  ].filter(Boolean);
+
+  const tableRows = top.length
+    ? top.map((r, i) => `
+        <tr>
+          <td class="rank">${i + 1}</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/${escAttr(r.h.id)}/${escAttr(procSlug)}">${escHtml(r.h.name)}</a></div>
+            <div class="hmetro">${escHtml(r.h.metro || "")}</div>
+          </td>
+          <td class="price">${fmtMoney(r.lo)}${r.hi !== r.lo ? ` – ${fmtMoney(r.hi)}` : ""}</td>
+        </tr>`).join("")
+    : `<tr><td colspan="3" style="text-align:center;color:var(--ink-3);padding:24px 8px;font-style:italic">No ${escHtml(payer.label)} negotiated rate published for ${escHtml(proc.label.toLowerCase())} as of ${escHtml(asOf)}.</td></tr>`;
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/procedure">Procedures</a> &nbsp;·&nbsp; <a href="${escAttr(procedureCanonical)}">${escHtml(proc.label)}</a> &nbsp;·&nbsp; with ${escHtml(payer.label)}
+  </div>
+
+  <h1 class="display">${escHtml(proc.label)} with <span class="accent">${escHtml(payer.label)}</span>.</h1>
+  <p class="lede">
+    Negotiated rates ${escHtml(payer.label)} pays for ${escHtml(proc.label.toLowerCase())} at <strong>${totalCovered} US hospitals</strong>. Range: <strong>${escHtml(lowVal != null ? fmtMoney(lowVal) : "—")}</strong> to <strong>${escHtml(highVal != null ? fmtMoney(highVal) : "—")}</strong>. Your specific cost depends on your plan tier, deductible status, and coinsurance — see the <a href="/?p=${escAttr(proc.code)}&payer=${escAttr(payer.id)}">comparison tool</a> to model your exact out-of-pocket.
+  </p>
+
+  <h2 class="display">Top hospitals by ${escHtml(payer.label)} rate.</h2>
+  <table class="hospitals">
+    <thead><tr><th>#</th><th>Hospital</th><th style="text-align:right">${escHtml(payer.label)} rate</th></tr></thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+
+  <div class="cta">
+    <h2>Estimate what you'd actually pay with ${escHtml(payer.label)}.</h2>
+    <p>Add your deductible status and coinsurance to the comparison tool. We'll estimate your out-of-pocket per hospital.</p>
+    <a href="/?p=${escAttr(proc.code)}&payer=${escAttr(payer.id)}">Open comparison  →</a>
+  </div>
+
+  <h2 class="display">About these rates.</h2>
+  <div class="body-prose">
+    <p>Hospitals are required by federal law (45 CFR 180.50) to publish the rates they negotiated with each insurer for each procedure. These numbers are the rates the hospital published for ${escHtml(payer.label)} plans, pulled directly from each hospital's machine-readable file.</p>
+    <p>The <em>range</em> column reflects different ${escHtml(payer.label)} plan tiers (HMO, PPO, EPO, etc.). Your plan picks one number out of that range. Your actual out-of-pocket depends on your deductible status, copay, and coinsurance, which the comparison tool can model when you fill them in.</p>
+    <p>Cash-pay rates are often <em>cheaper</em> than the negotiated rate, especially for high-deductible plans. Worth comparing both — the <a href="${escAttr(procedureCanonical)}">${escHtml(proc.label)} overview</a> shows the cash-pay column alongside.</p>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+// ── Hospital system page ───────────────────────────────────────────────
+function renderSystemPage({ system, hospitalsInSystem, ratings, asOf }) {
+  const sysSlug = slugify(system);
+  const canonical = `${SITE_ORIGIN}/system/${sysSlug}`;
+  const total = hospitalsInSystem.length;
+  const metros = Array.from(new Set(hospitalsInSystem.map((h) => h.metro).filter(Boolean))).sort();
+  const ratedHospitals = hospitalsInSystem
+    .map((h) => ratings.ratings?.[h.id])
+    .filter((r) => r && r.matched && r.overall_rating != null);
+  const avgRating = ratedHospitals.length
+    ? (ratedHospitals.reduce((s, r) => s + r.overall_rating, 0) / ratedHospitals.length).toFixed(1)
+    : null;
+
+  const title = `${system} hospitals. ${total} facilities, prices for ${total} locations. Itemized.`;
+  const description = `${system}: ${total} hospitals across ${metros.length} US metros. Cash-pay and insurance prices for shoppable procedures. ${avgRating ? `Average CMS rating ${avgRating}/5.` : ""}`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "Organization",
+      name: system, url: canonical,
+      description: `Hospital system with ${total} facilities across ${metros.length} US metros.`,
+    },
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Hospital systems", item: SITE_ORIGIN + "/system" },
+        { "@type": "ListItem", position: 3, name: system, item: canonical },
+      ],
+    },
+  ];
+
+  const sorted = [...hospitalsInSystem].sort((a, b) => a.name.localeCompare(b.name));
+  const items = sorted.map((h) => {
+    const r = ratings.ratings?.[h.id];
+    const rt = r && r.matched && r.overall_rating != null ? `<span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink-3)">${r.overall_rating}/5</span>` : "";
+    return `    <a href="/hospital/${escAttr(h.id)}">
+      <strong>${escHtml(h.name)}</strong>
+      <span>${escHtml(h.metro || "")} ${rt}</span>
+    </a>`;
+  }).join("\n");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/system">Hospital systems</a> &nbsp;·&nbsp; ${escHtml(system)}
+  </div>
+
+  <h1 class="display"><span class="accent">${escHtml(system)}</span> hospitals.</h1>
+  <p class="lede">
+    <strong>${total} ${total === 1 ? "facility" : "facilities"}</strong> across <strong>${metros.length} ${metros.length === 1 ? "metro" : "metros"}</strong>${avgRating ? `, average CMS Care Compare rating <strong>${avgRating}/5</strong>` : ""}. Cash-pay and insurance prices pulled from each hospital's federally-mandated price transparency file.
+  </p>
+
+  <h2 class="display">Facilities.</h2>
+  <div class="grid">
+${items}
+  </div>
+
+  <div class="cta">
+    <h2>Compare ${escHtml(system)} hospital prices.</h2>
+    <p>Pick a procedure on the comparison tool to see prices across all ${escHtml(system)} hospitals plus other systems in the same metros.</p>
+    <a href="/procedure">See procedures  →</a>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+function renderSystemHub({ systemRows, asOf }) {
+  const total = systemRows.length;
+  const title = `${total} hospital systems. Itemized.`;
+  const description = `Browse ${total} US hospital systems with published price transparency data. Each system page lists every facility, metros covered, and CMS quality ratings.`;
+  const canonical = `${SITE_ORIGIN}/system`;
+
+  const ldBlocks = [{
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Hospital systems", item: canonical },
+    ],
+  }];
+
+  const items = systemRows.map((s) => `    <a href="/system/${escAttr(slugify(s.name))}">
+      <strong>${escHtml(s.name)}</strong>
+      <span>${s.count} ${s.count === 1 ? "facility" : "facilities"} · ${s.metros} ${s.metros === 1 ? "metro" : "metros"}</span>
+    </a>`).join("\n");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; Hospital systems
+  </div>
+
+  <h1 class="display"><span class="accent">${total} systems.</span></h1>
+  <p class="lede">Every US hospital system in our dataset, grouped by parent organization. Click through to see facilities, metros, and CMS ratings for each.</p>
+
+  <div class="grid">
+${items}
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+// ── Glossary ────────────────────────────────────────────────────────────
+const GLOSSARY = [
+  { slug: "cpt-code", term: "CPT Code", short: "Current Procedural Terminology code", body: "A 5-digit code that identifies a specific medical procedure or service. Maintained by the American Medical Association. Every line on a medical bill maps to a CPT (or HCPCS) code; that code determines the price. CPT 73721, for example, is a knee MRI without contrast." },
+  { slug: "hcpcs-code", term: "HCPCS Code", short: "Healthcare Common Procedure Coding System code", body: "Codes maintained by CMS for procedures, services, and supplies that aren't covered by CPT — primarily medical equipment, supplies, certain drugs, and some hospital outpatient services. Often appear alongside CPT codes on bills." },
+  { slug: "ms-drg", term: "MS-DRG", short: "Medicare Severity Diagnosis-Related Group", body: "How Medicare classifies inpatient hospital stays for payment. Each MS-DRG bundles a primary diagnosis, procedures, and patient severity into a single code that determines what Medicare pays. Hospitals also publish negotiated rates with private insurers by MS-DRG for inpatient cases." },
+  { slug: "deductible", term: "Deductible", short: "What you pay before insurance kicks in", body: "The dollar amount you pay out-of-pocket each year before your insurance starts covering claims. A $3,000 deductible means you pay the first $3,000 of medical costs yourself; insurance pays after. Once met, you typically owe coinsurance or copays, not full cost." },
+  { slug: "coinsurance", term: "Coinsurance", short: "Your % share after deductible", body: "The percentage of a covered medical bill you pay after meeting your deductible. 20% coinsurance means you pay 20% and your insurer pays 80%, until you hit your out-of-pocket maximum. Different from a copay (a flat dollar amount)." },
+  { slug: "copay", term: "Copay", short: "Flat fee per visit or service", body: "A flat dollar amount you pay for a specific service — typical $25-50 for primary care visits, $75-150 for specialists, $250-500 for ER. Copays count toward your out-of-pocket maximum but typically don't apply to your deductible." },
+  { slug: "out-of-pocket-maximum", term: "Out-of-pocket maximum", short: "The annual cap on what you pay", body: "The most you'll pay for covered medical services in a plan year. Includes deductible, coinsurance, and copays for in-network care. Once you hit it, your insurer pays 100% of covered services for the rest of the year. ACA requires every plan to have one." },
+  { slug: "eob", term: "EOB", short: "Explanation of Benefits", body: "The document your insurer sends you after a medical claim. Lists what was billed, what your insurer paid, and what you owe. NOT a bill — just an explanation. The actual bill comes from the hospital. EOB and bill amounts should match; if they don't, you have grounds to dispute." },
+  { slug: "mrf", term: "MRF", short: "Machine-Readable File", body: "The federally-mandated price file every US hospital must publish. Lists every procedure they bill, every insurance plan they contract with, and the negotiated rate for each combination. Required under 45 CFR 180.50 since January 2021. The MRF is what powers Itemized." },
+  { slug: "chargemaster", term: "Chargemaster", short: "The hospital's sticker price", body: "The hospital's internal list of standard prices for every service. Mostly arbitrary. Almost no one pays the chargemaster — insurers negotiate it down dramatically, and uninsured patients usually qualify for self-pay discounts. Sometimes called the 'gross charge.'" },
+  { slug: "negotiated-rate", term: "Negotiated rate", short: "What your insurer actually pays", body: "The dollar amount your insurance company has agreed to pay the hospital for a specific procedure. Confidential bilateral contract — different insurers pay different rates at the same hospital. The Hospital Price Transparency Rule made these public for the first time in 2021." },
+  { slug: "cash-pay", term: "Cash pay", short: "Self-pay rate (no insurance)", body: "What an uninsured patient is charged. Often dramatically cheaper than the negotiated insurance rate at the same hospital, especially for elective procedures. Worth comparing if you have a high-deductible plan." },
+  { slug: "facility-fee", term: "Facility fee", short: "What the building charges", body: "A separate charge from the physician's professional fee. The facility fee covers room, equipment, nursing, and overhead. Hospitals can charge facility fees for outpatient services that ASCs (ambulatory surgery centers) don't, which is why the same procedure often costs 2-3× more at a hospital." },
+  { slug: "professional-fee", term: "Professional fee", short: "What the doctor charges", body: "The radiologist, anesthesiologist, surgeon, or specialist's fee for their work. Billed separately from the facility fee. A single procedure can produce multiple bills: one from the hospital (facility), one from the doctor (professional). Both should be visible on the itemized bill." },
+  { slug: "in-network", term: "In-network", short: "Has a contract with your insurer", body: "A provider that has signed a contract with your insurance company to charge negotiated rates. In-network means your insurance covers more (lower deductible, lower coinsurance, no balance billing). Out-of-network providers charge whatever they want; your insurance covers less or nothing." },
+  { slug: "out-of-network", term: "Out-of-network", short: "No contract with your insurer", body: "A provider that does NOT have a contract with your insurance. They can bill you whatever they want, and your insurance typically covers a smaller percentage (or nothing). The No Surprises Act (2022) protects you from out-of-network bills in many emergency and facility-based situations." },
+  { slug: "no-surprises-act", term: "No Surprises Act", short: "Federal law against surprise bills", body: "Federal law effective 2022 that bans most surprise out-of-network billing. If you go to an in-network facility, you can't be balance-billed by out-of-network radiologists, anesthesiologists, ER doctors, etc. Also protects against air ambulance balance billing. Look for the 'Notice and Consent' form — if you didn't sign it, the bill is likely disputable." },
+  { slug: "hospital-price-transparency-rule", term: "Hospital Price Transparency Rule", short: "45 CFR 180.50 — the rule that makes prices public", body: "Federal regulation, in effect since January 2021, requiring every US hospital to publish a machine-readable file with every payer-negotiated rate, gross charge, and cash-pay price for every service. CMS enforces. Penalties for non-compliance up to $5,500/day. The data behind every price comparison on Itemized comes from these files." },
+  { slug: "section-501r", term: "Section 501(r)", short: "Charity care for non-profit hospitals", body: "IRS rule requiring every tax-exempt hospital to have a financial-assistance policy. Households below 200-400% of the Federal Poverty Level (varies by hospital) typically qualify for 50-100% bill reduction. The application is usually one page plus tax verification. Most patients don't know to ask." },
+  { slug: "balance-billing", term: "Balance billing", short: "When the provider bills you the difference", body: "When an out-of-network provider bills you for the difference between what they charged and what your insurance paid. Can run into thousands of dollars. The No Surprises Act bans most balance billing in emergency and facility-based settings; for non-emergency out-of-network care, balance billing is often legal but disclosed." },
+  { slug: "self-pay-discount", term: "Self-pay discount", short: "Off-list price for paying without insurance", body: "A reduction hospitals offer to patients paying without insurance, typically 10-30% off the chargemaster (sometimes more). Available to fully uninsured patients and to insured patients who want to pay cash to avoid using their insurance. Always ask for it." },
+  { slug: "tic", term: "TiC", short: "Transparency in Coverage rule", body: "Separate federal rule (effective 2022) requiring health insurers to publish their negotiated rates with every in-network provider. The files exist but are 200x larger than hospital MRFs. Companies like Turquoise Health and Serif Health build B2B tools on top of them. Itemized works from hospital MRFs only." },
+  { slug: "cms-care-compare", term: "CMS Care Compare", short: "The federal hospital quality rating", body: "CMS's overall hospital quality rating, 1-5 stars, built from ~50 measures spanning safety, mortality, readmission, patient experience, and timeliness. Hospital-wide composite, not procedure-specific. Built from Medicare claims, so pediatric and cancer-specialty hospitals don't get rated. Itemized surfaces this rating on every hospital row." },
+  { slug: "asc", term: "ASC", short: "Ambulatory Surgery Center", body: "Free-standing outpatient surgery facility. Typically 30-50% cheaper than hospital outpatient departments for the same procedure. Often physician-owned. Common for cataract surgery, colonoscopy, hernia repair, knee arthroscopy, and many imaging procedures. Note: ASCs are NOT covered by 45 CFR 180.50, so their prices aren't in this dataset." },
+  { slug: "hsa", term: "HSA", short: "Health Savings Account", body: "Tax-advantaged savings account paired with high-deductible health plans. Contributions are pre-tax; withdrawals for qualified medical expenses are tax-free. Funds roll over year-to-year. The cheapest way to pay for medical care if you're on an HDHP." },
+  { slug: "hdhp", term: "HDHP", short: "High-Deductible Health Plan", body: "Health plan with a deductible above a federal threshold ($1,650 individual / $3,300 family in 2026). Lower premiums than traditional plans, but you pay more out-of-pocket before insurance kicks in. HDHPs are HSA-eligible; cash-pay rates often beat HDHP negotiated rates for elective procedures." },
+  { slug: "fsa", term: "FSA", short: "Flexible Spending Account", body: "Pre-tax employer-sponsored account for medical expenses. Use-it-or-lose-it (some plans allow $640/year carryover). Doesn't roll over like HSA. Useful if you can predict your medical spend; risky if you can't." },
+  { slug: "deductible-met", term: "Deductible met", short: "Your insurance is now paying", body: "You've paid your full plan-year deductible out-of-pocket. From this point until the plan year resets (typically Jan 1), insurance covers covered services subject only to coinsurance and copays. The smartest time to schedule elective procedures." },
+  { slug: "preauthorization", term: "Preauthorization", short: "Insurance must approve in advance", body: "Some procedures require your insurer's approval before they'll pay. If you skip it, the claim can be denied entirely. Always check; often handled by the provider's office, but worth confirming. Keep the prior auth number." },
+  { slug: "claim-denial", term: "Claim denial", short: "Insurance refused to pay", body: "When your insurer rejects a claim. Common reasons: out-of-network, no preauthorization, not medically necessary, coding error. You can (and should) appeal — first internally to the insurer, then externally to your state insurance department. Most denials are reversed when appealed." },
+  { slug: "pre-existing-condition", term: "Pre-existing condition", short: "Medical condition you had before coverage started", body: "Under the Affordable Care Act (2010), insurers cannot deny coverage or charge more based on pre-existing conditions. This applies to all ACA-compliant plans. Short-term limited-duration plans and some employer arrangements have different rules; read carefully." },
+];
+
+function renderGlossaryHub() {
+  const canonical = `${SITE_ORIGIN}/glossary`;
+  const title = `Healthcare pricing glossary. ${GLOSSARY.length} terms in plain English. Itemized.`;
+  const description = `Plain-English definitions for ${GLOSSARY.length} healthcare-pricing and insurance terms: CPT, HCPCS, deductible, coinsurance, EOB, chargemaster, MRF, balance billing, and more.`;
+  const ldBlocks = [{
+    "@context": "https://schema.org", "@type": "DefinedTermSet",
+    name: "Itemized healthcare pricing glossary",
+    url: canonical,
+    hasDefinedTerm: GLOSSARY.map((g) => ({
+      "@type": "DefinedTerm",
+      name: g.term,
+      description: g.body,
+      url: `${SITE_ORIGIN}/glossary/${g.slug}`,
+    })),
+  }];
+  const items = GLOSSARY
+    .slice()
+    .sort((a, b) => a.term.localeCompare(b.term))
+    .map((g) => `    <a href="/glossary/${escAttr(g.slug)}">
+      <strong>${escHtml(g.term)}</strong>
+      <span>${escHtml(g.short)}</span>
+    </a>`).join("\n");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; Glossary
+  </div>
+
+  <h1 class="display">Healthcare pricing <span class="accent">glossary</span>.</h1>
+  <p class="lede">
+    Plain-English definitions for the terms that show up on hospital bills, insurance EOBs, and price-transparency files. Bookmark this; you'll need it.
+  </p>
+
+  <div class="grid">
+${items}
+  </div>
+` + renderShellFoot({ asOf: new Date().toISOString().slice(0, 10) });
+}
+
+function renderGlossaryTerm(term) {
+  const canonical = `${SITE_ORIGIN}/glossary/${term.slug}`;
+  const title = `What is ${term.term}? Plain-English definition. Itemized.`;
+  const description = `${term.term}: ${term.short}. ${term.body.slice(0, 160).replace(/\n/g, " ")}…`;
+  const ldBlocks = [{
+    "@context": "https://schema.org", "@type": "DefinedTerm",
+    name: term.term,
+    description: term.body,
+    inDefinedTermSet: `${SITE_ORIGIN}/glossary`,
+    url: canonical,
+  }, {
+    "@context": "https://schema.org", "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+      { "@type": "ListItem", position: 2, name: "Glossary", item: SITE_ORIGIN + "/glossary" },
+      { "@type": "ListItem", position: 3, name: term.term, item: canonical },
+    ],
+  }];
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/glossary">Glossary</a> &nbsp;·&nbsp; ${escHtml(term.term)}
+  </div>
+
+  <h1 class="display">${escHtml(term.term)}.</h1>
+  <p class="lede"><strong>${escHtml(term.short)}.</strong></p>
+
+  <div class="body-prose">
+    <p>${escHtml(term.body)}</p>
+  </div>
+
+  <div class="cta">
+    <h2>Use this in real life.</h2>
+    <p>The price comparison tool surfaces every term in this glossary in context — plan tiers, deductible status, cash-pay vs. negotiated rate. Pick a procedure to see them all in action.</p>
+    <a href="/procedure">Browse procedures  →</a>
+  </div>
+
+  <h2 class="display">Other terms.</h2>
+  <div class="pill-row">
+${GLOSSARY.filter((g) => g.slug !== term.slug).slice(0, 10).map((g) => `    <a href="/glossary/${escAttr(g.slug)}">${escHtml(g.term)}</a>`).join("\n")}
+  </div>
+` + renderShellFoot({ asOf: new Date().toISOString().slice(0, 10) });
+}
+
 // ── Sitemap + robots ────────────────────────────────────────────────────
 
 function renderSitemap(urls) {
@@ -1547,6 +2095,121 @@ async function main() {
     changefreq: "weekly",
   });
 
+  // ── Tier 1: state pages ──────────────────────────────────────────────
+  // Group every (procedure, state) where >= 1 hospital has a published cash
+  // price. URL: /state/{state-slug}/{procedure-slug}.
+  const stateDir = path.join(DIST_DIR, "state");
+  fs.mkdirSync(stateDir, { recursive: true });
+  let statePagesWritten = 0;
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    const byState = new Map();
+    for (const h of list) {
+      if (h.all_missing) continue;
+      const abbr = stateAbbrFromMetro(h.metro);
+      if (!abbr) continue;
+      if (!byState.has(abbr)) byState.set(abbr, []);
+      byState.get(abbr).push(h);
+    }
+    for (const [abbr, hospitalsInState] of byState) {
+      const hasCash = hospitalsInState.some((h) => Number.isFinite(h.cash_pay_low));
+      if (!hasCash) continue;
+      const stateName = STATE_NAMES[abbr];
+      const stateSlug = slugify(stateName);
+      const stateProcDir = path.join(stateDir, stateSlug);
+      fs.mkdirSync(stateProcDir, { recursive: true });
+      const html = renderStatePage({
+        proc, procSlug: proc._slug,
+        stateAbbr: abbr, stateName, hospitals: hospitalsInState, asOf: data.as_of,
+      });
+      fs.writeFileSync(path.join(stateProcDir, `${proc._slug}.html`), html);
+      statePagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/state/${stateSlug}/${proc._slug}`,
+        priority: "0.7", changefreq: "monthly",
+      });
+    }
+  }
+
+  // ── Tier 1: insurer-specific procedure pages ─────────────────────────
+  // For each (procedure, supported insurer) where any hospital has a rate,
+  // write a page. URL: /with/{insurer-slug}/{procedure-slug}.
+  const withDir = path.join(DIST_DIR, "with");
+  fs.mkdirSync(withDir, { recursive: true });
+  let insurerPagesWritten = 0;
+  const insurers = (data.supported_payers || []).filter((p) => p.id !== "__cash__" && p.id !== "__other__");
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    for (const payer of insurers) {
+      // Only emit if at least one hospital has a published rate for this insurer.
+      const anyHasRate = list.some((h) => {
+        if (h.all_missing) return false;
+        const rp = (h.rates_by_payer || []).find((p) => p.canonical_payer === payer.id);
+        return rp && rp.plans && rp.plans.some((pl) => Number.isFinite(pl.rate));
+      });
+      if (!anyHasRate) continue;
+      const pSlug = payerSlugify(payer.label);
+      const pDir = path.join(withDir, pSlug);
+      fs.mkdirSync(pDir, { recursive: true });
+      const html = renderInsurerPage({
+        proc, procSlug: proc._slug, payer, payerSlug: pSlug,
+        hospitals: list, asOf: data.as_of,
+      });
+      fs.writeFileSync(path.join(pDir, `${proc._slug}.html`), html);
+      insurerPagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/with/${pSlug}/${proc._slug}`,
+        priority: "0.7", changefreq: "monthly",
+      });
+    }
+  }
+
+  // ── Tier 1: hospital system pages ────────────────────────────────────
+  const systemDir = path.join(DIST_DIR, "system");
+  fs.mkdirSync(systemDir, { recursive: true });
+  const bySystem = new Map();
+  for (const [hid, h] of hospitalById) {
+    if (!h.system) continue;
+    if (!bySystem.has(h.system)) bySystem.set(h.system, []);
+    bySystem.get(h.system).push(h);
+  }
+  let systemPagesWritten = 0;
+  const systemRows = [];
+  for (const [sysName, hospitalsInSystem] of bySystem) {
+    const sysSlug = slugify(sysName);
+    if (!sysSlug) continue;
+    const sysSubDir = path.join(systemDir, sysSlug);
+    fs.mkdirSync(sysSubDir, { recursive: true });
+    const html = renderSystemPage({
+      system: sysName, hospitalsInSystem, ratings, asOf: data.as_of,
+    });
+    fs.writeFileSync(path.join(sysSubDir, "index.html"), html);
+    systemPagesWritten++;
+    const metros = new Set(hospitalsInSystem.map((h) => h.metro).filter(Boolean));
+    systemRows.push({ name: sysName, count: hospitalsInSystem.length, metros: metros.size });
+    sitemapUrls.push({
+      loc: `${SITE_ORIGIN}/system/${sysSlug}`,
+      priority: "0.6", changefreq: "monthly",
+    });
+  }
+  // System hub at /system.
+  systemRows.sort((a, b) => b.count - a.count);
+  fs.writeFileSync(path.join(systemDir, "index.html"), renderSystemHub({ systemRows, asOf: data.as_of }));
+  sitemapUrls.push({ loc: `${SITE_ORIGIN}/system`, priority: "0.7", changefreq: "monthly" });
+
+  // ── Tier 1: glossary ─────────────────────────────────────────────────
+  const glossaryDir = path.join(DIST_DIR, "glossary");
+  fs.mkdirSync(glossaryDir, { recursive: true });
+  fs.writeFileSync(path.join(glossaryDir, "index.html"), renderGlossaryHub());
+  sitemapUrls.push({ loc: `${SITE_ORIGIN}/glossary`, priority: "0.7", changefreq: "monthly" });
+  for (const term of GLOSSARY) {
+    fs.writeFileSync(path.join(glossaryDir, `${term.slug}.html`), renderGlossaryTerm(term));
+    sitemapUrls.push({
+      loc: `${SITE_ORIGIN}/glossary/${term.slug}`,
+      priority: "0.6", changefreq: "monthly",
+    });
+  }
+
   fs.writeFileSync(path.join(DIST_DIR, "sitemap.xml"), renderSitemap(sitemapUrls));
   fs.writeFileSync(path.join(DIST_DIR, "robots.txt"), renderRobots());
 
@@ -1554,6 +2217,10 @@ async function main() {
   console.log(`SEO: wrote ${metroPagesWritten} per-metro pages -> ui/dist/procedure/{slug}/in/{metro}.html`);
   console.log(`SEO: wrote ${hospPagesWritten} hospital overview pages -> ui/dist/hospital/{id}/`);
   console.log(`SEO: wrote ${hospProcPagesWritten} per-(hospital, procedure) pages -> ui/dist/hospital/{id}/{procedure}.html`);
+  console.log(`SEO: wrote ${statePagesWritten} state pages -> ui/dist/state/{state}/{procedure}.html`);
+  console.log(`SEO: wrote ${insurerPagesWritten} insurer pages -> ui/dist/with/{insurer}/{procedure}.html`);
+  console.log(`SEO: wrote ${systemPagesWritten} hospital-system pages + hub -> ui/dist/system/`);
+  console.log(`SEO: wrote ${GLOSSARY.length} glossary terms + hub -> ui/dist/glossary/`);
   console.log(`SEO: sitemap.xml (${sitemapUrls.length} urls), robots.txt`);
   console.log(`SEO: a sample slug -> ${SITE_ORIGIN}/procedure/${[...slugMap.keys()][0]}`);
 }

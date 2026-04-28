@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Chest X-ray, single view with Humana. Negotiated rates at 37 hospitals. Itemized.</title>
+  <meta name="description" content="Chest X-ray, single view cost with Humana: negotiated rates $6 to $972 across 37 US hospitals. Plan-by-plan from CMS-mandated transparency files.">
+  <link rel="canonical" href="https://itemized.health/with/humana/chest-x-ray-single-view">
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Chest X-ray, single view with Humana. Negotiated rates at 37 hospitals. Itemized.">
+  <meta property="og:description" content="Chest X-ray, single view cost with Humana: negotiated rates $6 to $972 across 37 US hospitals. Plan-by-plan from CMS-mandated transparency files.">
+  <meta property="og:url" content="https://itemized.health/with/humana/chest-x-ray-single-view">
+  <meta property="og:site_name" content="Itemized">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --paper:#F5F1EA; --paper-2:#EFEAE1; --paper-3:#E5DECF; --ink:#0F0E0C; --ink-2:#2A2925; --ink-3:#6B675F; --rule-soft:rgba(15,14,12,0.10); --signal:#5B3FE0; --signal-soft:#ECE6FE; --display-font:'Bricolage Grotesque',system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Inter',system-ui,sans-serif; background: var(--paper); color: var(--ink); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+    .container { max-width: 920px; margin: 0 auto; padding: 24px; }
+    .nav { max-width: 1280px; margin: 0 auto; padding: 18px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--rule-soft); }
+    .nav .wordmark { font-family: var(--display-font); font-weight: 700; font-size: 22px; color: var(--ink); text-decoration: none; }
+    .nav .wordmark .dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); margin: 0 6px 2px; vertical-align: middle; }
+    .nav .wordmark .tag { font-family: 'Inter',sans-serif; font-weight: 500; font-size: 12px; color: var(--ink-3); margin-left: 8px; }
+    .nav-right { display: flex; gap: 22px; font-size: 14px; }
+    .nav-right a { color: var(--ink-2); text-decoration: none; }
+    .crumb { font-size: 12px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 16px; }
+    .crumb a { color: var(--ink-3); text-decoration: none; }
+    .crumb a:hover { color: var(--ink); }
+    h1.display { font-family: var(--display-font); font-size: clamp(36px, 5.5vw, 56px); margin: 0 0 16px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    h2.display { font-family: var(--display-font); font-size: clamp(24px, 3vw, 36px); margin: 40px 0 14px; font-weight: 700; letter-spacing: -0.01em; }
+    h3 { font-family: var(--display-font); font-size: 20px; margin: 24px 0 8px; font-weight: 600; }
+    .accent { color: var(--signal); }
+    .lede { font-size: 18px; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+    .lede strong { color: var(--ink); }
+    p { margin: 0 0 16px; color: var(--ink-2); font-size: 16px; }
+    a { color: var(--signal); text-decoration: underline; text-underline-offset: 3px; }
+    a:hover { color: var(--ink); }
+    table.hospitals { width: 100%; border-collapse: collapse; margin: 16px 0 24px; }
+    table.hospitals th, table.hospitals td { padding: 14px 8px; text-align: left; border-bottom: 1px solid var(--rule-soft); }
+    table.hospitals th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-3); font-weight: 500; }
+    table.hospitals td.rank { width: 36px; color: var(--ink-3); font-family: 'JetBrains Mono',monospace; font-size: 14px; }
+    table.hospitals td.name .hname { font-weight: 600; font-size: 16px; }
+    table.hospitals td.name .hname a { color: var(--ink); text-decoration: none; }
+    table.hospitals td.name .hname a:hover { color: var(--signal); }
+    table.hospitals td.name .hmetro { color: var(--ink-3); font-size: 13px; margin-top: 2px; }
+    table.hospitals td.price { text-align: right; font-family: var(--display-font); font-size: 18px; font-weight: 600; }
+    .pair { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; margin: 24px 0 32px; }
+    .pair-card { background: var(--paper-2); border-radius: 24px; padding: 24px; }
+    .pair-card.lo { background: var(--signal-soft); }
+    .pair-card .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-3); margin-bottom: 8px; }
+    .pair-card .num { font-family: var(--display-font); font-size: clamp(34px, 4vw, 50px); font-weight: 700; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
+    .pair-card .num .cur { font-size: 0.6em; vertical-align: 0.18em; margin-right: 2px; color: var(--ink-3); }
+    .pair-card .who { margin-top: 12px; font-size: 14px; color: var(--ink-2); }
+    .pair-card .who .h { font-weight: 600; }
+    .pair-card .who .m { color: var(--ink-3); font-size: 13px; }
+    .pair .vs { display: flex; align-items: center; justify-content: center; font-family: var(--display-font); font-size: 18px; color: var(--ink-3); }
+    .cta { background: var(--ink); color: var(--paper); border-radius: 24px; padding: 28px 24px; margin: 32px 0; }
+    .cta h2 { color: var(--paper); margin: 0 0 12px; font-family: var(--display-font); font-size: 24px; letter-spacing: -0.02em; }
+    .cta p { color: rgba(245,241,234,0.8); margin: 0 0 16px; font-size: 16px; }
+    .cta a { display: inline-block; background: var(--signal); color: var(--paper); padding: 14px 22px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 15px; }
+    .cta a:hover { background: #6E55EA; }
+    .body-prose { max-width: 64ch; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin: 16px 0 32px; }
+    .grid a { display: block; background: var(--paper-2); border-radius: 14px; padding: 14px 16px; color: var(--ink); text-decoration: none; transition: background 120ms ease; }
+    .grid a:hover { background: var(--paper-3); }
+    .grid a strong { display: block; font-size: 15px; font-weight: 600; }
+    .grid a span { font-size: 12px; color: var(--ink-3); margin-top: 4px; display: block; font-family: 'JetBrains Mono', monospace; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+    .pill-row a { background: var(--paper-2); padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
+    .pill-row a:hover { background: var(--paper-3); color: var(--ink); }
+    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+  </style>
+
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "MedicalProcedure",
+  "name": "Chest X-ray, single view",
+  "code": {
+    "@type": "MedicalCode",
+    "codeValue": "71045",
+    "codingSystem": "CPT"
+  },
+  "url": "https://itemized.health/with/humana/chest-x-ray-single-view"
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "AggregateOffer",
+  "name": "Chest X-ray, single view negotiated rates with Humana",
+  "priceCurrency": "USD",
+  "lowPrice": 6,
+  "highPrice": 972,
+  "offerCount": 37,
+  "url": "https://itemized.health/with/humana/chest-x-ray-single-view"
+}</script>
+  <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Itemized",
+      "item": "https://itemized.health/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Procedures",
+      "item": "https://itemized.health/procedure"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Chest X-ray, single view",
+      "item": "https://itemized.health/procedure/chest-x-ray-single-view"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "Humana",
+      "item": "https://itemized.health/with/humana/chest-x-ray-single-view"
+    }
+  ]
+}</script>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="wordmark">Itemized<span class="dot"></span><span class="tag">Hospital prices, finally.</span></a>
+  <div class="nav-right">
+    <a href="/#methodology">Methodology</a>
+    <a href="/#faq">FAQ</a>
+    <a href="/bills.html">Got a bill?</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/procedure">Procedures</a> &nbsp;·&nbsp; <a href="https://itemized.health/procedure/chest-x-ray-single-view">Chest X-ray, single view</a> &nbsp;·&nbsp; with Humana
+  </div>
+
+  <h1 class="display">Chest X-ray, single view with <span class="accent">Humana</span>.</h1>
+  <p class="lede">
+    Negotiated rates Humana pays for chest x-ray, single view at <strong>37 US hospitals</strong>. Range: <strong>$6</strong> to <strong>$972</strong>. Your specific cost depends on your plan tier, deductible status, and coinsurance — see the <a href="/?p=71045&payer=Humana">comparison tool</a> to model your exact out-of-pocket.
+  </p>
+
+  <h2 class="display">Top hospitals by Humana rate.</h2>
+  <table class="hospitals">
+    <thead><tr><th>#</th><th>Hospital</th><th style="text-align:right">Humana rate</th></tr></thead>
+    <tbody>
+        <tr>
+          <td class="rank">1</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/vanderbilt-umc/chest-x-ray-single-view">Vanderbilt University Medical Center</a></div>
+            <div class="hmetro">Nashville, TN</div>
+          </td>
+          <td class="price">$6 – $149</td>
+        </tr>
+        <tr>
+          <td class="rank">2</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/adventist-white-memorial-montebello/chest-x-ray-single-view">Adventist Health White Memorial Montebello</a></div>
+            <div class="hmetro">Montebello, CA</div>
+          </td>
+          <td class="price">$9</td>
+        </tr>
+        <tr>
+          <td class="rank">3</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/seattle-childrens/chest-x-ray-single-view">Seattle Children's Hospital</a></div>
+            <div class="hmetro">Seattle, WA</div>
+          </td>
+          <td class="price">$29 – $596</td>
+        </tr>
+        <tr>
+          <td class="rank">4</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/hca-houston-medical-center/chest-x-ray-single-view">HCA Houston Healthcare Medical Center</a></div>
+            <div class="hmetro">Houston, TX</div>
+          </td>
+          <td class="price">$32 – $223</td>
+        </tr>
+        <tr>
+          <td class="rank">5</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/hca-houston-kingwood/chest-x-ray-single-view">HCA Houston Healthcare Kingwood</a></div>
+            <div class="hmetro">Houston, TX</div>
+          </td>
+          <td class="price">$32 – $234</td>
+        </tr>
+        <tr>
+          <td class="rank">6</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/st-davids-medical-center/chest-x-ray-single-view">St. David's Medical Center</a></div>
+            <div class="hmetro">Austin, TX</div>
+          </td>
+          <td class="price">$32</td>
+        </tr>
+        <tr>
+          <td class="rank">7</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/st-davids-north-austin/chest-x-ray-single-view">St. David's North Austin Medical Center</a></div>
+            <div class="hmetro">Austin, TX</div>
+          </td>
+          <td class="price">$32</td>
+        </tr>
+        <tr>
+          <td class="rank">8</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/st-davids-round-rock/chest-x-ray-single-view">St. David's Round Rock Medical Center</a></div>
+            <div class="hmetro">Round Rock, TX</div>
+          </td>
+          <td class="price">$32</td>
+        </tr>
+        <tr>
+          <td class="rank">9</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/heart-hospital-austin/chest-x-ray-single-view">Heart Hospital of Austin</a></div>
+            <div class="hmetro">Austin, TX</div>
+          </td>
+          <td class="price">$32</td>
+        </tr>
+        <tr>
+          <td class="rank">10</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/jackson-memorial/chest-x-ray-single-view">Jackson Memorial Hospital</a></div>
+            <div class="hmetro">Miami, FL</div>
+          </td>
+          <td class="price">$36 – $569</td>
+        </tr>
+        <tr>
+          <td class="rank">11</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/jackson-north/chest-x-ray-single-view">Jackson North Medical Center</a></div>
+            <div class="hmetro">North Miami Beach, FL</div>
+          </td>
+          <td class="price">$36 – $234</td>
+        </tr>
+        <tr>
+          <td class="rank">12</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/jackson-south/chest-x-ray-single-view">Jackson South Medical Center</a></div>
+            <div class="hmetro">Miami, FL</div>
+          </td>
+          <td class="price">$36 – $234</td>
+        </tr>
+        <tr>
+          <td class="rank">13</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/emory-decatur/chest-x-ray-single-view">Emory Decatur Hospital</a></div>
+            <div class="hmetro">Atlanta, GA</div>
+          </td>
+          <td class="price">$37</td>
+        </tr>
+        <tr>
+          <td class="rank">14</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/emory-university-hospital/chest-x-ray-single-view">Emory University Hospital</a></div>
+            <div class="hmetro">Atlanta, GA</div>
+          </td>
+          <td class="price">$37</td>
+        </tr>
+        <tr>
+          <td class="rank">15</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/honorhealth-osborn/chest-x-ray-single-view">HonorHealth Scottsdale Osborn</a></div>
+            <div class="hmetro">Phoenix, AZ</div>
+          </td>
+          <td class="price">$38 – $64</td>
+        </tr>
+        <tr>
+          <td class="rank">16</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/honorhealth-deer-valley/chest-x-ray-single-view">HonorHealth Deer Valley Medical Center</a></div>
+            <div class="hmetro">Phoenix, AZ</div>
+          </td>
+          <td class="price">$38 – $64</td>
+        </tr>
+        <tr>
+          <td class="rank">17</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/ucsd-health/chest-x-ray-single-view">UC San Diego Health</a></div>
+            <div class="hmetro">San Diego, CA</div>
+          </td>
+          <td class="price">$89 – $627</td>
+        </tr>
+        <tr>
+          <td class="rank">18</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/ahn-allegheny-general/chest-x-ray-single-view">Allegheny General Hospital</a></div>
+            <div class="hmetro">Pittsburgh, PA</div>
+          </td>
+          <td class="price">$90</td>
+        </tr>
+        <tr>
+          <td class="rank">19</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/ahn-jefferson-regional/chest-x-ray-single-view">Jefferson Regional Medical Center</a></div>
+            <div class="hmetro">Jefferson Hills, PA</div>
+          </td>
+          <td class="price">$90</td>
+        </tr>
+        <tr>
+          <td class="rank">20</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/baptist-hospital-miami/chest-x-ray-single-view">Baptist Hospital of Miami</a></div>
+            <div class="hmetro">Miami, FL</div>
+          </td>
+          <td class="price">$99</td>
+        </tr>
+        <tr>
+          <td class="rank">21</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/baptist-doctors-coral-gables/chest-x-ray-single-view">Doctors Hospital</a></div>
+            <div class="hmetro">Coral Gables, FL</div>
+          </td>
+          <td class="price">$99</td>
+        </tr>
+        <tr>
+          <td class="rank">22</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/baptist-homestead/chest-x-ray-single-view">Homestead Hospital</a></div>
+            <div class="hmetro">Homestead, FL</div>
+          </td>
+          <td class="price">$99</td>
+        </tr>
+        <tr>
+          <td class="rank">23</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/loyola-medical-center/chest-x-ray-single-view">Loyola University Medical Center</a></div>
+            <div class="hmetro">Maywood, IL</div>
+          </td>
+          <td class="price">$101</td>
+        </tr>
+        <tr>
+          <td class="rank">24</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/henry-ford-detroit/chest-x-ray-single-view">Henry Ford Hospital</a></div>
+            <div class="hmetro">Detroit, MI</div>
+          </td>
+          <td class="price">$110 – $142</td>
+        </tr>
+        <tr>
+          <td class="rank">25</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/dignity-glendale-memorial/chest-x-ray-single-view">Glendale Memorial Hospital</a></div>
+            <div class="hmetro">Glendale, CA</div>
+          </td>
+          <td class="price">$112</td>
+        </tr>
+        <tr>
+          <td class="rank">26</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/hup-penn/chest-x-ray-single-view">Hospital of the University of Pennsylvania</a></div>
+            <div class="hmetro">Philadelphia, PA</div>
+          </td>
+          <td class="price">$299 – $377</td>
+        </tr>
+        <tr>
+          <td class="rank">27</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/boston-childrens/chest-x-ray-single-view">Boston Children's Hospital</a></div>
+            <div class="hmetro">Boston, MA</div>
+          </td>
+          <td class="price">$305</td>
+        </tr>
+        <tr>
+          <td class="rank">28</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/northwestern-memorial/chest-x-ray-single-view">Northwestern Memorial Hospital</a></div>
+            <div class="hmetro">Chicago, IL</div>
+          </td>
+          <td class="price">$307 – $384</td>
+        </tr>
+        <tr>
+          <td class="rank">29</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/penn-presbyterian/chest-x-ray-single-view">Penn Presbyterian Medical Center</a></div>
+            <div class="hmetro">Philadelphia, PA</div>
+          </td>
+          <td class="price">$375 – $536</td>
+        </tr>
+        <tr>
+          <td class="rank">30</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/sharp-grossmont/chest-x-ray-single-view">Sharp Grossmont Hospital</a></div>
+            <div class="hmetro">La Mesa, CA</div>
+          </td>
+          <td class="price">$426</td>
+        </tr>
+        <tr>
+          <td class="rank">31</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/john-muir-walnut-creek/chest-x-ray-single-view">John Muir Health Walnut Creek Medical Center</a></div>
+            <div class="hmetro">Walnut Creek, CA</div>
+          </td>
+          <td class="price">$458</td>
+        </tr>
+        <tr>
+          <td class="rank">32</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/john-muir-concord/chest-x-ray-single-view">John Muir Health Concord Medical Center</a></div>
+            <div class="hmetro">Concord, CA</div>
+          </td>
+          <td class="price">$458</td>
+        </tr>
+        <tr>
+          <td class="rank">33</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/childrens-medical-center-dallas/chest-x-ray-single-view">Children's Medical Center Dallas</a></div>
+            <div class="hmetro">Dallas, TX</div>
+          </td>
+          <td class="price">$514</td>
+        </tr>
+        <tr>
+          <td class="rank">34</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/lurie-childrens/chest-x-ray-single-view">Ann &amp; Robert H. Lurie Children's Hospital</a></div>
+            <div class="hmetro">Chicago, IL</div>
+          </td>
+          <td class="price">$525</td>
+        </tr>
+        <tr>
+          <td class="rank">35</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/upmc-magee-womens/chest-x-ray-single-view">UPMC Magee-Womens Hospital</a></div>
+            <div class="hmetro">Pittsburgh, PA</div>
+          </td>
+          <td class="price">$666</td>
+        </tr>
+        <tr>
+          <td class="rank">36</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/baylor-st-lukes-tmc/chest-x-ray-single-view">Baylor St. Luke's Medical Center</a></div>
+            <div class="hmetro">Houston, TX</div>
+          </td>
+          <td class="price">$811</td>
+        </tr>
+        <tr>
+          <td class="rank">37</td>
+          <td class="name">
+            <div class="hname"><a href="/hospital/upmc-presbyterian-shadyside/chest-x-ray-single-view">UPMC Presbyterian Shadyside</a></div>
+            <div class="hmetro">Pittsburgh, PA</div>
+          </td>
+          <td class="price">$972</td>
+        </tr></tbody>
+  </table>
+
+  <div class="cta">
+    <h2>Estimate what you'd actually pay with Humana.</h2>
+    <p>Add your deductible status and coinsurance to the comparison tool. We'll estimate your out-of-pocket per hospital.</p>
+    <a href="/?p=71045&payer=Humana">Open comparison  →</a>
+  </div>
+
+  <h2 class="display">About these rates.</h2>
+  <div class="body-prose">
+    <p>Hospitals are required by federal law (45 CFR 180.50) to publish the rates they negotiated with each insurer for each procedure. These numbers are the rates the hospital published for Humana plans, pulled directly from each hospital's machine-readable file.</p>
+    <p>The <em>range</em> column reflects different Humana plan tiers (HMO, PPO, EPO, etc.). Your plan picks one number out of that range. Your actual out-of-pocket depends on your deductible status, copay, and coinsurance, which the comparison tool can model when you fill them in.</p>
+    <p>Cash-pay rates are often <em>cheaper</em> than the negotiated rate, especially for high-deductible plans. Worth comparing both — the <a href="https://itemized.health/procedure/chest-x-ray-single-view">Chest X-ray, single view overview</a> shows the cash-pay column alongside.</p>
+  </div>
+
+  <footer>
+    <div><strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). Last refresh: 2026-04-27.</div>
+    <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+  </footer>
+</main>
+
+</body>
+</html>
