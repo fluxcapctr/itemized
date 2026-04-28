@@ -239,7 +239,6 @@ function SearchBox() {
           autoComplete="off"
           spellCheck="false"
         />
-        <span className="search-kbd">⌘K</span>
       </div>
       {showDropdown && (
         <div className="search-dropdown" ref={listRef}>
