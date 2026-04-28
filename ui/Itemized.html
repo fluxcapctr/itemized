@@ -979,6 +979,82 @@
   }
   .dpa-source strong { color: var(--ink-2); font-weight: 600; }
 
+  /* Email capture — placed between MethodologyCards and FAQ. */
+  .email-capture {
+    margin: 80px 0 0; padding: 40px 36px;
+    background: var(--ink); color: var(--paper);
+    border-radius: var(--corner);
+  }
+  .email-capture h3 {
+    font-family: var(--display-font); font-size: clamp(28px, 3.8vw, 40px);
+    letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 12px;
+    color: var(--paper);
+  }
+  .email-capture .ec-text { max-width: 56ch; margin-bottom: 24px; }
+  .email-capture .ec-text p {
+    font-size: 16px; line-height: 1.55; color: rgba(245,241,234,0.78);
+    margin: 0;
+  }
+  .email-capture .ec-form {
+    display: flex; gap: 10px; max-width: 520px; flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .email-capture .ec-form input[type="email"] {
+    flex: 1; min-width: 240px;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 14px; padding: 14px 18px;
+    color: var(--paper); font-family: 'Inter', sans-serif; font-size: 15px;
+    outline: none; transition: border-color 120ms ease, background 120ms ease;
+  }
+  .email-capture .ec-form input[type="email"]::placeholder { color: rgba(245,241,234,0.42); }
+  .email-capture .ec-form input[type="email"]:focus {
+    border-color: var(--signal); background: rgba(91,63,224,0.12);
+  }
+  .email-capture .ec-form button {
+    background: var(--signal); color: var(--paper); border: 0;
+    padding: 14px 24px; border-radius: 14px;
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
+    cursor: pointer; transition: background 120ms ease, transform 120ms ease;
+    flex-shrink: 0;
+  }
+  .email-capture .ec-form button:hover:not(:disabled) { background: #6E55EA; }
+  .email-capture .ec-form button:active:not(:disabled) { transform: scale(0.98); }
+  .email-capture .ec-form button:disabled { opacity: 0.5; cursor: not-allowed; }
+  .email-capture .ec-err {
+    background: rgba(196, 74, 26, 0.18);
+    color: #F8C9B0;
+    border-radius: 10px; padding: 10px 14px; margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .email-capture .ec-trust {
+    font-size: 12px; color: rgba(245,241,234,0.54);
+    font-family: 'JetBrains Mono', monospace; letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+  .email-capture .ec-success {
+    display: flex; gap: 16px; align-items: flex-start;
+  }
+  .email-capture .ec-success-icon {
+    width: 44px; height: 44px; flex-shrink: 0;
+    background: var(--signal); color: var(--paper);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-family: var(--display-font); font-weight: 700; font-size: 22px;
+  }
+  .email-capture .ec-success strong {
+    display: block; font-family: var(--display-font); font-size: 22px;
+    margin-bottom: 6px; color: var(--paper); letter-spacing: -0.01em;
+  }
+  .email-capture .ec-success span {
+    display: block; font-size: 14px; line-height: 1.55;
+    color: rgba(245,241,234,0.74); max-width: 56ch;
+  }
+  @media (max-width: 640px) {
+    .email-capture { padding: 28px 22px; margin-top: 60px; }
+    .email-capture .ec-form { flex-direction: column; align-items: stretch; }
+    .email-capture .ec-form input[type="email"] { min-width: 0; }
+    .email-capture .ec-form button { width: 100%; }
+  }
+
   /* Procedure overview block (above the comparison list) */
   .proc-overview {
     background: var(--paper-2); border-radius: var(--corner);

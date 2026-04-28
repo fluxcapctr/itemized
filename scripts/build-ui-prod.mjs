@@ -65,6 +65,19 @@ async function main() {
       fs.copyFileSync(src, path.join(DIST_DIR, file));
     }
   }
+  // Copy ui/api/* into ui/dist/api/* — Vercel auto-detects api/*.js
+  // files at the project root (which is set to ui/dist/) and turns each
+  // into a serverless function.
+  const apiSrcDir = path.join(UI_DIR, "api");
+  if (fs.existsSync(apiSrcDir)) {
+    const apiDistDir = path.join(DIST_DIR, "api");
+    fs.mkdirSync(apiDistDir, { recursive: true });
+    for (const f of fs.readdirSync(apiSrcDir)) {
+      fs.copyFileSync(path.join(apiSrcDir, f), path.join(apiDistDir, f));
+    }
+    console.log(`  api/ — ${fs.readdirSync(apiSrcDir).length} serverless function(s)`);
+  }
+
   // Copy ui/guide/* into ui/dist/guide/* for static long-form pages.
   const guideSrcDir = path.join(UI_DIR, "guide");
   if (fs.existsSync(guideSrcDir)) {

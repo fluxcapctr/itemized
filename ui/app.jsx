@@ -924,6 +924,80 @@ function DirectPayAlternatives({ proc }) {
   );
 }
 
+// Email capture. POSTs to /api/subscribe, which writes to Vercel KV.
+// To swap to ConvertKit / Beehiiv / Loops later, change SUBSCRIBE_ENDPOINT.
+const SUBSCRIBE_ENDPOINT = "/api/subscribe";
+
+function EmailCapture() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [errMsg, setErrMsg] = useState("");
+
+  async function submit(e) {
+    e.preventDefault();
+    const trimmed = email.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(trimmed)) {
+      setStatus("error");
+      setErrMsg("That doesn't look like a valid email.");
+      return;
+    }
+    setStatus("loading"); setErrMsg("");
+    try {
+      const r = await fetch(SUBSCRIBE_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: trimmed, source: "homepage" }),
+      });
+      if (!r.ok) {
+        const txt = await r.text().catch(() => "");
+        throw new Error(txt || `HTTP ${r.status}`);
+      }
+      setStatus("success");
+    } catch (err) {
+      setStatus("error");
+      setErrMsg("Couldn't subscribe right now. Try again in a sec.");
+    }
+  }
+
+  return (
+    <section className="email-capture">
+      {status === "success" ? (
+        <div className="ec-success">
+          <div className="ec-success-icon">✓</div>
+          <div>
+            <strong>You're in.</strong>
+            <span>We'll email when prices shift more than 10% or hospitals come online in your area. Unsubscribe anytime.</span>
+          </div>
+        </div>
+      ) : (
+        <form onSubmit={submit}>
+          <div className="ec-text">
+            <h3>Prices change. We'll tell you.</h3>
+            <p>Monthly dispatches when negotiated rates update or new hospitals come online near you. No marketing fluff. Unsubscribe anytime.</p>
+          </div>
+          <div className="ec-form">
+            <input
+              type="email"
+              placeholder="you@email.com"
+              value={email}
+              onChange={(e) => { setEmail(e.target.value); if (status === "error") setStatus("idle"); }}
+              disabled={status === "loading"}
+              autoComplete="email"
+              spellCheck="false"
+              required
+            />
+            <button type="submit" disabled={status === "loading"}>
+              {status === "loading" ? "..." : "Get alerts"}
+            </button>
+          </div>
+          {status === "error" && <div className="ec-err">{errMsg}</div>}
+          <div className="ec-trust">No spam. We don't sell email addresses. Powered by Itemized · 100% reader-supported.</div>
+        </form>
+      )}
+    </section>
+  );
+}
+
 function ProcOverview({ proc }) {
   const [expanded, setExpanded] = useState(false);
   if (!proc.overview) return null;
@@ -1450,6 +1524,8 @@ function App() {
         <div style={{height: 80}} />
 
         {tweaks.showMethodology && <MethodologyCards data={data} />}
+
+        <EmailCapture />
 
         <FAQ
           hospitalCount={proc.hospitals.filter(h => !h.all_missing).length || proc.hospitals.length}
