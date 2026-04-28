@@ -190,6 +190,66 @@ function loadRatings() {
   return sandbox.window.ITEMIZED_RATINGS || { ratings: {} };
 }
 
+// Read window.ITEMIZED_DIRECT_PAY from the direct-pay.real.js bundle.
+function loadDirectPay() {
+  const fp = path.join(UI_DIR, "direct-pay.real.js");
+  if (!fs.existsSync(fp)) return null;
+  const txt = fs.readFileSync(fp, "utf8");
+  const sandbox = { window: {} };
+  // eslint-disable-next-line no-new-func
+  new Function("window", txt)(sandbox.window);
+  return sandbox.window.ITEMIZED_DIRECT_PAY || null;
+}
+
+function renderDirectPayBlock(proc, dp) {
+  if (!dp || !dp.pricing) return "";
+  const priceData = dp.pricing[proc.code];
+  if (!priceData) return "";
+  const providers = (dp.default_providers || []).map((id) => dp.providers[id]).filter(Boolean);
+  if (!providers.length) return "";
+  const hospLow = proc.headline?.cash_low;
+  let savings = "";
+  if (Number.isFinite(hospLow) && hospLow > 0 && Number.isFinite(priceData.typical_low)) {
+    const pct = Math.round(100 - (priceData.typical_low / hospLow) * 100);
+    if (pct > 0) savings = `, often ${pct}%+ cheaper than the lowest hospital cash rate`;
+  }
+  const items = providers.map((p) => `
+    <a href="${escAttr(p.affiliate_url || p.url)}" rel="sponsored noopener" target="_blank" class="dpa-item">
+      <div class="dpa-name">${escHtml(p.name)}</div>
+      <div class="dpa-note">${escHtml(p.tagline || "")}</div>
+      <div class="dpa-arrow">→</div>
+    </a>`).join("");
+  return `
+  <div class="direct-pay-alt">
+    <div class="dpa-h">
+      <span class="dpa-icon">💡</span>
+      <div>
+        <strong>Free-standing imaging centers publish cash-pay rates of <span style="color:var(--signal)">${fmtMoney(priceData.typical_low)}–${fmtMoney(priceData.typical_high)}</span> for ${escHtml(proc.short.toLowerCase())}${savings}.</strong>
+        <span class="dpa-sub">These facilities aren't covered by 45 CFR 180.50 (the rule applies to hospitals), so they're not in the comparison above. Click through to see your specific provider's current rate.</span>
+      </div>
+    </div>
+    <div class="dpa-list">${items}
+    </div>
+    <div class="dpa-source"><strong>How we got this range:</strong> ${escHtml(priceData.source)}. Last reviewed ${escHtml(dp.as_of)}. Prices are typical published cash-pay rates, not real-time. We earn a referral fee when you click through.</div>
+  </div>
+  <style>
+    .direct-pay-alt { background: linear-gradient(180deg, #FFF8E7 0%, #FFF1D2 100%); border: 1px solid rgba(180,140,40,0.18); border-radius: 24px; padding: 24px 26px; margin: 24px 0; }
+    .dpa-h { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; }
+    .dpa-h .dpa-icon { font-size: 22px; flex-shrink: 0; }
+    .dpa-h strong { display: block; font-size: 16px; line-height: 1.45; color: var(--ink); margin-bottom: 6px; }
+    .dpa-h .dpa-sub { display: block; font-size: 13px; line-height: 1.5; color: var(--ink-3); }
+    .dpa-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .dpa-item { background: rgba(255,255,255,0.55); border: 1px solid rgba(180,140,40,0.18); border-radius: 14px; padding: 14px 16px; text-decoration: none; color: var(--ink); display: flex; flex-direction: column; gap: 6px; transition: background 120ms ease, transform 120ms ease; }
+    .dpa-item:hover { background: rgba(255,255,255,0.85); transform: translateY(-1px); }
+    .dpa-item .dpa-name { font-weight: 700; font-size: 15px; }
+    .dpa-item .dpa-note { font-size: 12px; color: var(--ink-3); flex: 1; }
+    .dpa-item .dpa-arrow { font-size: 18px; color: var(--ink-3); align-self: flex-end; }
+    .dpa-item:hover .dpa-arrow { color: var(--signal); }
+    .dpa-source { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(180,140,40,0.18); font-size: 12px; line-height: 1.55; color: var(--ink-3); }
+    .dpa-source strong { color: var(--ink-2); font-weight: 600; }
+  </style>`;
+}
+
 // Read window.ITEMIZED_HCAHPS from the hcahps.real.js bundle.
 function loadHcahps() {
   const fp = path.join(UI_DIR, "hcahps.real.js");
@@ -357,7 +417,7 @@ function buildFaqs(proc, low, high, count, metros) {
   ];
 }
 
-function renderPage({ proc, slug, hospitals, asOf }) {
+function renderPage({ proc, slug, hospitals, asOf, directPay }) {
   const procName = proc.label;
   const procShort = proc.short;
   const procCpt = proc.code;
@@ -662,6 +722,8 @@ ${ANALYTICS_TAGS}
     <tbody>${top5Rows}
     </tbody>
   </table>
+
+  ${renderDirectPayBlock(proc, directPay)}
 
   <div class="cta">
     <h2>See all ${totalWithData} hospitals, your insurance, your zip.</h2>
@@ -2724,6 +2786,7 @@ async function main() {
   const data = loadIndex();
   const ratings = loadRatings();
   const hcahps = loadHcahps();
+  const directPay = loadDirectPay();
   const procDir = path.join(DIST_DIR, "procedure");
   const hospDir = path.join(DIST_DIR, "hospital");
   fs.mkdirSync(procDir, { recursive: true });
@@ -2751,7 +2814,7 @@ async function main() {
 
     const hospitals = loadProcHospitals(proc.code);
     hospitalsByProc.set(proc.code, hospitals);
-    const html = renderPage({ proc, slug, hospitals, asOf: data.as_of });
+    const html = renderPage({ proc, slug, hospitals, asOf: data.as_of, directPay });
     fs.writeFileSync(path.join(procDir, `${slug}.html`), html);
     written++;
     sitemapUrls.push({

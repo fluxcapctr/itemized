@@ -973,6 +973,11 @@
   .dpa-note { font-size: 12px; color: var(--ink-3); line-height: 1.4; }
   .dpa-arrow { position: absolute; top: 16px; right: 18px; color: var(--ink-3); font-size: 14px; }
   .dpa-item:hover .dpa-arrow { color: var(--signal); }
+  .dpa-source {
+    margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule-soft);
+    font-size: 12px; line-height: 1.55; color: var(--ink-3);
+  }
+  .dpa-source strong { color: var(--ink-2); font-weight: 600; }
 
   /* Procedure overview block (above the comparison list) */
   .proc-overview {
@@ -1192,6 +1197,7 @@
 <script src="ratings.real.js"></script>
 <script src="hcahps.real.js"></script>
 <script src="search-index.real.js"></script>
+<script src="direct-pay.real.js"></script>
 
 <!-- Vercel Web Analytics (page views + custom events). Free up to 2,500
      events/month on Hobby plan. Loaded async; failures degrade silently. -->

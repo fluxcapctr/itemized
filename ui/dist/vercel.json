@@ -6,6 +6,28 @@
       "destination": "/Itemized"
     }
   ],
+  "redirects": [
+    {
+      "source": "/go/radnet",
+      "destination": "https://www.radnet.com/los-angeles?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay",
+      "statusCode": 307
+    },
+    {
+      "source": "/go/simonmed",
+      "destination": "https://www.simonmed.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay",
+      "statusCode": 307
+    },
+    {
+      "source": "/go/akumin",
+      "destination": "https://akumin.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay",
+      "statusCode": 307
+    },
+    {
+      "source": "/go/goodbill",
+      "destination": "https://goodbill.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=bill-help",
+      "statusCode": 307
+    }
+  ],
   "headers": [
     {
       "source": "/data/(.*)",

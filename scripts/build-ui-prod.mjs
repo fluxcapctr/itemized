@@ -59,7 +59,7 @@ async function main() {
 
   // 3) Copy static files (bills.html, data files)
   console.log("copying static files...");
-  for (const file of ["bills.html", "data.real.js", "ratings.real.js", "hcahps.real.js", "search-index.real.js"]) {
+  for (const file of ["bills.html", "data.real.js", "ratings.real.js", "hcahps.real.js", "search-index.real.js", "direct-pay.real.js"]) {
     const src = path.join(UI_DIR, file);
     if (fs.existsSync(src)) {
       fs.copyFileSync(src, path.join(DIST_DIR, file));
@@ -94,6 +94,17 @@ async function main() {
       // cleanUrls strips ".html", so rewriting to /Itemized.html collides
       // with the redirect. Point at the cleaned form.
       { source: "/", destination: "/Itemized" },
+    ],
+    // Affiliate redirects. Tracking layer between us and the partner so
+    // we can swap the destination URL (or wire a real affiliate
+    // program's tracked link) without touching every page that links
+    // out. Use 307 (temporary) so search engines don't try to index the
+    // partner's site at our domain.
+    redirects: [
+      { source: "/go/radnet",    destination: "https://www.radnet.com/los-angeles?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay", statusCode: 307 },
+      { source: "/go/simonmed",  destination: "https://www.simonmed.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay", statusCode: 307 },
+      { source: "/go/akumin",    destination: "https://akumin.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=imaging-direct-pay", statusCode: 307 },
+      { source: "/go/goodbill",  destination: "https://goodbill.com/?utm_source=itemized&utm_medium=affiliate&utm_campaign=bill-help", statusCode: 307 },
     ],
     headers: [
       {

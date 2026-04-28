@@ -879,42 +879,46 @@ function MethodologyCards({ data }) {
 //
 // TODO: replace public links with affiliate-tracked URLs once partnerships are
 // signed. Marker: /go/{partner} would route through a tracking redirect.
-const DIRECT_PAY_PROVIDERS = {
-  imaging: [
-    { name: "RadNet", note: "70+ LA-area imaging centers (Liberty Pacific, Beverly Hills Imaging, ProMed, Tower Saint John's, more)", url: "https://www.radnet.com/los-angeles" },
-    { name: "SimonMed Imaging", note: "15-20 LA centers, transparent cash pricing", url: "https://www.simonmed.com" },
-    { name: "Akumin", note: "National imaging chain, LA-area locations", url: "https://akumin.com" },
-  ],
-};
-
-const PROCEDURE_DIRECT_PAY_TYPE = {
-  "70551": "imaging", "70553": "imaging", "72148": "imaging",
-  "73721": "imaging", "74177": "imaging", "76700": "imaging",
-  "77067": "imaging", "77080": "imaging", "71045": "imaging",
-};
-
 function DirectPayAlternatives({ proc }) {
-  const type = PROCEDURE_DIRECT_PAY_TYPE[proc.code];
-  if (!type) return null;
-  const providers = DIRECT_PAY_PROVIDERS[type] || [];
-  if (providers.length === 0) return null;
+  const dp = window.ITEMIZED_DIRECT_PAY;
+  if (!dp || !dp.pricing) return null;
+  const priceData = dp.pricing[proc.code];
+  if (!priceData) return null;
+
+  const providerIds = dp.default_providers || ["radnet", "simonmed", "akumin"];
+  const providers = providerIds.map((id) => dp.providers[id]).filter(Boolean);
+  if (!providers.length) return null;
+
+  // Compute the % savings vs the hospital median for this procedure.
+  // Use proc.headline.cash_low as the cheapest hospital baseline; the
+  // direct-pay typical-low is typically well below this.
+  const hospitalLow = proc.headline?.cash_low;
+  const hospitalHigh = proc.headline?.cash_high;
+  let savingsPct = null;
+  if (Number.isFinite(hospitalLow) && Number.isFinite(priceData.typical_low) && hospitalLow > 0) {
+    savingsPct = Math.round(100 - (priceData.typical_low / hospitalLow) * 100);
+  }
+
   return (
     <div className="direct-pay-alt">
       <div className="dpa-h">
         <span className="dpa-icon">💡</span>
         <div>
-          <strong>Free-standing imaging centers are typically 50–70% cheaper than hospitals for {proc.short.toLowerCase()}.</strong>
-          <span className="dpa-sub">These facilities don't publish CMS-format MRFs (the federal rule applies to hospitals only), so they're not in the comparison above. Most publish cash pricing on request.</span>
+          <strong>Free-standing imaging centers publish cash-pay rates of <span style={{color: "var(--signal)"}}>${fmt(priceData.typical_low)}–${fmt(priceData.typical_high)}</span> for {proc.short.toLowerCase()}{savingsPct != null && savingsPct > 0 ? `, often ${savingsPct}%+ cheaper than the lowest hospital cash rate` : ""}.</strong>
+          <span className="dpa-sub">These facilities aren't covered by 45 CFR 180.50 (the rule applies to hospitals), so they're not in the comparison above. Prices vary by location; click through to see your specific provider's current rate.</span>
         </div>
       </div>
       <div className="dpa-list">
         {providers.map((p) => (
-          <a key={p.name} className="dpa-item" href={p.url} target="_blank" rel="noopener noreferrer">
+          <a key={p.id} className="dpa-item" href={p.affiliate_url || p.url} target="_blank" rel="sponsored noopener noreferrer">
             <div className="dpa-name">{p.name}</div>
-            <div className="dpa-note">{p.note}</div>
+            <div className="dpa-note">{p.tagline}</div>
             <div className="dpa-arrow">→</div>
           </a>
         ))}
+      </div>
+      <div className="dpa-source">
+        <strong>How we got this range:</strong> {priceData.source}. Last reviewed {dp.as_of}. Prices are typical published cash-pay rates, not real-time. We earn a referral fee when you click through.
       </div>
     </div>
   );
