@@ -498,18 +498,16 @@ function HospitalCard({ h, idx, isCheapest, mode, plan, payerLabel, isLocal, isE
         <span className="name-line">
           <span className="name-text">{h.name}</span>
           {isCheapest && rate.low != null && <span className="tag cheap">cheapest</span>}
+          {h.partial_parse && <span className="tag partial">partial parse</span>}
+        </span>
+        <span className="sys">{h.system}</span>
+        <span className="rating-line">
+          <StarBlock hospitalId={h.id} isPediatric={h.is_pediatric} />
           {(() => {
             const pos = positionLabel(rate.low, peerPrices);
             if (!pos || isCheapest || rate.low == null) return null;
             return <span className={`tag pos pos-${pos.tier}`}>{pos.text}</span>;
           })()}
-          {h.partial_parse && <span className="tag partial">partial parse</span>}
-        </span>
-        <span className="sys">{h.system}</span>
-        <StarBlock hospitalId={h.id} isPediatric={h.is_pediatric} />
-        <span className="src-badge" title="Sourced from this hospital's CMS-mandated Machine-Readable File. The hospital is legally required to honor what's published.">
-          <svg width="11" height="11" viewBox="0 0 12 12" aria-hidden="true"><path d="M5 8.5l-2-2 1-1 1 1 3-3 1 1z" fill="currentColor"/></svg>
-          MRF source
         </span>
       </div>
       <div className="metro">

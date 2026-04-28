@@ -562,12 +562,20 @@
   /* ── Star rating block (CMS Care Compare) ──────────────────────────────── */
   .star-block {
     display: inline-flex; align-items: baseline; gap: 6px;
-    margin-left: 10px; padding: 2px 8px 3px;
+    padding: 2px 8px 3px;
     background: var(--paper); border: 1px solid var(--rule-soft);
     border-radius: 100px; cursor: pointer; user-select: none;
     position: relative; vertical-align: 1px;
     transition: background 120ms ease, border-color 120ms ease;
   }
+  /* Rating line in the hospital card: holds the CMS star chip and the
+     position chip ("Significantly lower" etc). Flush-left under the
+     hospital name + system rows. */
+  .card .name .rating-line {
+    display: flex; align-items: center; gap: 8px;
+    margin-top: 6px; flex-wrap: wrap;
+  }
+  .card .name .rating-line .tag { margin-left: 0; vertical-align: 0; }
   .card.cheapest .star-block { background: rgba(255,255,255,0.55); border-color: rgba(255,255,255,0.55); }
   .star-block:hover { background: var(--paper-3); }
   .star-block .star-num {
