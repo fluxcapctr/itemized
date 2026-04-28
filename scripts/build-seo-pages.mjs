@@ -1900,6 +1900,328 @@ ${GLOSSARY.filter((g) => g.slug !== term.slug).slice(0, 10).map((g) => `    <a h
 ` + renderShellFoot({ asOf: new Date().toISOString().slice(0, 10) });
 }
 
+// ── Tier-2 SEO: head-to-head comparison, listicles, best value ─────────
+
+// Render a head-to-head comparison page covering all common procedures
+// between two hospitals in the same metro.
+function renderComparisonPage({ a, b, ratings, hospitalsByProc, procedures, asOf }) {
+  const aSlug = a.id;
+  const bSlug = b.id;
+  const slug = `${aSlug}-vs-${bSlug}`;
+  const canonical = `${SITE_ORIGIN}/compare/${slug}`;
+
+  // Build the procedure-by-procedure table.
+  const rows = [];
+  for (const proc of procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    const ah = list.find((h) => h.id === aSlug && !h.all_missing);
+    const bh = list.find((h) => h.id === bSlug && !h.all_missing);
+    if (!ah || !bh) continue;
+    const aCash = Number.isFinite(ah.cash_pay_low) ? ah.cash_pay_low : null;
+    const bCash = Number.isFinite(bh.cash_pay_low) ? bh.cash_pay_low : null;
+    if (aCash == null && bCash == null) continue;
+    let cheaper = null;
+    if (aCash != null && bCash != null) cheaper = aCash < bCash ? "a" : (bCash < aCash ? "b" : null);
+    rows.push({ proc, aCash, bCash, cheaper });
+  }
+
+  const aRating = ratings.ratings?.[aSlug];
+  const bRating = ratings.ratings?.[bSlug];
+  const aStars = aRating && aRating.matched && aRating.overall_rating != null ? aRating.overall_rating : null;
+  const bStars = bRating && bRating.matched && bRating.overall_rating != null ? bRating.overall_rating : null;
+
+  const aWins = rows.filter((r) => r.cheaper === "a").length;
+  const bWins = rows.filter((r) => r.cheaper === "b").length;
+  const overallCheaper = aWins > bWins ? "a" : (bWins > aWins ? "b" : null);
+
+  const title = `${a.name} vs ${b.name}: prices, ratings, head-to-head. Itemized.`;
+  const description = `Compare ${a.name} and ${b.name} side-by-side: cash-pay prices for ${rows.length} procedures, CMS quality ratings, and which hospital is cheaper for what. Real federally-mandated price data.`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Compare hospitals", item: SITE_ORIGIN + "/compare" },
+        { "@type": "ListItem", position: 3, name: `${a.name} vs ${b.name}`, item: canonical },
+      ],
+    },
+    hospitalSchema(a, aRating, `${SITE_ORIGIN}/hospital/${aSlug}`),
+    hospitalSchema(b, bRating, `${SITE_ORIGIN}/hospital/${bSlug}`),
+  ];
+
+  const tableRows = rows.map((r) => {
+    const aClass = r.cheaper === "a" ? "win" : "";
+    const bClass = r.cheaper === "b" ? "win" : "";
+    return `        <tr>
+          <td class="proc"><a href="/procedure/${escAttr(r.proc._slug)}">${escHtml(r.proc.label)}</a></td>
+          <td class="price ${aClass}">${r.aCash != null ? fmtMoney(r.aCash) : `<span class="none">—</span>`}</td>
+          <td class="price ${bClass}">${r.bCash != null ? fmtMoney(r.bCash) : `<span class="none">—</span>`}</td>
+          <td class="winner">${r.cheaper === "a" ? `${escHtml(a.name.split(" ")[0])} ↓` : r.cheaper === "b" ? `${escHtml(b.name.split(" ")[0])} ↓` : "tie"}</td>
+        </tr>`;
+  }).join("\n");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/compare">Compare</a> &nbsp;·&nbsp; ${escHtml(a.name)} vs ${escHtml(b.name)}
+  </div>
+
+  <h1 class="display"><a href="/hospital/${escAttr(aSlug)}" style="color:inherit;text-decoration:none">${escHtml(a.name)}</a> vs <span class="accent">${escHtml(b.name)}</span>.</h1>
+  <p class="lede">
+    Side-by-side prices for <strong>${rows.length} ${rows.length === 1 ? "procedure" : "procedures"}</strong> both hospitals publish, plus CMS quality ratings and metro context. Pulled from each hospital's federally-mandated price transparency file.
+    ${overallCheaper === "a" ? ` <strong>${escHtml(a.name)} is cheaper on more procedures (${aWins} vs ${bWins}).</strong>` : ""}
+    ${overallCheaper === "b" ? ` <strong>${escHtml(b.name)} is cheaper on more procedures (${bWins} vs ${aWins}).</strong>` : ""}
+  </p>
+
+  <div class="pair">
+    <div class="pair-card lo" style="background:var(--paper-2)">
+      <div class="lbl"><a href="/hospital/${escAttr(aSlug)}" style="color:inherit;text-decoration:none">${escHtml(a.name)}</a></div>
+      <div style="margin-top:8px;font-size:14px;color:var(--ink-2)">${escHtml(a.metro || "")}</div>
+      ${a.system ? `<div style="margin-top:4px;font-size:13px;color:var(--ink-3)">${escHtml(a.system)}</div>` : ""}
+      ${aStars != null ? `<div style="margin-top:8px;font-size:14px;color:var(--ink-2)"><strong>${aStars}/5 CMS</strong></div>` : ""}
+      <div style="margin-top:12px;font-size:13px;color:var(--ink-3)">Cheaper on <strong style="color:var(--ink)">${aWins}</strong> of ${rows.length} procedures</div>
+    </div>
+    <div class="vs">vs.</div>
+    <div class="pair-card lo" style="background:var(--paper-2)">
+      <div class="lbl"><a href="/hospital/${escAttr(bSlug)}" style="color:inherit;text-decoration:none">${escHtml(b.name)}</a></div>
+      <div style="margin-top:8px;font-size:14px;color:var(--ink-2)">${escHtml(b.metro || "")}</div>
+      ${b.system ? `<div style="margin-top:4px;font-size:13px;color:var(--ink-3)">${escHtml(b.system)}</div>` : ""}
+      ${bStars != null ? `<div style="margin-top:8px;font-size:14px;color:var(--ink-2)"><strong>${bStars}/5 CMS</strong></div>` : ""}
+      <div style="margin-top:12px;font-size:13px;color:var(--ink-3)">Cheaper on <strong style="color:var(--ink)">${bWins}</strong> of ${rows.length} procedures</div>
+    </div>
+  </div>
+
+  <h2 class="display">Head-to-head, by procedure.</h2>
+  <table class="hospitals">
+    <thead>
+      <tr>
+        <th>Procedure</th>
+        <th style="text-align:right">${escHtml(a.name.split(" ")[0])}</th>
+        <th style="text-align:right">${escHtml(b.name.split(" ")[0])}</th>
+        <th style="text-align:right">Cheaper</th>
+      </tr>
+    </thead>
+    <tbody>
+${tableRows}
+    </tbody>
+  </table>
+
+  <style>
+    table.hospitals td.proc a { color: var(--ink); text-decoration: none; }
+    table.hospitals td.proc a:hover { color: var(--signal); text-decoration: underline; }
+    table.hospitals td.price { text-align: right; }
+    table.hospitals td.price.win { color: var(--signal); font-weight: 700; }
+    table.hospitals td.price .none { color: var(--ink-3); font-weight: 400; }
+    table.hospitals td.winner { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  </style>
+
+  <div class="cta">
+    <h2>Add your insurance.</h2>
+    <p>Cash-pay is one number. With your insurance plan, the actual price differs. Pick your insurer in the comparison tool to see plan-specific rates at both hospitals.</p>
+    <a href="/?p=${escAttr(rows[0]?.proc?.code || procedures[0].code)}">Open comparison  →</a>
+  </div>
+
+  <h2 class="display">How to read this comparison.</h2>
+  <div class="body-prose">
+    <p>The cash-pay price is what an uninsured patient would be charged at each hospital. It's the cleanest apples-to-apples comparison because it doesn't depend on your insurance plan.</p>
+    <p>The CMS rating is the federal quality composite, built from ~50 measures spanning safety, mortality, readmission, patient experience, and timeliness. A 5-star hospital may not be the best at every procedure, and a 3-star hospital can have a strong specific service line. Treat the rating as one input, not the answer.</p>
+    <p>For your specific insurance plan, prices can shift dramatically. Some hospitals negotiate steep discounts with one insurer and not another. Always check the plan-specific rate before you book.</p>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+// ── Listicle: top 10 cheapest hospitals for a procedure in a metro ─────
+function renderListiclePage({ proc, procSlug, metro, hospitalsInMetro, asOf }) {
+  const cityName = metro.split(",")[0].trim();
+  const stateAbbr = (metro.split(",")[1] || "").trim();
+  const mSlug = metroSlug(metro);
+  const slug = `cheapest-${procSlug}-${mSlug}`;
+  const canonical = `${SITE_ORIGIN}/list/${slug}`;
+
+  const ranked = hospitalsInMetro
+    .filter((h) => !h.all_missing && Number.isFinite(h.cash_pay_low))
+    .sort((a, b) => a.cash_pay_low - b.cash_pay_low)
+    .slice(0, 10);
+
+  const lowVal = ranked[0]?.cash_pay_low ?? null;
+  const highVal = ranked[ranked.length - 1]?.cash_pay_low ?? null;
+
+  const title = `${ranked.length} cheapest hospitals for ${proc.label.toLowerCase()} in ${cityName}${stateAbbr ? `, ${stateAbbr}` : ""}. Itemized.`;
+  const description = `The ${ranked.length} cheapest ${cityName}-area hospitals for ${proc.label.toLowerCase()} (CPT ${proc.code}). Cash-pay range ${lowVal ? fmtMoney(lowVal) : "—"} to ${highVal ? fmtMoney(highVal) : "—"}. Real CMS-mandated price data.`;
+
+  const procedureCanonical = `${SITE_ORIGIN}/procedure/${procSlug}`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "ItemList",
+      name: `${ranked.length} cheapest hospitals for ${proc.label} in ${cityName}`,
+      url: canonical,
+      itemListOrder: "https://schema.org/ItemListOrderAscending",
+      numberOfItems: ranked.length,
+      itemListElement: ranked.map((h, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: `${SITE_ORIGIN}/hospital/${h.id}/${procSlug}`,
+        name: h.name,
+      })),
+    },
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Lists", item: SITE_ORIGIN + "/list" },
+        { "@type": "ListItem", position: 3, name: `Cheapest ${proc.short.toLowerCase()} in ${cityName}`, item: canonical },
+      ],
+    },
+  ];
+
+  const items = ranked.map((h, i) => `
+  <div style="display:grid;grid-template-columns:48px 1fr auto;gap:16px;align-items:start;padding:18px 0;border-bottom:1px solid var(--rule-soft)">
+    <div style="font-family:var(--display-font);font-weight:700;font-size:32px;color:var(--ink-3);letter-spacing:-0.02em;line-height:1">${i + 1}</div>
+    <div>
+      <div style="font-family:var(--display-font);font-weight:700;font-size:18px;letter-spacing:-0.01em"><a href="/hospital/${escAttr(h.id)}/${escAttr(procSlug)}" style="color:var(--ink);text-decoration:none">${escHtml(h.name)}</a></div>
+      <div style="font-size:13px;color:var(--ink-3);margin-top:2px">${escHtml(h.metro || "")}${h.system ? ` · ${escHtml(h.system)}` : ""}</div>
+    </div>
+    <div style="font-family:var(--display-font);font-weight:700;font-size:22px;letter-spacing:-0.02em;color:var(--ink)">${fmtMoney(h.cash_pay_low)}</div>
+  </div>`).join("");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/list">Lists</a> &nbsp;·&nbsp; Cheapest in ${escHtml(cityName)}
+  </div>
+
+  <h1 class="display">${ranked.length} cheapest hospitals for <span class="accent">${escHtml(proc.label.toLowerCase())}</span> in ${escHtml(cityName)}.</h1>
+  <p class="lede">
+    Sorted by published cash-pay price, low to high. Pulled from each hospital's federally-mandated price transparency file. Cash-pay is what an uninsured patient is charged; insured patients can sometimes get the cash rate by asking. CPT code ${escHtml(proc.code)}.
+  </p>
+
+  <div>
+${items}
+  </div>
+
+  <div class="cta">
+    <h2>See the full ${escHtml(cityName)} list with insurance rates.</h2>
+    <p>This list shows the top ${ranked.length} cash-pay prices. The procedure page covers every ${escHtml(cityName)}-area hospital, plus plan-specific negotiated rates if you add your insurance.</p>
+    <a href="/procedure/${escAttr(procSlug)}/in/${escAttr(mSlug)}">Full ${escHtml(cityName)} comparison  →</a>
+  </div>
+
+  <h2 class="display">Why prices vary this much.</h2>
+  <div class="body-prose">
+    <p>The same ${escHtml(proc.label.toLowerCase())} on the same equipment can cost dramatically different amounts at different hospitals. Three reasons.</p>
+    <p><strong>Chargemasters are arbitrary.</strong> The "sticker price" hospitals publish was never designed for consumers. It's a starting number for negotiation with insurance, with adjustments stacked on for decades.</p>
+    <p><strong>Negotiated rates are confidential.</strong> Each insurer negotiates its own rate with each hospital. Aetna at Hospital A might pay 60% of what Cigna pays at the same hospital for the same code.</p>
+    <p><strong>Cash pay is its own thing.</strong> Hospitals often offer self-pay rates dramatically cheaper than what they'd bill insurance, especially for elective procedures. Worth asking even if you have insurance.</p>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
+// ── Best-value pages: top hospitals combining price + CMS rating ───────
+function renderBestValuePage({ proc, procSlug, hospitals, ratings, asOf, scope = "national", metro = null }) {
+  const isNational = scope === "national";
+  const cityName = metro ? metro.split(",")[0].trim() : null;
+  const slug = isNational ? procSlug : `${procSlug}-${metroSlug(metro)}`;
+  const canonical = isNational
+    ? `${SITE_ORIGIN}/best-value/${slug}`
+    : `${SITE_ORIGIN}/best-value/${procSlug}/${metroSlug(metro)}`;
+
+  // Score = rank-by-price + (max_rating - rating). Lower is better.
+  const candidates = hospitals.filter((h) => {
+    if (h.all_missing) return false;
+    if (!Number.isFinite(h.cash_pay_low)) return false;
+    if (h.is_pediatric) return false; // pediatric specialty: not CMS rated
+    return true;
+  });
+  const withRating = candidates.map((h) => {
+    const r = ratings.ratings?.[h.id];
+    const stars = r && r.matched && r.overall_rating != null ? r.overall_rating : null;
+    return { h, stars, cash: h.cash_pay_low };
+  });
+  // Filter to hospitals with a published rating; otherwise composite is meaningless.
+  const rated = withRating.filter((x) => x.stars != null);
+  if (rated.length === 0) return null;
+  rated.sort((a, b) => a.cash - b.cash);
+  const priceRank = new Map(rated.map((x, i) => [x.h.id, i]));
+  const ratingSorted = [...rated].sort((a, b) => b.stars - a.stars);
+  const ratingRank = new Map(ratingSorted.map((x, i) => [x.h.id, i]));
+  const scored = rated.map((x) => ({
+    ...x,
+    score: priceRank.get(x.h.id) + ratingRank.get(x.h.id),
+  })).sort((a, b) => a.score - b.score);
+
+  const top10 = scored.slice(0, 10);
+  if (top10.length === 0) return null;
+
+  const title = isNational
+    ? `Best-value hospitals for ${proc.label.toLowerCase()}: top ${top10.length} on price + CMS rating. Itemized.`
+    : `Best-value hospitals for ${proc.label.toLowerCase()} in ${cityName}: top ${top10.length}. Itemized.`;
+  const description = isNational
+    ? `Top ${top10.length} US hospitals for ${proc.label.toLowerCase()} ranked on a composite of cash price and CMS Care Compare rating. Cheapest 4-5 star hospitals first.`
+    : `Top ${top10.length} ${cityName}-area hospitals for ${proc.label.toLowerCase()} ranked on price + CMS rating composite.`;
+
+  const procedureCanonical = `${SITE_ORIGIN}/procedure/${procSlug}`;
+
+  const ldBlocks = [
+    {
+      "@context": "https://schema.org", "@type": "ItemList",
+      name: `Best-value hospitals for ${proc.label}${isNational ? "" : ` in ${cityName}`}`,
+      url: canonical,
+      numberOfItems: top10.length,
+      itemListElement: top10.map((x, i) => ({
+        "@type": "ListItem", position: i + 1,
+        url: `${SITE_ORIGIN}/hospital/${x.h.id}/${procSlug}`,
+        name: x.h.name,
+      })),
+    },
+    {
+      "@context": "https://schema.org", "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Itemized", item: SITE_ORIGIN + "/" },
+        { "@type": "ListItem", position: 2, name: "Best value", item: SITE_ORIGIN + "/best-value" },
+        { "@type": "ListItem", position: 3, name: proc.label, item: canonical },
+      ],
+    },
+  ];
+
+  const items = top10.map((x, i) => `
+  <div style="display:grid;grid-template-columns:48px 1fr auto auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--rule-soft)">
+    <div style="font-family:var(--display-font);font-weight:700;font-size:30px;color:var(--ink-3);letter-spacing:-0.02em;line-height:1">${i + 1}</div>
+    <div>
+      <div style="font-family:var(--display-font);font-weight:700;font-size:17px;letter-spacing:-0.01em"><a href="/hospital/${escAttr(x.h.id)}/${escAttr(procSlug)}" style="color:var(--ink);text-decoration:none">${escHtml(x.h.name)}</a></div>
+      <div style="font-size:13px;color:var(--ink-3);margin-top:2px">${escHtml(x.h.metro || "")}</div>
+    </div>
+    <div style="background:var(--signal-soft);color:var(--signal);font-weight:700;font-size:13px;padding:4px 10px;border-radius:999px">${x.stars}/5 CMS</div>
+    <div style="font-family:var(--display-font);font-weight:700;font-size:22px;letter-spacing:-0.02em;color:var(--ink)">${fmtMoney(x.cash)}</div>
+  </div>`).join("");
+
+  return renderShellHead({ title, description, canonical, ldBlocks }) + `
+  <div class="crumb">
+    <a href="/">Itemized</a> &nbsp;·&nbsp; <a href="/best-value">Best value</a> &nbsp;·&nbsp; ${escHtml(proc.label)}${cityName ? ` in ${escHtml(cityName)}` : ""}
+  </div>
+
+  <h1 class="display">Best-value hospitals for <span class="accent">${escHtml(proc.label.toLowerCase())}</span>${cityName ? ` in ${escHtml(cityName)}` : ""}.</h1>
+  <p class="lede">
+    Ranked on a composite of cash-pay price (low is good) and CMS Care Compare rating (high is good). The top of this list is where price and quality both work in your favor. ${cityName ? "" : "National rankings."} CPT code ${escHtml(proc.code)}.
+  </p>
+
+  <div>
+${items}
+  </div>
+
+  <div class="cta">
+    <h2>See the full picture.</h2>
+    <p>This list filters to hospitals with a CMS rating. The full procedure page covers every hospital with prices for ${escHtml(proc.label.toLowerCase())}, including pediatric and specialty hospitals not rated by CMS.</p>
+    <a href="${escAttr(procedureCanonical)}">Full ${escHtml(proc.short.toLowerCase())} overview  →</a>
+  </div>
+
+  <h2 class="display">How "best value" is computed.</h2>
+  <div class="body-prose">
+    <p>Each hospital gets two ranks: one by cash-pay price (cheapest = rank 1) and one by CMS overall rating (highest = rank 1). The two are summed; the lowest sum is the best value. Ties broken by price.</p>
+    <p>Hospitals without a published CMS rating (specialty, pediatric, cancer-only) are excluded from this ranking because the composite would be meaningless. They show up on the procedure overview page instead.</p>
+    <p>This is one heuristic. Some patients reasonably weight rating heavier than price, others the reverse. The <a href="/?p=${escAttr(proc.code)}">comparison tool</a> lets you sort by price-only, rating-only, or this same composite, and add your insurance for plan-specific numbers.</p>
+  </div>
+` + renderShellFoot({ asOf });
+}
+
 // ── Sitemap + robots ────────────────────────────────────────────────────
 
 function renderSitemap(urls) {
@@ -2197,6 +2519,125 @@ async function main() {
   fs.writeFileSync(path.join(systemDir, "index.html"), renderSystemHub({ systemRows, asOf: data.as_of }));
   sitemapUrls.push({ loc: `${SITE_ORIGIN}/system`, priority: "0.7", changefreq: "monthly" });
 
+  // ── Tier 2: head-to-head comparison pages ────────────────────────────
+  // For each metro with 2+ hospitals (with data), generate all unordered
+  // pairs from the top 8 hospitals (by # procedures with data). URL:
+  // /compare/{a-id}-vs-{b-id}.
+  const compareDir = path.join(DIST_DIR, "compare");
+  fs.mkdirSync(compareDir, { recursive: true });
+  let comparePagesWritten = 0;
+  // Group hospitals by metro and rank each metro's hospitals by procedure
+  // coverage (# procedures with data).
+  const byMetroSet = new Map();
+  for (const [hid, h] of hospitalById) {
+    if (!h.metro) continue;
+    if (!byMetroSet.has(h.metro)) byMetroSet.set(h.metro, []);
+    byMetroSet.get(h.metro).push({ hid, h });
+  }
+  for (const [metro, list] of byMetroSet) {
+    if (list.length < 2) continue;
+    // Sort by procedure coverage desc.
+    const enriched = list.map(({ hid, h }) => ({
+      hid, h, procCount: (procsByHospital.get(hid) || []).length,
+    })).sort((a, b) => b.procCount - a.procCount);
+    const top = enriched.slice(0, 8);
+    for (let i = 0; i < top.length; i++) {
+      for (let j = i + 1; j < top.length; j++) {
+        const a = top[i].h;
+        const b = top[j].h;
+        const html = renderComparisonPage({
+          a, b, ratings, hospitalsByProc, procedures: data.procedures, asOf: data.as_of,
+        });
+        const slug = `${a.id}-vs-${b.id}`;
+        fs.writeFileSync(path.join(compareDir, `${slug}.html`), html);
+        comparePagesWritten++;
+        sitemapUrls.push({
+          loc: `${SITE_ORIGIN}/compare/${slug}`,
+          priority: "0.6", changefreq: "monthly",
+        });
+      }
+    }
+  }
+
+  // ── Tier 2: top 10 cheapest listicle pages ───────────────────────────
+  // For each (procedure, metro) where >= 5 hospitals have a published cash
+  // price, write a "top 10 cheapest" listicle. URL: /list/cheapest-{proc}-{metro}.
+  const listDir = path.join(DIST_DIR, "list");
+  fs.mkdirSync(listDir, { recursive: true });
+  let listiclePagesWritten = 0;
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    const byMetro = new Map();
+    for (const h of list) {
+      if (h.all_missing || !Number.isFinite(h.cash_pay_low) || !h.metro) continue;
+      if (!byMetro.has(h.metro)) byMetro.set(h.metro, []);
+      byMetro.get(h.metro).push(h);
+    }
+    for (const [metro, hospitalsInMetro] of byMetro) {
+      if (hospitalsInMetro.length < 5) continue;
+      const html = renderListiclePage({
+        proc, procSlug: proc._slug, metro, hospitalsInMetro, asOf: data.as_of,
+      });
+      const mSlug = metroSlug(metro);
+      const slug = `cheapest-${proc._slug}-${mSlug}`;
+      fs.writeFileSync(path.join(listDir, `${slug}.html`), html);
+      listiclePagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/list/${slug}`,
+        priority: "0.65", changefreq: "monthly",
+      });
+    }
+  }
+
+  // ── Tier 2: best-value pages ─────────────────────────────────────────
+  // Per procedure (national), and per (procedure, metro) for metros with
+  // 5+ rated hospitals.
+  const bvDir = path.join(DIST_DIR, "best-value");
+  fs.mkdirSync(bvDir, { recursive: true });
+  let bvPagesWritten = 0;
+  for (const proc of data.procedures) {
+    const list = hospitalsByProc.get(proc.code) || [];
+    // National page for this procedure.
+    const natHtml = renderBestValuePage({
+      proc, procSlug: proc._slug, hospitals: list, ratings, asOf: data.as_of, scope: "national",
+    });
+    if (natHtml) {
+      fs.writeFileSync(path.join(bvDir, `${proc._slug}.html`), natHtml);
+      bvPagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/best-value/${proc._slug}`,
+        priority: "0.7", changefreq: "monthly",
+      });
+    }
+    // Per-metro best-value pages for metros with 5+ rated hospitals.
+    const byMetro = new Map();
+    for (const h of list) {
+      if (h.all_missing || !Number.isFinite(h.cash_pay_low) || !h.metro) continue;
+      if (!byMetro.has(h.metro)) byMetro.set(h.metro, []);
+      byMetro.get(h.metro).push(h);
+    }
+    for (const [metro, hospitalsInMetro] of byMetro) {
+      const ratedCount = hospitalsInMetro.filter((h) => {
+        const r = ratings.ratings?.[h.id];
+        return r && r.matched && r.overall_rating != null;
+      }).length;
+      if (ratedCount < 5) continue;
+      const metroHtml = renderBestValuePage({
+        proc, procSlug: proc._slug, hospitals: hospitalsInMetro, ratings, asOf: data.as_of,
+        scope: "metro", metro,
+      });
+      if (!metroHtml) continue;
+      const procDir = path.join(bvDir, proc._slug);
+      fs.mkdirSync(procDir, { recursive: true });
+      fs.writeFileSync(path.join(procDir, `${metroSlug(metro)}.html`), metroHtml);
+      bvPagesWritten++;
+      sitemapUrls.push({
+        loc: `${SITE_ORIGIN}/best-value/${proc._slug}/${metroSlug(metro)}`,
+        priority: "0.6", changefreq: "monthly",
+      });
+    }
+  }
+
   // ── Tier 1: glossary ─────────────────────────────────────────────────
   const glossaryDir = path.join(DIST_DIR, "glossary");
   fs.mkdirSync(glossaryDir, { recursive: true });
@@ -2220,6 +2661,9 @@ async function main() {
   console.log(`SEO: wrote ${statePagesWritten} state pages -> ui/dist/state/{state}/{procedure}.html`);
   console.log(`SEO: wrote ${insurerPagesWritten} insurer pages -> ui/dist/with/{insurer}/{procedure}.html`);
   console.log(`SEO: wrote ${systemPagesWritten} hospital-system pages + hub -> ui/dist/system/`);
+  console.log(`SEO: wrote ${comparePagesWritten} head-to-head pages -> ui/dist/compare/{a}-vs-{b}.html`);
+  console.log(`SEO: wrote ${listiclePagesWritten} top-10-cheapest listicles -> ui/dist/list/cheapest-{proc}-{metro}.html`);
+  console.log(`SEO: wrote ${bvPagesWritten} best-value pages -> ui/dist/best-value/`);
   console.log(`SEO: wrote ${GLOSSARY.length} glossary terms + hub -> ui/dist/glossary/`);
   console.log(`SEO: sitemap.xml (${sitemapUrls.length} urls), robots.txt`);
   console.log(`SEO: a sample slug -> ${SITE_ORIGIN}/procedure/${[...slugMap.keys()][0]}`);
