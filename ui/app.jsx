@@ -737,7 +737,7 @@ function ProcOverview({ proc }) {
   );
 }
 
-function FAQ() {
+function FAQ({ hospitalCount, metroCount, procedureCount }) {
   const [openIdx, setOpenIdx] = useState(null);
   const items = [
     {
@@ -746,7 +746,7 @@ function FAQ() {
     },
     {
       q: "Why is my hospital missing?",
-      a: "Either we haven't parsed it yet (we're at 96 hospitals across 13 metros and still adding), or the hospital published their MRF in an unusual format we haven't written a parser for, or their server blocks automated downloads. We list our coverage gaps in the methodology section.",
+      a: `Either we haven't parsed it yet (we're at ${hospitalCount} hospitals across ${metroCount} metros and still adding), or the hospital published their MRF in an unusual format we haven't written a parser for, or their server blocks automated downloads. We add hospitals on a rolling basis. If yours isn't here, ask.`,
     },
     {
       q: "Why does my insurance plan show \"no rate published\"?",
@@ -1243,7 +1243,11 @@ function App() {
 
         {tweaks.showMethodology && <MethodologyCards data={data} />}
 
-        <FAQ />
+        <FAQ
+          hospitalCount={proc.hospitals.filter(h => !h.all_missing).length || proc.hospitals.length}
+          metroCount={new Set(proc.hospitals.filter(h => !h.all_missing).map(h => h.metro).filter(Boolean)).size}
+          procedureCount={procedures.length}
+        />
 
         <footer className="foot">
           <div className="foot-sources">
