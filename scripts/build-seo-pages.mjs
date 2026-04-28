@@ -22,6 +22,15 @@ const UI_DIR = path.join(REPO, "ui");
 const DIST_DIR = path.join(UI_DIR, "dist");
 const SITE_ORIGIN = "https://itemized.health";
 
+// Vercel Analytics + Speed Insights tags. Must be enabled in the Vercel
+// dashboard (Project → Analytics → Enable) for these endpoints to serve;
+// otherwise they 404 silently and degrade. Free on Hobby up to 2,500
+// events/month.
+const ANALYTICS_TAGS = `
+  <script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>`;
+
 // Metro-area clustering. Our hospital `metro` field is the literal city
 // ("Burbank, CA" / "Bronx, NY"), which is too granular for comparison
 // pages. People search "Cedars-Sinai vs UCLA" expecting all greater-LA
@@ -581,6 +590,7 @@ function renderPage({ proc, slug, hospitals, asOf }) {
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+${ANALYTICS_TAGS}
 </head>
 <body>
 
@@ -833,6 +843,7 @@ function renderMetroPage({ proc, procSlug, metro, hospitalsInMetro, asOf }) {
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+${ANALYTICS_TAGS}
 </head>
 <body>
 
@@ -1200,6 +1211,7 @@ function renderHospitalIndex({ hospital, procRows, rating, asOf, hcahpsForHospit
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+${ANALYTICS_TAGS}
 </head>
 <body>
 
@@ -1398,6 +1410,7 @@ function renderHospitalProcedurePage({ hospital, hospitalSlug, proc, procSlug, a
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+${ANALYTICS_TAGS}
 </head>
 <body>
 
@@ -1678,6 +1691,7 @@ function renderShellHead({ title, description, canonical, ldBlocks, type = "webs
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
+${ANALYTICS_TAGS}
 </head>
 <body>
 

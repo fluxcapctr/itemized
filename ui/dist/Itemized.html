@@ -758,6 +758,40 @@
   .faq-item:not([open]) { color: var(--ink-2); }
   .faq-item:not([open]):hover { background: var(--paper-3); }
 
+  /* Patient-experience HCAHPS panel inside row-expand. */
+  .hcahps-block { margin: 22px 0 8px; }
+  .hcahps-block .hcahps-h {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 12px; margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .hcahps-block .hcahps-title {
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600;
+    font-size: 14px; color: var(--ink); letter-spacing: -0.01em;
+  }
+  .hcahps-block .hcahps-meta {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    color: var(--ink-3); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .hcahps-block table.hcahps-table { width: 100%; border-collapse: collapse; }
+  .hcahps-block table.hcahps-table th {
+    text-align: left; font-family: 'JetBrains Mono', monospace; font-size: 10px;
+    letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3);
+    font-weight: 500; padding: 8px 6px; border-bottom: 1px solid var(--rule-soft);
+  }
+  .hcahps-block table.hcahps-table th:nth-child(2),
+  .hcahps-block table.hcahps-table th:nth-child(3),
+  .hcahps-block table.hcahps-table th:nth-child(4) { text-align: right; }
+  .hcahps-block table.hcahps-table td {
+    padding: 8px 6px; border-bottom: 1px solid var(--rule-soft); font-size: 13px;
+  }
+  .hcahps-block td.hc-label { color: var(--ink-2); font-weight: 500; }
+  .hcahps-block td.hc-val { text-align: right; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; color: var(--ink); }
+  .hcahps-block td.hc-bench { text-align: right; color: var(--ink-3); }
+  .hcahps-block td.hc-delta { text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .hcahps-block td.delta-up { color: #2F7D5C; font-weight: 600; }
+  .hcahps-block td.delta-down { color: #B7421C; font-weight: 600; }
+  .hcahps-block td.delta-flat { color: var(--ink-3); }
+
   /* Contact + No Surprises Act block (inside row-expand) */
   .contact-block {
     margin: 18px 0; padding: 0;
@@ -1043,6 +1077,13 @@
 <script src="data.real.js"></script>
 <script src="ratings.real.js"></script>
 <script src="hcahps.real.js"></script>
+
+<!-- Vercel Web Analytics (page views + custom events). Free up to 2,500
+     events/month on Hobby plan. Loaded async; failures degrade silently. -->
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Vercel Speed Insights (Core Web Vitals tracking, also free). -->
+<script defer src="/_vercel/speed-insights/script.js"></script>
 
 <!-- React + Babel -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>

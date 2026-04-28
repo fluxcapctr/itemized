@@ -135,6 +135,17 @@ function getRating(hospitalId) {
   const r = (window.ITEMIZED_RATINGS && window.ITEMIZED_RATINGS.ratings) || {};
   return r[hospitalId] || null;
 }
+function getHcahps(hospitalId) {
+  const all = (window.ITEMIZED_HCAHPS && window.ITEMIZED_HCAHPS.hospitals) || {};
+  return all[hospitalId] || null;
+}
+function getHcahpsMeta() {
+  return window.ITEMIZED_HCAHPS || null;
+}
+function fmtHcahps(value, kind) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return kind === "stars" ? `${value}/5` : `${value}%`;
+}
 function ratingForSort(hospitalId) {
   const r = getRating(hospitalId);
   if (!r || r.overall_rating == null) return -1;
@@ -600,6 +611,57 @@ function HospitalCard({ h, idx, isCheapest, mode, plan, payerLabel, isLocal, isE
             </div>
           </div>
         </div>
+        {/* Patient experience (HCAHPS) — federal patient survey, 9 measures. */}
+        {(() => {
+          const hc = getHcahps(h.id);
+          const meta = getHcahpsMeta();
+          if (!hc || !meta || !meta.measures) return null;
+          const period = hc.period_end || meta.period;
+          const sample = hc.sample_size;
+          return (
+            <div className="hcahps-block">
+              <div className="hcahps-h">
+                <span className="hcahps-title">Patient experience</span>
+                <span className="hcahps-meta">
+                  HCAHPS · period ending {period || "—"}{sample ? ` · ${sample.toLocaleString("en-US")} surveys` : ""}
+                </span>
+              </div>
+              <table className="hcahps-table">
+                <thead>
+                  <tr>
+                    <th>Measure</th>
+                    <th>This hospital</th>
+                    <th>Network avg</th>
+                    <th>Δ</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {meta.measures.map(m => {
+                    const v = hc.measures && hc.measures[m.short];
+                    const bench = meta.benchmarks && meta.benchmarks[m.short] && meta.benchmarks[m.short].mean;
+                    let deltaCell = "—", deltaCls = "delta-flat";
+                    if (Number.isFinite(v) && Number.isFinite(bench)) {
+                      const diff = m.kind === "stars" ? +(v - bench).toFixed(1) : Math.round(v - bench);
+                      const sign = diff > 0 ? "+" : "";
+                      const unit = m.kind === "stars" ? "" : "pp";
+                      deltaCls = diff > 0 ? "delta-up" : (diff < 0 ? "delta-down" : "delta-flat");
+                      deltaCell = `${sign}${diff}${unit}`;
+                    }
+                    return (
+                      <tr key={m.short}>
+                        <td className="hc-label">{m.label}</td>
+                        <td className="hc-val">{fmtHcahps(v, m.kind)}</td>
+                        <td className="hc-bench">{fmtHcahps(bench, m.kind)}</td>
+                        <td className={`hc-delta ${deltaCls}`}>{deltaCell}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          );
+        })()}
+
         {/* Contact this hospital — phone + address from CMS Care Compare. */}
         {(h.phone || h.address) && (
           <div className="contact-block">
