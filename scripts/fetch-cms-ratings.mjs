@@ -194,6 +194,22 @@ const HOSPITAL_LOOKUPS = [
   { id: "scripps-la-jolla", state: "CA", nameMatch: ["SCRIPPS MEMORIAL HOSPITAL LA JOLLA"] },
   { id: "scripps-mercy-sd", state: "CA", cityContains: "SAN DIEGO", nameMatch: ["SCRIPPS MERCY HOSPITAL"] },
   { id: "rady-childrens", state: "CA", nameMatch: ["RADY CHILDREN'S HOSPITAL", "CHILDREN'S HOSPITAL - SAN DIEGO"] },
+
+  // Round 8: Flagship academic medical centers + new metros
+  { id: "johns-hopkins", state: "MD", cityContains: "BALTIMORE", nameMatch: ["JOHNS HOPKINS HOSPITAL", "THE JOHNS HOPKINS HOSPITAL"] },
+  { id: "ummc-baltimore", state: "MD", cityContains: "BALTIMORE", nameMatch: ["UNIVERSITY OF MARYLAND MEDICAL CENTER"] },
+  { id: "duke-university-hospital", state: "NC", cityContains: "DURHAM", nameMatch: ["DUKE UNIVERSITY HOSPITAL", "DUKE UNIV HOSPITAL"] },
+  { id: "unc-hospitals", state: "NC", cityContains: "CHAPEL HILL", nameMatch: ["UNC HOSPITALS", "UNIVERSITY OF NORTH CAROLINA HOSPITAL"] },
+  { id: "ucsf-medical-center", state: "CA", cityContains: "SAN FRANCISCO", nameMatch: ["UCSF MEDICAL CENTER", "UNIVERSITY OF CALIFORNIA SAN FRANCISCO"] },
+  { id: "umich-health", state: "MI", cityContains: "ANN ARBOR", nameMatch: ["UNIVERSITY OF MICHIGAN HOSPITALS", "MICHIGAN MEDICINE", "UNIVERSITY OF MICHIGAN HEALTH"] },
+  { id: "yale-new-haven", state: "CT", cityContains: "NEW HAVEN", nameMatch: ["YALE NEW HAVEN HOSPITAL", "YALE-NEW HAVEN HOSPITAL"] },
+  { id: "penn-hup", state: "PA", cityContains: "PHILADELPHIA", nameMatch: ["HOSPITAL OF THE UNIVERSITY OF PENNSYLVANIA"] },
+  { id: "uchealth-univ-colorado", state: "CO", nameMatch: ["UNIVERSITY OF COLORADO HOSPITAL"] },
+  { id: "atrium-carolinas-medical-center", state: "NC", cityContains: "CHARLOTTE", nameMatch: ["CAROLINAS MEDICAL CENTER", "ATRIUM HEALTH CAROLINAS"] },
+  { id: "fairview-univ-minnesota", state: "MN", cityContains: "MINNEAPOLIS", nameMatch: ["UNIVERSITY OF MINNESOTA MEDICAL CENTER", "M HEALTH FAIRVIEW", "FAIRVIEW UNIVERSITY"] },
+  { id: "ohsu", state: "OR", cityContains: "PORTLAND", nameMatch: ["OREGON HEALTH AND SCIENCE UNIVERSITY", "OHSU HOSPITAL"] },
+  { id: "univ-utah-hospital", state: "UT", cityContains: "SALT LAKE CITY", nameMatch: ["UNIVERSITY OF UTAH HOSPITAL", "UNIVERSITY OF UTAH"] },
+  { id: "intermountain-medical-center", state: "UT", nameMatch: ["INTERMOUNTAIN MEDICAL CENTER"] },
 ];
 
 // CMS provider-data API caps page size at 500. Paginate to get the full ~5,400-hospital

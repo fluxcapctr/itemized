@@ -325,6 +325,22 @@ const HOSPITAL_META = {
   "scripps-la-jolla": { name: "Scripps Memorial Hospital La Jolla", metro: "La Jolla, CA", system: "Scripps Health" },
   "scripps-mercy-sd": { name: "Scripps Mercy Hospital San Diego", metro: "San Diego, CA", system: "Scripps Health" },
   "rady-childrens": { name: "Rady Children's Hospital San Diego", metro: "San Diego, CA", system: "Rady Children's", is_pediatric: true },
+
+  // Round 8: Flagship academic medical centers + new metros.
+  "johns-hopkins": { name: "Johns Hopkins Hospital", metro: "Baltimore, MD", system: "Johns Hopkins Medicine" },
+  "ummc-baltimore": { name: "University of Maryland Medical Center", metro: "Baltimore, MD", system: "University of Maryland Medical System" },
+  "duke-university-hospital": { name: "Duke University Hospital", metro: "Durham, NC", system: "Duke Health" },
+  "unc-hospitals": { name: "UNC Hospitals", metro: "Chapel Hill, NC", system: "UNC Health" },
+  "ucsf-medical-center": { name: "UCSF Medical Center", metro: "San Francisco, CA", system: "UCSF Health" },
+  "umich-health": { name: "University of Michigan Health", metro: "Ann Arbor, MI", system: "Michigan Medicine" },
+  "yale-new-haven": { name: "Yale New Haven Hospital", metro: "New Haven, CT", system: "Yale New Haven Health" },
+  "penn-hup": { name: "Hospital of the University of Pennsylvania (HUP)", metro: "Philadelphia, PA", system: "Penn Medicine" },
+  "uchealth-univ-colorado": { name: "UCHealth University of Colorado Hospital", metro: "Aurora, CO", system: "UCHealth" },
+  "atrium-carolinas-medical-center": { name: "Atrium Health Carolinas Medical Center", metro: "Charlotte, NC", system: "Atrium Health" },
+  "fairview-univ-minnesota": { name: "M Health Fairview University of Minnesota Medical Center", metro: "Minneapolis, MN", system: "M Health Fairview" },
+  "ohsu": { name: "OHSU Hospital", metro: "Portland, OR", system: "Oregon Health & Science University" },
+  "univ-utah-hospital": { name: "University of Utah Hospital", metro: "Salt Lake City, UT", system: "University of Utah Health" },
+  "intermountain-medical-center": { name: "Intermountain Medical Center", metro: "Murray, UT", system: "Intermountain Health" },
 };
 
 // Geocode each hospital's zip (from raw-files/ratings.json) once at build time.

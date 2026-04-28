@@ -111,6 +111,19 @@ const METRO_CLUSTERS = {
   "San Diego, CA": "Greater San Diego, CA",
   "La Mesa, CA": "Greater San Diego, CA",
   "La Jolla, CA": "Greater San Diego, CA",
+  // Greater Baltimore (round 8)
+  "Baltimore, MD": "Greater Baltimore, MD",
+  // Triangle / Research Triangle (round 8)
+  "Durham, NC": "Research Triangle, NC",
+  "Chapel Hill, NC": "Research Triangle, NC",
+  // Add SF proper to the Bay Area cluster (round 8)
+  "San Francisco, CA": "SF Bay Area, CA",
+  // Greater Salt Lake (round 8)
+  "Salt Lake City, UT": "Greater Salt Lake, UT",
+  "Murray, UT": "Greater Salt Lake, UT",
+  // (Single-hospital metros below — left without cluster aliases for now;
+  // they'll just use their raw metro string. Ann Arbor, New Haven,
+  // Aurora CO, Charlotte, Minneapolis, Portland.)
 };
 
 function metroCluster(metro) {

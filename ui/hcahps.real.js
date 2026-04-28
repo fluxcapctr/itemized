@@ -62,40 +62,40 @@ window.ITEMIZED_HCAHPS = {
   ],
   "benchmarks": {
     "overall_stars": {
-      "mean": 2.8,
-      "n": 132
+      "mean": 2.9,
+      "n": 145
     },
     "would_recommend_pct": {
-      "mean": 69.6,
-      "n": 132
+      "mean": 70.3,
+      "n": 145
     },
     "rating_9_10_pct": {
-      "mean": 68.6,
-      "n": 132
+      "mean": 69.2,
+      "n": 145
     },
     "nurse_comm_pct": {
-      "mean": 75.6,
-      "n": 132
+      "mean": 75.9,
+      "n": 145
     },
     "doctor_comm_pct": {
-      "mean": 76.6,
-      "n": 132
+      "mean": 76.9,
+      "n": 145
     },
     "recovery_info_pct": {
-      "mean": 84.4,
-      "n": 132
+      "mean": 84.8,
+      "n": 145
     },
     "clean_pct": {
       "mean": 68.6,
-      "n": 132
+      "n": 145
     },
     "med_explain_pct": {
-      "mean": 57.6,
-      "n": 132
+      "mean": 57.8,
+      "n": 145
     },
     "quiet_pct": {
-      "mean": 52.2,
-      "n": 132
+      "mean": 52.6,
+      "n": 145
     }
   },
   "hospitals": {
@@ -2449,6 +2449,214 @@ window.ITEMIZED_HCAHPS = {
         "rating_9_10_pct": null,
         "would_recommend_pct": null,
         "overall_stars": null
+      }
+    },
+    "johns-hopkins": {
+      "sample_size": 3117,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 80,
+        "doctor_comm_pct": 81,
+        "med_explain_pct": 62,
+        "recovery_info_pct": 89,
+        "clean_pct": 71,
+        "quiet_pct": 67,
+        "rating_9_10_pct": 80,
+        "would_recommend_pct": 81,
+        "overall_stars": 4
+      }
+    },
+    "ummc-baltimore": {
+      "sample_size": 1370,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 75,
+        "doctor_comm_pct": 79,
+        "med_explain_pct": 56,
+        "recovery_info_pct": 88,
+        "clean_pct": 63,
+        "quiet_pct": 53,
+        "rating_9_10_pct": 69,
+        "would_recommend_pct": 70,
+        "overall_stars": 3
+      }
+    },
+    "duke-university-hospital": {
+      "sample_size": 1836,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 82,
+        "doctor_comm_pct": 83,
+        "med_explain_pct": 64,
+        "recovery_info_pct": 90,
+        "clean_pct": 67,
+        "quiet_pct": 61,
+        "rating_9_10_pct": 80,
+        "would_recommend_pct": 82,
+        "overall_stars": 4
+      }
+    },
+    "unc-hospitals": {
+      "sample_size": 2471,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 80,
+        "doctor_comm_pct": 82,
+        "med_explain_pct": 62,
+        "recovery_info_pct": 88,
+        "clean_pct": 72,
+        "quiet_pct": 64,
+        "rating_9_10_pct": 78,
+        "would_recommend_pct": 80,
+        "overall_stars": 4
+      }
+    },
+    "ucsf-medical-center": {
+      "sample_size": 1320,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 81,
+        "doctor_comm_pct": 81,
+        "med_explain_pct": 60,
+        "recovery_info_pct": 87,
+        "clean_pct": 71,
+        "quiet_pct": 54,
+        "rating_9_10_pct": 77,
+        "would_recommend_pct": 83,
+        "overall_stars": 4
+      }
+    },
+    "umich-health": {
+      "sample_size": 1071,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 85,
+        "doctor_comm_pct": 82,
+        "med_explain_pct": 61,
+        "recovery_info_pct": 90,
+        "clean_pct": 61,
+        "quiet_pct": 47,
+        "rating_9_10_pct": 81,
+        "would_recommend_pct": 85,
+        "overall_stars": 4
+      }
+    },
+    "yale-new-haven": {
+      "sample_size": 755,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 76,
+        "doctor_comm_pct": 77,
+        "med_explain_pct": 58,
+        "recovery_info_pct": 88,
+        "clean_pct": 65,
+        "quiet_pct": 45,
+        "rating_9_10_pct": 64,
+        "would_recommend_pct": 68,
+        "overall_stars": 3
+      }
+    },
+    "uchealth-univ-colorado": {
+      "sample_size": 3854,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 76,
+        "doctor_comm_pct": 78,
+        "med_explain_pct": 59,
+        "recovery_info_pct": 88,
+        "clean_pct": 66,
+        "quiet_pct": 61,
+        "rating_9_10_pct": 76,
+        "would_recommend_pct": 78,
+        "overall_stars": 3
+      }
+    },
+    "atrium-carolinas-medical-center": {
+      "sample_size": 1324,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 77,
+        "doctor_comm_pct": 79,
+        "med_explain_pct": 59,
+        "recovery_info_pct": 86,
+        "clean_pct": 67,
+        "quiet_pct": 56,
+        "rating_9_10_pct": 71,
+        "would_recommend_pct": 72,
+        "overall_stars": 3
+      }
+    },
+    "fairview-univ-minnesota": {
+      "sample_size": 400,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 78,
+        "doctor_comm_pct": 82,
+        "med_explain_pct": 57,
+        "recovery_info_pct": 88,
+        "clean_pct": 64,
+        "quiet_pct": 56,
+        "rating_9_10_pct": 69,
+        "would_recommend_pct": 71,
+        "overall_stars": 3
+      }
+    },
+    "ohsu": {
+      "sample_size": 1176,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 81,
+        "doctor_comm_pct": 81,
+        "med_explain_pct": 61,
+        "recovery_info_pct": 89,
+        "clean_pct": 64,
+        "quiet_pct": 53,
+        "rating_9_10_pct": 74,
+        "would_recommend_pct": 77,
+        "overall_stars": 4
+      }
+    },
+    "univ-utah-hospital": {
+      "sample_size": 843,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 78,
+        "doctor_comm_pct": 79,
+        "med_explain_pct": 58,
+        "recovery_info_pct": 90,
+        "clean_pct": 77,
+        "quiet_pct": 61,
+        "rating_9_10_pct": 80,
+        "would_recommend_pct": 82,
+        "overall_stars": 4
+      }
+    },
+    "intermountain-medical-center": {
+      "sample_size": 1118,
+      "period_start": "04/01/2024",
+      "period_end": "03/31/2025",
+      "measures": {
+        "nurse_comm_pct": 77,
+        "doctor_comm_pct": 78,
+        "med_explain_pct": 60,
+        "recovery_info_pct": 89,
+        "clean_pct": 79,
+        "quiet_pct": 58,
+        "rating_9_10_pct": 77,
+        "would_recommend_pct": 79,
+        "overall_stars": 4
       }
     }
   }

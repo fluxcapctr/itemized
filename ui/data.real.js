@@ -2,7 +2,7 @@
 // Index only — hospital arrays are lazy-loaded from data/{cpt}.json on demand.
 (function () {
   window.ITEMIZED_DATA = {
-  "as_of": "2026-04-27",
+  "as_of": "2026-04-28",
   "city": "Los Angeles",
   "procedures": [
     {
@@ -172,13 +172,13 @@
       "category": "Imaging",
       "is_default": false,
       "headline": {
-        "cash_low": 16,
-        "cash_low_hospital": "John H. Stroger Jr. Hospital",
-        "cash_low_metro": "Chicago, IL",
+        "cash_low": 15,
+        "cash_low_hospital": "University of Michigan Health",
+        "cash_low_metro": "Ann Arbor, MI",
         "cash_high": 2059,
         "cash_high_hospital": "HCA Houston Healthcare Medical Center",
         "cash_high_metro": "Houston, TX",
-        "spread_x": 129
+        "spread_x": 137
       },
       "overview": {
         "headline": "Chest X-ray, single view.",
@@ -592,13 +592,13 @@
       "category": "Office",
       "is_default": false,
       "headline": {
-        "cash_low": 31,
-        "cash_low_hospital": "Adventist Health Glendale",
-        "cash_low_metro": "Glendale, CA",
+        "cash_low": 13,
+        "cash_low_hospital": "University of Utah Hospital",
+        "cash_low_metro": "Salt Lake City, UT",
         "cash_high": 27777,
         "cash_high_hospital": "Sharp Memorial Hospital",
         "cash_high_metro": "San Diego, CA",
-        "spread_x": 896
+        "spread_x": 2137
       },
       "overview": {
         "headline": "Office visit, established patient, level 4.",
@@ -692,13 +692,13 @@
       "category": "Surgery",
       "is_default": false,
       "headline": {
-        "cash_low": 11,
-        "cash_low_hospital": "Allegheny General Hospital",
-        "cash_low_metro": "Pittsburgh, PA",
+        "cash_low": 10,
+        "cash_low_hospital": "Forbes Hospital",
+        "cash_low_metro": "Monroeville, PA",
         "cash_high": 51289,
         "cash_high_hospital": "John Muir Health Walnut Creek Medical Center",
         "cash_high_metro": "Walnut Creek, CA",
-        "spread_x": 4663
+        "spread_x": 5129
       },
       "overview": {
         "headline": "Surgical removal of the uterus through an abdominal incision.",
@@ -832,13 +832,13 @@
       "category": "Office",
       "is_default": false,
       "headline": {
-        "cash_low": 35,
-        "cash_low_hospital": "Adventist Health Glendale",
-        "cash_low_metro": "Glendale, CA",
-        "cash_high": 892,
-        "cash_high_hospital": "MemorialCare Long Beach Medical Center",
-        "cash_high_metro": "Long Beach, CA",
-        "spread_x": 25
+        "cash_low": 15,
+        "cash_low_hospital": "Johns Hopkins Hospital",
+        "cash_low_metro": "Baltimore, MD",
+        "cash_high": 1156,
+        "cash_high_hospital": "University of Maryland Medical Center",
+        "cash_high_metro": "Baltimore, MD",
+        "spread_x": 77
       },
       "overview": {
         "headline": "Outpatient therapy session with a licensed mental health provider.",

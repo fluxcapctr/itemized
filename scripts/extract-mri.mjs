@@ -531,6 +531,40 @@ async function main() {
   } else {
     await processIfExists("rady-childrens", path.join(RAW_DIR, "rady-childrens.csv"), processCSV);
   }
+
+  // ── Round 8: flagship academic medical centers + new metros ─────────
+  // All download as CSV; U Michigan and OHSU ship .zip, handled with the
+  // zip-or-csv fallback pattern. Yale and Intermountain serve .ashx that
+  // Sitecore unwraps to CSV (file extension is .csv on disk; download
+  // script forced ext=csv).
+  await processIfExists("johns-hopkins", path.join(RAW_DIR, "johns-hopkins.csv"), processCSV);
+  await processIfExists("ummc-baltimore", path.join(RAW_DIR, "ummc-baltimore.csv"), processCSV);
+  await processIfExists("duke-university-hospital", path.join(RAW_DIR, "duke-university-hospital.csv"), processCSV);
+  await processIfExists("unc-hospitals", path.join(RAW_DIR, "unc-hospitals.csv"), processCSV);
+  // UCSF served JSON disguised as .csv; renamed locally to .json after download.
+  await processIfExists("ucsf-medical-center", path.join(RAW_DIR, "ucsf-medical-center.json"), processJSON);
+  if (fs.existsSync(path.join(RAW_DIR, "umich-health.zip"))) {
+    await processZipped("umich-health", "csv");
+  } else {
+    await processIfExists("umich-health", path.join(RAW_DIR, "umich-health.csv"), processCSV);
+  }
+  await processIfExists("yale-new-haven", path.join(RAW_DIR, "yale-new-haven.csv"), processCSV);
+  await processIfExists("penn-hup", path.join(RAW_DIR, "penn-hup.csv"), processCSV);
+  await processIfExists("uchealth-univ-colorado", path.join(RAW_DIR, "uchealth-univ-colorado.csv"), processCSV);
+  await processIfExists("atrium-carolinas-medical-center", path.join(RAW_DIR, "atrium-carolinas-medical-center.csv"), processCSV);
+  await processIfExists("fairview-univ-minnesota", path.join(RAW_DIR, "fairview-univ-minnesota.csv"), processCSV);
+  if (fs.existsSync(path.join(RAW_DIR, "ohsu.zip"))) {
+    await processZipped("ohsu", "csv");
+  } else {
+    await processIfExists("ohsu", path.join(RAW_DIR, "ohsu.csv"), processCSV);
+  }
+  await processIfExists("univ-utah-hospital", path.join(RAW_DIR, "univ-utah-hospital.csv"), processCSV);
+  // Intermountain served a ZIP archive disguised as .csv; renamed to .zip locally.
+  if (fs.existsSync(path.join(RAW_DIR, "intermountain-medical-center.zip"))) {
+    await processZipped("intermountain-medical-center", "csv");
+  } else {
+    await processIfExists("intermountain-medical-center", path.join(RAW_DIR, "intermountain-medical-center.csv"), processCSV);
+  }
   // Mass General zip is unpacked manually to mass-general-unzipped/. Find any *.csv inside.
   const mgDir = path.join(RAW_DIR, "mass-general-unzipped");
   if (fs.existsSync(mgDir)) {

@@ -252,6 +252,27 @@ const HOSPITALS = [
   { id: "scripps-mercy-sd", name: "Scripps Mercy Hospital San Diego", url: "https://apps.scripps.org/pricetransparency/951684089_Scripps-Mercy-Hospital-San-Diego_standardcharges.csv", ext: "csv" },
   { id: "rady-childrens", name: "Rady Children's Hospital San Diego", url: "https://www.rchsd.org/wp-content/uploads/2026/03/95-1691313_rady-childrens-hospital-san-diego_standardcharges.csv", ext: "csv" },
 
+  // ── Round 8: Flagship academic medical centers + new metros ─────────
+  // Adds Hopkins (Baltimore), Duke + UNC (Triangle NC), UCSF (SF proper),
+  // U Michigan (Ann Arbor), Yale (New Haven), Penn HUP (Philly densify),
+  // UCHealth Colorado (Denver), Atrium (Charlotte), M Health Fairview
+  // (Minneapolis), OHSU (Portland), U Utah + Intermountain (Salt Lake),
+  // UMMC (Baltimore densify). Mayo Clinic deferred — Akamai blocks
+  // automated discovery of their MRF URLs.
+  { id: "johns-hopkins", name: "Johns Hopkins Hospital", url: "https://jhm-web-assets.s3.amazonaws.com/hopkinsmedicine/prod/charge-fees/520591656_JohnsHopkinsHospital_standardcharges.csv", ext: "csv" },
+  { id: "ummc-baltimore", name: "University of Maryland Medical Center", url: "https://www.umms.org/standard-charges/521362793_University-of-Maryland-Medical-Center_standardcharges.csv", ext: "csv" },
+  { id: "duke-university-hospital", name: "Duke University Hospital", url: "https://rca.centaurihs.com/ptapp/api/cdm/export/oneclick?recno=fad40f5dd5e6b2097ff0a8f592b095fac2e3a3eeef64efd5ca2b56f564a91e8e", ext: "csv" },
+  { id: "unc-hospitals", name: "UNC Hospitals", url: "http://rca.centaurihs.com/ptapp/api/cdm/export/oneclick?recno=d4ccc071fab9c79f17e52dc5b243ef668affc5e569aafa907c5b4c81f0a89284", ext: "csv" },
+  { id: "ucsf-medical-center", name: "UCSF Medical Center", url: "https://app.box.com/index.php?rm=box_download_shared_file&shared_name=ldckxfm5nm9wah74gqi7fdhe6mrtpg5e&file_id=f_1959275070690", ext: "csv" },
+  { id: "umich-health", name: "University of Michigan Health (Michigan Medicine)", url: "https://www.uofmhealth.org/386006309_university-of-michigan-health_standardcharges4-1-2026.zip", ext: "zip" },
+  { id: "yale-new-haven", name: "Yale New Haven Hospital", url: "https://www.ynhh.org/-/media/Files/YNHHS/sc/06-0646652-Yale_New_Haven_Hospital_Standard_Charges011025.ashx", ext: "csv" },
+  { id: "penn-hup", name: "Hospital of the University of Pennsylvania (HUP)", url: "https://www1.pennmedicine.org/images/pricing/231352685_the-trustees-of-the-university-of-pennsylvania-dba-the-hospital-of-the-univer_standardcharges.csv", ext: "csv" },
+  { id: "uchealth-univ-colorado", name: "UCHealth University of Colorado Hospital", url: "https://sthpiprd.blob.core.windows.net/machine-readable-files/8086/841179794_university-of-colorado-hospital-authority_standardcharges.csv", ext: "csv" },
+  { id: "atrium-carolinas-medical-center", name: "Atrium Health Carolinas Medical Center", url: "https://sthpiprd.blob.core.windows.net/machine-readable-files/11173/561398929-1053358945_carolinas-medical-center_standardcharges.csv", ext: "csv" },
+  { id: "fairview-univ-minnesota", name: "M Health Fairview University of Minnesota Medical Center", url: "https://requiredlearning.fairview.org/price_transparency/410991680-1083692941_fairview-health-services_standardcharges.csv", ext: "csv" },
+  { id: "ohsu", name: "OHSU Hospital", url: "https://www.ohsu.edu/sites/default/files/custom/931176109_Oregon-Health-and-Science-University_standardcharges.zip", ext: "zip" },
+  { id: "univ-utah-hospital", name: "University of Utah Hospital", url: "https://md.utah.edu/pricing/876000525_UNIVERSITY-OF-UTAH-HOSPITAL-AND-CLINICS_standardcharges.csv", ext: "csv" },
+  { id: "intermountain-medical-center", name: "Intermountain Medical Center", url: "https://intermountainhealthcare.org/-/media/files/intermountain-health/locations/hospital-prices/942854057_intermountain-medical-center_standardcharges.ashx", ext: "csv" },
 ];
 
 const OUT_DIR = path.resolve(
