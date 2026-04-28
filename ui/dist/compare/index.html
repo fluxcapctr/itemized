@@ -3,13 +3,13 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Compare hospitals head-to-head. 218 pre-built comparisons. Itemized.</title>
-  <meta name="description" content="Compare any two US hospitals side-by-side: prices for 42 procedures, CMS quality ratings, HCAHPS patient experience scores. 218 pre-built head-to-head comparisons; or pick your own pair.">
+  <title>Compare hospitals head-to-head. 1047 pre-built comparisons. Itemized.</title>
+  <meta name="description" content="Compare any two US hospitals side-by-side: prices for 42 procedures, CMS quality ratings, HCAHPS patient experience scores. 1047 pre-built head-to-head comparisons; or pick your own pair.">
   <link rel="canonical" href="https://itemized.health/compare">
   <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Compare hospitals head-to-head. 218 pre-built comparisons. Itemized.">
-  <meta property="og:description" content="Compare any two US hospitals side-by-side: prices for 42 procedures, CMS quality ratings, HCAHPS patient experience scores. 218 pre-built head-to-head comparisons; or pick your own pair.">
+  <meta property="og:title" content="Compare hospitals head-to-head. 1047 pre-built comparisons. Itemized.">
+  <meta property="og:description" content="Compare any two US hospitals side-by-side: prices for 42 procedures, CMS quality ratings, HCAHPS patient experience scores. 1047 pre-built head-to-head comparisons; or pick your own pair.">
   <meta property="og:url" content="https://itemized.health/compare">
   <meta property="og:site_name" content="Itemized">
   <meta name="twitter:card" content="summary_large_image">
@@ -72,8 +72,19 @@
     .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
     .pill-row a { background: var(--paper-2); padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
     .pill-row a:hover { background: var(--paper-3); color: var(--ink); }
-    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
-    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+    /* Site-wide footer used on every static SEO page. Three columns
+       (Compare / Resources / About) on desktop, stacks on mobile. */
+    .site-foot { border-top: 1px solid var(--rule-soft); margin: 80px 0 0; padding: 48px 0 32px; color: var(--ink-3); font-size: 13px; }
+    .site-foot .foot-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-bottom: 36px; }
+    .site-foot .foot-col h4 { font-family: var(--display-font); font-weight: 600; font-size: 13px; color: var(--ink); margin: 0 0 14px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .site-foot .foot-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+    .site-foot .foot-col a { color: var(--ink-2); text-decoration: none; font-size: 14px; transition: color 120ms ease; }
+    .site-foot .foot-col a:hover { color: var(--signal); }
+    .site-foot .foot-rule { border-top: 1px solid var(--rule-soft); padding-top: 20px; line-height: 1.5; max-width: 100%; }
+    .site-foot .foot-rule strong { color: var(--ink-2); }
+    .site-foot .foot-rule .foot-disc { margin-top: 6px; font-style: italic; color: var(--ink-3); }
+    .site-foot .foot-rule .foot-disc a { color: var(--ink-2); text-decoration: none; }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } .site-foot .foot-cols { grid-template-columns: 1fr; gap: 32px; } }
   </style>
 
   <script type="application/ld+json">{
@@ -121,615 +132,431 @@
     <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center" id="pickerRow">
       <select id="hospA" style="padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;background:var(--paper);border:1px solid var(--rule-soft);border-radius:12px;width:100%;color:var(--ink);appearance:menulist">
         <option value="">Hospital A…</option>
-    <optgroup label="Arcadia, CA">
-      <option value="usc-arcadia">USC Arcadia Hospital</option>
+    <optgroup label="Greater Los Angeles, CA">
+      <option value="adventist-glendale" data-cluster="Greater Los Angeles, CA">Adventist Health Glendale</option>
+      <option value="adventist-simi-valley" data-cluster="Greater Los Angeles, CA">Adventist Health Simi Valley</option>
+      <option value="adventist-white-memorial-montebello" data-cluster="Greater Los Angeles, CA">Adventist Health White Memorial Montebello</option>
+      <option value="dignity-california-hospital" data-cluster="Greater Los Angeles, CA">California Hospital Medical Center</option>
+      <option value="cedars-sinai-marina-del-rey" data-cluster="Greater Los Angeles, CA">Cedars-Sinai Marina del Rey Hospital</option>
+      <option value="cedars-sinai" data-cluster="Greater Los Angeles, CA">Cedars-Sinai Medical Center</option>
+      <option value="chla" data-cluster="Greater Los Angeles, CA">Children's Hospital Los Angeles</option>
+      <option value="coast-plaza" data-cluster="Greater Los Angeles, CA">Coast Plaza Hospital</option>
+      <option value="garfield-medical-center" data-cluster="Greater Los Angeles, CA">Garfield Medical Center</option>
+      <option value="dignity-glendale-memorial" data-cluster="Greater Los Angeles, CA">Glendale Memorial Hospital</option>
+      <option value="greater-el-monte" data-cluster="Greater Los Angeles, CA">Greater El Monte Community Hospital</option>
+      <option value="harbor-ucla" data-cluster="Greater Los Angeles, CA">Harbor-UCLA Medical Center</option>
+      <option value="hoag-newport" data-cluster="Greater Los Angeles, CA">Hoag Memorial Hospital Presbyterian</option>
+      <option value="hoag-orthopedic-institute" data-cluster="Greater Los Angeles, CA">Hoag Orthopedic Institute</option>
+      <option value="hollywood-presbyterian" data-cluster="Greater Los Angeles, CA">Hollywood Presbyterian Medical Center</option>
+      <option value="huntington-pasadena" data-cluster="Greater Los Angeles, CA">Huntington Hospital</option>
+      <option value="kaiser-la-sunset" data-cluster="Greater Los Angeles, CA">Kaiser Permanente LA Medical Center</option>
+      <option value="usc-keck" data-cluster="Greater Los Angeles, CA">Keck Hospital of USC</option>
+      <option value="long-beach-memorial" data-cluster="Greater Los Angeles, CA">MemorialCare Long Beach Medical Center</option>
+      <option value="miller-childrens" data-cluster="Greater Los Angeles, CA">MemorialCare Miller Children's &amp; Women's Hospital</option>
+      <option value="mlk-community" data-cluster="Greater Los Angeles, CA">MLK Community Hospital</option>
+      <option value="monterey-park-hospital" data-cluster="Greater Los Angeles, CA">Monterey Park Hospital</option>
+      <option value="olive-view-ucla" data-cluster="Greater Los Angeles, CA">Olive View-UCLA Medical Center</option>
+      <option value="pomona-valley" data-cluster="Greater Los Angeles, CA">Pomona Valley Hospital Medical Center</option>
+      <option value="providence-tarzana" data-cluster="Greater Los Angeles, CA">Providence Cedars-Sinai Tarzana Medical Center</option>
+      <option value="providence-st-johns-santa-monica" data-cluster="Greater Los Angeles, CA">Providence Saint John's Health Center</option>
+      <option value="providence-st-joseph" data-cluster="Greater Los Angeles, CA">Providence Saint Joseph (Burbank)</option>
+      <option value="ucla-ronald-reagan" data-cluster="Greater Los Angeles, CA">Ronald Reagan UCLA Medical Center</option>
+      <option value="st-francis-lynwood" data-cluster="Greater Los Angeles, CA">Saint Francis Medical Center</option>
+      <option value="san-gabriel-valley-mc" data-cluster="Greater Los Angeles, CA">San Gabriel Valley Medical Center</option>
+      <option value="dignity-st-mary-long-beach" data-cluster="Greater Los Angeles, CA">St. Mary Medical Center</option>
+      <option value="torrance-memorial" data-cluster="Greater Los Angeles, CA">Torrance Memorial Medical Center</option>
+      <option value="ucla-santa-monica" data-cluster="Greater Los Angeles, CA">UCLA Santa Monica Medical Center</option>
+      <option value="usc-arcadia" data-cluster="Greater Los Angeles, CA">USC Arcadia Hospital</option>
+      <option value="usc-norris" data-cluster="Greater Los Angeles, CA">USC Norris Cancer Hospital</option>
+      <option value="usc-verdugo-hills" data-cluster="Greater Los Angeles, CA">USC Verdugo Hills Hospital</option>
+      <option value="whittier-hospital" data-cluster="Greater Los Angeles, CA">Whittier Hospital Medical Center</option>
     </optgroup>
-    <optgroup label="Atlanta, GA">
-      <option value="emory-decatur">Emory Decatur Hospital</option>
-      <option value="emory-university-hospital">Emory University Hospital</option>
-      <option value="grady-memorial">Grady Memorial Hospital</option>
-      <option value="piedmont-atlanta">Piedmont Atlanta Hospital</option>
+    <optgroup label="Greater New York, NY">
+      <option value="nychh-bellevue" data-cluster="Greater New York, NY">Bellevue Hospital Center</option>
+      <option value="nychh-elmhurst" data-cluster="Greater New York, NY">Elmhurst Hospital Center</option>
+      <option value="hss-main" data-cluster="Greater New York, NY">Hospital for Special Surgery</option>
+      <option value="nychh-jacobi" data-cluster="Greater New York, NY">Jacobi Medical Center</option>
+      <option value="nychh-kings-county" data-cluster="Greater New York, NY">Kings County Hospital Center</option>
+      <option value="northwell-lenox-hill" data-cluster="Greater New York, NY">Lenox Hill Hospital</option>
+      <option value="maimonides-medical-center" data-cluster="Greater New York, NY">Maimonides Medical Center</option>
+      <option value="msk-cancer-center" data-cluster="Greater New York, NY">Memorial Sloan Kettering Cancer Center</option>
+      <option value="montefiore-medical-center" data-cluster="Greater New York, NY">Montefiore Medical Center</option>
+      <option value="mount-sinai-hospital" data-cluster="Greater New York, NY">Mount Sinai Hospital</option>
+      <option value="nyp-columbia" data-cluster="Greater New York, NY">NewYork-Presbyterian / Columbia &amp; Weill Cornell</option>
+      <option value="nyp-queens" data-cluster="Greater New York, NY">NewYork-Presbyterian Queens</option>
+      <option value="nyu-langone-tisch" data-cluster="Greater New York, NY">NYU Langone Tisch Hospital</option>
     </optgroup>
-    <optgroup label="Austin, TX">
-      <option value="ascension-seton-medical-austin">Ascension Seton Medical Center Austin</option>
-      <option value="ascension-seton-northwest">Ascension Seton Northwest Hospital</option>
-      <option value="dell-childrens-austin">Dell Children's Medical Center</option>
-      <option value="dell-seton-uta">Dell Seton Medical Center at UT Austin</option>
-      <option value="heart-hospital-austin">Heart Hospital of Austin</option>
-      <option value="st-davids-medical-center">St. David's Medical Center</option>
-      <option value="st-davids-north-austin">St. David's North Austin Medical Center</option>
+    <optgroup label="Greater Houston, TX">
+      <option value="baylor-st-lukes-tmc" data-cluster="Greater Houston, TX">Baylor St. Luke's Medical Center</option>
+      <option value="harris-health-ben-taub" data-cluster="Greater Houston, TX">Ben Taub Hospital</option>
+      <option value="hca-houston-kingwood" data-cluster="Greater Houston, TX">HCA Houston Healthcare Kingwood</option>
+      <option value="hca-houston-medical-center" data-cluster="Greater Houston, TX">HCA Houston Healthcare Medical Center</option>
+      <option value="houston-methodist" data-cluster="Greater Houston, TX">Houston Methodist Hospital</option>
+      <option value="memorial-hermann-memorial-city" data-cluster="Greater Houston, TX">Memorial Hermann Memorial City Medical Center</option>
+      <option value="memorial-hermann-southwest" data-cluster="Greater Houston, TX">Memorial Hermann Southwest Hospital</option>
+      <option value="memorial-hermann-sugar-land" data-cluster="Greater Houston, TX">Memorial Hermann Sugar Land Hospital</option>
+      <option value="memorial-hermann-tmc" data-cluster="Greater Houston, TX">Memorial Hermann-Texas Medical Center</option>
+      <option value="texas-childrens" data-cluster="Greater Houston, TX">Texas Children's Hospital</option>
+      <option value="md-anderson" data-cluster="Greater Houston, TX">UT MD Anderson Cancer Center</option>
     </optgroup>
-    <optgroup label="Boston, MA">
-      <option value="bidmc">Beth Israel Deaconess Medical Center</option>
-      <option value="boston-childrens">Boston Children's Hospital</option>
-      <option value="brigham-and-womens">Brigham and Women's Hospital</option>
-      <option value="mass-general">Massachusetts General Hospital</option>
+    <optgroup label="Greater Chicago, IL">
+      <option value="advocate-christ" data-cluster="Greater Chicago, IL">Advocate Christ Medical Center</option>
+      <option value="advocate-illinois-masonic" data-cluster="Greater Chicago, IL">Advocate Illinois Masonic Medical Center</option>
+      <option value="advocate-lutheran-general" data-cluster="Greater Chicago, IL">Advocate Lutheran General Hospital</option>
+      <option value="lurie-childrens" data-cluster="Greater Chicago, IL">Ann &amp; Robert H. Lurie Children's Hospital</option>
+      <option value="endeavor-evanston" data-cluster="Greater Chicago, IL">Endeavor Health Evanston Hospital</option>
+      <option value="stroger-cook-county" data-cluster="Greater Chicago, IL">John H. Stroger Jr. Hospital</option>
+      <option value="loyola-medical-center" data-cluster="Greater Chicago, IL">Loyola University Medical Center</option>
+      <option value="northwestern-memorial" data-cluster="Greater Chicago, IL">Northwestern Memorial Hospital</option>
+      <option value="rush-university" data-cluster="Greater Chicago, IL">Rush University Medical Center</option>
+      <option value="uchicago-medical-center" data-cluster="Greater Chicago, IL">University of Chicago Medical Center</option>
     </optgroup>
-    <optgroup label="Bronx, NY">
-      <option value="nychh-jacobi">Jacobi Medical Center</option>
-      <option value="montefiore-medical-center">Montefiore Medical Center</option>
+    <optgroup label="Greater Detroit, MI">
+      <option value="childrens-hospital-michigan" data-cluster="Greater Detroit, MI">Children's Hospital of Michigan</option>
+      <option value="corewell-dearborn" data-cluster="Greater Detroit, MI">Corewell Health Dearborn</option>
+      <option value="corewell-farmington-hills" data-cluster="Greater Detroit, MI">Corewell Health Farmington Hills</option>
+      <option value="corewell-royal-oak" data-cluster="Greater Detroit, MI">Corewell Health Royal Oak</option>
+      <option value="corewell-troy" data-cluster="Greater Detroit, MI">Corewell Health Troy</option>
+      <option value="dmc-detroit-receiving" data-cluster="Greater Detroit, MI">DMC Detroit Receiving Hospital</option>
+      <option value="dmc-harper-university" data-cluster="Greater Detroit, MI">DMC Harper University Hospital</option>
+      <option value="dmc-sinai-grace" data-cluster="Greater Detroit, MI">DMC Sinai-Grace Hospital</option>
+      <option value="henry-ford-detroit" data-cluster="Greater Detroit, MI">Henry Ford Hospital</option>
+      <option value="henry-ford-west-bloomfield" data-cluster="Greater Detroit, MI">Henry Ford West Bloomfield Hospital</option>
     </optgroup>
-    <optgroup label="Brooklyn, NY">
-      <option value="nychh-kings-county">Kings County Hospital Center</option>
-      <option value="maimonides-medical-center">Maimonides Medical Center</option>
+    <optgroup label="Greater Austin, TX">
+      <option value="ascension-seton-medical-austin" data-cluster="Greater Austin, TX">Ascension Seton Medical Center Austin</option>
+      <option value="ascension-seton-northwest" data-cluster="Greater Austin, TX">Ascension Seton Northwest Hospital</option>
+      <option value="dell-childrens-austin" data-cluster="Greater Austin, TX">Dell Children's Medical Center</option>
+      <option value="dell-seton-uta" data-cluster="Greater Austin, TX">Dell Seton Medical Center at UT Austin</option>
+      <option value="heart-hospital-austin" data-cluster="Greater Austin, TX">Heart Hospital of Austin</option>
+      <option value="st-davids-medical-center" data-cluster="Greater Austin, TX">St. David's Medical Center</option>
+      <option value="st-davids-north-austin" data-cluster="Greater Austin, TX">St. David's North Austin Medical Center</option>
+      <option value="st-davids-round-rock" data-cluster="Greater Austin, TX">St. David's Round Rock Medical Center</option>
     </optgroup>
-    <optgroup label="Burlington, MA">
-      <option value="lahey-burlington">Lahey Hospital &amp; Medical Center</option>
-    </optgroup>
-    <optgroup label="Chicago, IL">
-      <option value="advocate-christ">Advocate Christ Medical Center</option>
-      <option value="advocate-illinois-masonic">Advocate Illinois Masonic Medical Center</option>
-      <option value="lurie-childrens">Ann &amp; Robert H. Lurie Children's Hospital</option>
-      <option value="stroger-cook-county">John H. Stroger Jr. Hospital</option>
-      <option value="northwestern-memorial">Northwestern Memorial Hospital</option>
-      <option value="rush-university">Rush University Medical Center</option>
-      <option value="uchicago-medical-center">University of Chicago Medical Center</option>
-    </optgroup>
-    <optgroup label="Clearwater, FL">
-      <option value="baycare-morton-plant">BayCare Morton Plant Hospital</option>
-    </optgroup>
-    <optgroup label="Cleveland, OH">
-      <option value="cleveland-clinic">Cleveland Clinic</option>
-    </optgroup>
-    <optgroup label="Colorado Springs, CO">
-      <option value="uchealth-memorial-central">UCHealth Memorial Hospital Central</option>
-    </optgroup>
-    <optgroup label="Concord, CA">
-      <option value="john-muir-concord">John Muir Health Concord Medical Center</option>
-    </optgroup>
-    <optgroup label="Coral Gables, FL">
-      <option value="baptist-doctors-coral-gables">Doctors Hospital</option>
+    <optgroup label="Greater Miami, FL">
+      <option value="baptist-hospital-miami" data-cluster="Greater Miami, FL">Baptist Hospital of Miami</option>
+      <option value="baptist-doctors-coral-gables" data-cluster="Greater Miami, FL">Doctors Hospital</option>
+      <option value="baptist-homestead" data-cluster="Greater Miami, FL">Homestead Hospital</option>
+      <option value="jackson-memorial" data-cluster="Greater Miami, FL">Jackson Memorial Hospital</option>
+      <option value="jackson-north" data-cluster="Greater Miami, FL">Jackson North Medical Center</option>
+      <option value="jackson-south" data-cluster="Greater Miami, FL">Jackson South Medical Center</option>
+      <option value="nicklaus-childrens" data-cluster="Greater Miami, FL">Nicklaus Children's Hospital</option>
     </optgroup>
     <optgroup label="Dallas, TX">
-      <option value="baylor-university-medical-center">Baylor University Medical Center</option>
-      <option value="childrens-medical-center-dallas">Children's Medical Center Dallas</option>
-      <option value="methodist-dallas">Methodist Dallas Medical Center</option>
-      <option value="parkland-memorial">Parkland Memorial Hospital</option>
-      <option value="texas-health-presbyterian-dallas">Texas Health Presbyterian Hospital Dallas</option>
-      <option value="ut-southwestern">UT Southwestern Medical Center</option>
+      <option value="baylor-university-medical-center" data-cluster="Dallas, TX">Baylor University Medical Center</option>
+      <option value="childrens-medical-center-dallas" data-cluster="Dallas, TX">Children's Medical Center Dallas</option>
+      <option value="methodist-dallas" data-cluster="Dallas, TX">Methodist Dallas Medical Center</option>
+      <option value="parkland-memorial" data-cluster="Dallas, TX">Parkland Memorial Hospital</option>
+      <option value="texas-health-presbyterian-dallas" data-cluster="Dallas, TX">Texas Health Presbyterian Hospital Dallas</option>
+      <option value="ut-southwestern" data-cluster="Dallas, TX">UT Southwestern Medical Center</option>
     </optgroup>
-    <optgroup label="Dearborn, MI">
-      <option value="corewell-dearborn">Corewell Health Dearborn</option>
-    </optgroup>
-    <optgroup label="Detroit, MI">
-      <option value="childrens-hospital-michigan">Children's Hospital of Michigan</option>
-      <option value="dmc-detroit-receiving">DMC Detroit Receiving Hospital</option>
-      <option value="dmc-harper-university">DMC Harper University Hospital</option>
-      <option value="dmc-sinai-grace">DMC Sinai-Grace Hospital</option>
-      <option value="henry-ford-detroit">Henry Ford Hospital</option>
-    </optgroup>
-    <optgroup label="Evanston, IL">
-      <option value="endeavor-evanston">Endeavor Health Evanston Hospital</option>
-    </optgroup>
-    <optgroup label="Farmington Hills, MI">
-      <option value="corewell-farmington-hills">Corewell Health Farmington Hills</option>
-    </optgroup>
-    <optgroup label="Glendale, CA">
-      <option value="adventist-glendale">Adventist Health Glendale</option>
-      <option value="dignity-glendale-memorial">Glendale Memorial Hospital</option>
-      <option value="usc-verdugo-hills">USC Verdugo Hills Hospital</option>
-    </optgroup>
-    <optgroup label="Homestead, FL">
-      <option value="baptist-homestead">Homestead Hospital</option>
-    </optgroup>
-    <optgroup label="Houston, TX">
-      <option value="baylor-st-lukes-tmc">Baylor St. Luke's Medical Center</option>
-      <option value="harris-health-ben-taub">Ben Taub Hospital</option>
-      <option value="hca-houston-kingwood">HCA Houston Healthcare Kingwood</option>
-      <option value="hca-houston-medical-center">HCA Houston Healthcare Medical Center</option>
-      <option value="houston-methodist">Houston Methodist Hospital</option>
-      <option value="memorial-hermann-memorial-city">Memorial Hermann Memorial City Medical Center</option>
-      <option value="memorial-hermann-southwest">Memorial Hermann Southwest Hospital</option>
-      <option value="memorial-hermann-tmc">Memorial Hermann-Texas Medical Center</option>
-      <option value="texas-childrens">Texas Children's Hospital</option>
-      <option value="md-anderson">UT MD Anderson Cancer Center</option>
-    </optgroup>
-    <optgroup label="Jefferson Hills, PA">
-      <option value="ahn-jefferson-regional">Jefferson Regional Medical Center</option>
-    </optgroup>
-    <optgroup label="La Jolla, CA">
-      <option value="scripps-la-jolla">Scripps Memorial Hospital La Jolla</option>
-    </optgroup>
-    <optgroup label="La Mesa, CA">
-      <option value="sharp-grossmont">Sharp Grossmont Hospital</option>
-    </optgroup>
-    <optgroup label="Long Beach, CA">
-      <option value="long-beach-memorial">MemorialCare Long Beach Medical Center</option>
-      <option value="miller-childrens">MemorialCare Miller Children's &amp; Women's Hospital</option>
-      <option value="dignity-st-mary-long-beach">St. Mary Medical Center</option>
-    </optgroup>
-    <optgroup label="Los Angeles, CA">
-      <option value="dignity-california-hospital">California Hospital Medical Center</option>
-      <option value="cedars-sinai">Cedars-Sinai Medical Center</option>
-      <option value="chla">Children's Hospital Los Angeles</option>
-      <option value="hollywood-presbyterian">Hollywood Presbyterian Medical Center</option>
-      <option value="kaiser-la-sunset">Kaiser Permanente LA Medical Center</option>
-      <option value="usc-keck">Keck Hospital of USC</option>
-      <option value="mlk-community">MLK Community Hospital</option>
-      <option value="providence-st-joseph">Providence Saint Joseph (Burbank)</option>
-      <option value="ucla-ronald-reagan">Ronald Reagan UCLA Medical Center</option>
-      <option value="usc-norris">USC Norris Cancer Hospital</option>
-    </optgroup>
-    <optgroup label="Lynwood, CA">
-      <option value="st-francis-lynwood">Saint Francis Medical Center</option>
-    </optgroup>
-    <optgroup label="Manhasset, NY">
-      <option value="northwell-north-shore">North Shore University Hospital</option>
-    </optgroup>
-    <optgroup label="Marietta, GA">
-      <option value="wellstar-kennestone">WellStar Kennestone Hospital</option>
-    </optgroup>
-    <optgroup label="Marina del Rey, CA">
-      <option value="cedars-sinai-marina-del-rey">Cedars-Sinai Marina del Rey Hospital</option>
-    </optgroup>
-    <optgroup label="Maywood, IL">
-      <option value="loyola-medical-center">Loyola University Medical Center</option>
-    </optgroup>
-    <optgroup label="Miami, FL">
-      <option value="baptist-hospital-miami">Baptist Hospital of Miami</option>
-      <option value="jackson-memorial">Jackson Memorial Hospital</option>
-      <option value="jackson-south">Jackson South Medical Center</option>
-      <option value="nicklaus-childrens">Nicklaus Children's Hospital</option>
-    </optgroup>
-    <optgroup label="Monroeville, PA">
-      <option value="ahn-forbes">Forbes Hospital</option>
-    </optgroup>
-    <optgroup label="Montebello, CA">
-      <option value="adventist-white-memorial-montebello">Adventist Health White Memorial Montebello</option>
-    </optgroup>
-    <optgroup label="Monterey Park, CA">
-      <option value="garfield-medical-center">Garfield Medical Center</option>
-      <option value="monterey-park-hospital">Monterey Park Hospital</option>
-    </optgroup>
-    <optgroup label="Nashville, TN">
-      <option value="vanderbilt-umc">Vanderbilt University Medical Center</option>
-    </optgroup>
-    <optgroup label="New York, NY">
-      <option value="nychh-bellevue">Bellevue Hospital Center</option>
-      <option value="hss-main">Hospital for Special Surgery</option>
-      <option value="northwell-lenox-hill">Lenox Hill Hospital</option>
-      <option value="msk-cancer-center">Memorial Sloan Kettering Cancer Center</option>
-      <option value="mount-sinai-hospital">Mount Sinai Hospital</option>
-      <option value="nyp-columbia">NewYork-Presbyterian / Columbia &amp; Weill Cornell</option>
-      <option value="nyu-langone-tisch">NYU Langone Tisch Hospital</option>
-    </optgroup>
-    <optgroup label="Newport Beach, CA">
-      <option value="hoag-newport">Hoag Memorial Hospital Presbyterian</option>
-      <option value="hoag-orthopedic-institute">Hoag Orthopedic Institute</option>
-    </optgroup>
-    <optgroup label="North Miami Beach, FL">
-      <option value="jackson-north">Jackson North Medical Center</option>
-    </optgroup>
-    <optgroup label="Northridge, CA">
-      <option value="dignity-northridge">Northridge Hospital Medical Center</option>
-    </optgroup>
-    <optgroup label="Norwalk, CA">
-      <option value="coast-plaza">Coast Plaza Hospital</option>
-    </optgroup>
-    <optgroup label="Oakland, CA">
-      <option value="kaiser-oakland">Kaiser Permanente Oakland Medical Center</option>
-    </optgroup>
-    <optgroup label="Palo Alto, CA">
-      <option value="stanford-health-care">Stanford Health Care</option>
-    </optgroup>
-    <optgroup label="Park Ridge, IL">
-      <option value="advocate-lutheran-general">Advocate Lutheran General Hospital</option>
-    </optgroup>
-    <optgroup label="Pasadena, CA">
-      <option value="huntington-pasadena">Huntington Hospital</option>
+    <optgroup label="Greater San Diego, CA">
+      <option value="rady-childrens" data-cluster="Greater San Diego, CA">Rady Children's Hospital San Diego</option>
+      <option value="scripps-la-jolla" data-cluster="Greater San Diego, CA">Scripps Memorial Hospital La Jolla</option>
+      <option value="scripps-mercy-sd" data-cluster="Greater San Diego, CA">Scripps Mercy Hospital San Diego</option>
+      <option value="sharp-grossmont" data-cluster="Greater San Diego, CA">Sharp Grossmont Hospital</option>
+      <option value="sharp-memorial" data-cluster="Greater San Diego, CA">Sharp Memorial Hospital</option>
+      <option value="ucsd-health" data-cluster="Greater San Diego, CA">UC San Diego Health</option>
     </optgroup>
     <optgroup label="Philadelphia, PA">
-      <option value="chop">Children's Hospital of Philadelphia</option>
-      <option value="hup-penn">Hospital of the University of Pennsylvania</option>
-      <option value="jefferson-abington">Jefferson Abington Hospital</option>
-      <option value="jefferson-einstein-philadelphia">Jefferson Einstein Philadelphia</option>
-      <option value="penn-presbyterian">Penn Presbyterian Medical Center</option>
-      <option value="temple-university-hospital">Temple University Hospital</option>
+      <option value="chop" data-cluster="Philadelphia, PA">Children's Hospital of Philadelphia</option>
+      <option value="hup-penn" data-cluster="Philadelphia, PA">Hospital of the University of Pennsylvania</option>
+      <option value="jefferson-abington" data-cluster="Philadelphia, PA">Jefferson Abington Hospital</option>
+      <option value="jefferson-einstein-philadelphia" data-cluster="Philadelphia, PA">Jefferson Einstein Philadelphia</option>
+      <option value="penn-presbyterian" data-cluster="Philadelphia, PA">Penn Presbyterian Medical Center</option>
+      <option value="temple-university-hospital" data-cluster="Philadelphia, PA">Temple University Hospital</option>
+    </optgroup>
+    <optgroup label="SF Bay Area, CA">
+      <option value="john-muir-concord" data-cluster="SF Bay Area, CA">John Muir Health Concord Medical Center</option>
+      <option value="john-muir-walnut-creek" data-cluster="SF Bay Area, CA">John Muir Health Walnut Creek Medical Center</option>
+      <option value="kaiser-oakland" data-cluster="SF Bay Area, CA">Kaiser Permanente Oakland Medical Center</option>
+      <option value="kaiser-redwood-city" data-cluster="SF Bay Area, CA">Kaiser Permanente Redwood City Medical Center</option>
+      <option value="stanford-health-care" data-cluster="SF Bay Area, CA">Stanford Health Care</option>
+      <option value="stanford-tri-valley" data-cluster="SF Bay Area, CA">Stanford Health Care Tri-Valley</option>
+    </optgroup>
+    <optgroup label="Greater Atlanta, GA">
+      <option value="emory-decatur" data-cluster="Greater Atlanta, GA">Emory Decatur Hospital</option>
+      <option value="emory-university-hospital" data-cluster="Greater Atlanta, GA">Emory University Hospital</option>
+      <option value="grady-memorial" data-cluster="Greater Atlanta, GA">Grady Memorial Hospital</option>
+      <option value="piedmont-atlanta" data-cluster="Greater Atlanta, GA">Piedmont Atlanta Hospital</option>
+      <option value="wellstar-kennestone" data-cluster="Greater Atlanta, GA">WellStar Kennestone Hospital</option>
+    </optgroup>
+    <optgroup label="Greater Boston, MA">
+      <option value="bidmc" data-cluster="Greater Boston, MA">Beth Israel Deaconess Medical Center</option>
+      <option value="boston-childrens" data-cluster="Greater Boston, MA">Boston Children's Hospital</option>
+      <option value="brigham-and-womens" data-cluster="Greater Boston, MA">Brigham and Women's Hospital</option>
+      <option value="lahey-burlington" data-cluster="Greater Boston, MA">Lahey Hospital &amp; Medical Center</option>
+      <option value="mass-general" data-cluster="Greater Boston, MA">Massachusetts General Hospital</option>
+    </optgroup>
+    <optgroup label="Greater Pittsburgh, PA">
+      <option value="ahn-allegheny-general" data-cluster="Greater Pittsburgh, PA">Allegheny General Hospital</option>
+      <option value="ahn-jefferson-regional" data-cluster="Greater Pittsburgh, PA">Jefferson Regional Medical Center</option>
+      <option value="upmc-childrens-pittsburgh" data-cluster="Greater Pittsburgh, PA">UPMC Children's Hospital of Pittsburgh</option>
+      <option value="upmc-magee-womens" data-cluster="Greater Pittsburgh, PA">UPMC Magee-Womens Hospital</option>
+      <option value="upmc-presbyterian-shadyside" data-cluster="Greater Pittsburgh, PA">UPMC Presbyterian Shadyside</option>
     </optgroup>
     <optgroup label="Phoenix, AZ">
-      <option value="banner-university-phoenix">Banner - University Medical Center Phoenix</option>
-      <option value="honorhealth-deer-valley">HonorHealth Deer Valley Medical Center</option>
-      <option value="honorhealth-osborn">HonorHealth Scottsdale Osborn</option>
-      <option value="phoenix-childrens">Phoenix Children's Hospital</option>
-      <option value="st-josephs-phoenix">St. Joseph's Hospital and Medical Center</option>
+      <option value="banner-university-phoenix" data-cluster="Phoenix, AZ">Banner - University Medical Center Phoenix</option>
+      <option value="honorhealth-deer-valley" data-cluster="Phoenix, AZ">HonorHealth Deer Valley Medical Center</option>
+      <option value="honorhealth-osborn" data-cluster="Phoenix, AZ">HonorHealth Scottsdale Osborn</option>
+      <option value="phoenix-childrens" data-cluster="Phoenix, AZ">Phoenix Children's Hospital</option>
+      <option value="st-josephs-phoenix" data-cluster="Phoenix, AZ">St. Joseph's Hospital and Medical Center</option>
     </optgroup>
-    <optgroup label="Pittsburgh, PA">
-      <option value="ahn-allegheny-general">Allegheny General Hospital</option>
-      <option value="upmc-childrens-pittsburgh">UPMC Children's Hospital of Pittsburgh</option>
-      <option value="upmc-magee-womens">UPMC Magee-Womens Hospital</option>
-      <option value="upmc-presbyterian-shadyside">UPMC Presbyterian Shadyside</option>
-    </optgroup>
-    <optgroup label="Pleasanton, CA">
-      <option value="stanford-tri-valley">Stanford Health Care Tri-Valley</option>
-    </optgroup>
-    <optgroup label="Pomona, CA">
-      <option value="pomona-valley">Pomona Valley Hospital Medical Center</option>
-    </optgroup>
-    <optgroup label="Queens / Nassau, NY">
-      <option value="northwell-lij">Northwell Long Island Jewish Medical Center</option>
-    </optgroup>
-    <optgroup label="Queens, NY">
-      <option value="nychh-elmhurst">Elmhurst Hospital Center</option>
-      <option value="nyp-queens">NewYork-Presbyterian Queens</option>
-    </optgroup>
-    <optgroup label="Redwood City, CA">
-      <option value="kaiser-redwood-city">Kaiser Permanente Redwood City Medical Center</option>
-    </optgroup>
-    <optgroup label="Round Rock, TX">
-      <option value="st-davids-round-rock">St. David's Round Rock Medical Center</option>
-    </optgroup>
-    <optgroup label="Royal Oak, MI">
-      <option value="corewell-royal-oak">Corewell Health Royal Oak</option>
-    </optgroup>
-    <optgroup label="San Diego, CA">
-      <option value="rady-childrens">Rady Children's Hospital San Diego</option>
-      <option value="scripps-mercy-sd">Scripps Mercy Hospital San Diego</option>
-      <option value="sharp-memorial">Sharp Memorial Hospital</option>
-      <option value="ucsd-health">UC San Diego Health</option>
-    </optgroup>
-    <optgroup label="San Gabriel, CA">
-      <option value="san-gabriel-valley-mc">San Gabriel Valley Medical Center</option>
-    </optgroup>
-    <optgroup label="Santa Ana, CA">
-      <option value="south-coast-global-mc">South Coast Global Medical Center</option>
-    </optgroup>
-    <optgroup label="Santa Monica, CA">
-      <option value="providence-st-johns-santa-monica">Providence Saint John's Health Center</option>
-      <option value="ucla-santa-monica">UCLA Santa Monica Medical Center</option>
+    <optgroup label="Greater Tampa, FL">
+      <option value="baycare-morton-plant" data-cluster="Greater Tampa, FL">BayCare Morton Plant Hospital</option>
+      <option value="baycare-st-josephs-tampa" data-cluster="Greater Tampa, FL">BayCare St. Joseph's Hospital Tampa</option>
+      <option value="moffitt-cancer-center" data-cluster="Greater Tampa, FL">H. Lee Moffitt Cancer Center</option>
+      <option value="tampa-general" data-cluster="Greater Tampa, FL">Tampa General Hospital</option>
     </optgroup>
     <optgroup label="Seattle, WA">
-      <option value="seattle-childrens">Seattle Children's Hospital</option>
-      <option value="swedish-first-hill">Swedish Medical Center First Hill</option>
-      <option value="virginia-mason">Virginia Mason Medical Center</option>
+      <option value="seattle-childrens" data-cluster="Seattle, WA">Seattle Children's Hospital</option>
+      <option value="swedish-first-hill" data-cluster="Seattle, WA">Swedish Medical Center First Hill</option>
+      <option value="virginia-mason" data-cluster="Seattle, WA">Virginia Mason Medical Center</option>
     </optgroup>
-    <optgroup label="Simi Valley, CA">
-      <option value="adventist-simi-valley">Adventist Health Simi Valley</option>
+    <optgroup label="Cleveland, OH">
+      <option value="cleveland-clinic" data-cluster="Cleveland, OH">Cleveland Clinic</option>
     </optgroup>
-    <optgroup label="South El Monte, CA">
-      <option value="greater-el-monte">Greater El Monte Community Hospital</option>
+    <optgroup label="Colorado Springs, CO">
+      <option value="uchealth-memorial-central" data-cluster="Colorado Springs, CO">UCHealth Memorial Hospital Central</option>
+    </optgroup>
+    <optgroup label="Manhasset, NY">
+      <option value="northwell-north-shore" data-cluster="Manhasset, NY">North Shore University Hospital</option>
+    </optgroup>
+    <optgroup label="Monroeville, PA">
+      <option value="ahn-forbes" data-cluster="Monroeville, PA">Forbes Hospital</option>
+    </optgroup>
+    <optgroup label="Nashville, TN">
+      <option value="vanderbilt-umc" data-cluster="Nashville, TN">Vanderbilt University Medical Center</option>
+    </optgroup>
+    <optgroup label="Northridge, CA">
+      <option value="dignity-northridge" data-cluster="Northridge, CA">Northridge Hospital Medical Center</option>
+    </optgroup>
+    <optgroup label="Queens / Nassau, NY">
+      <option value="northwell-lij" data-cluster="Queens / Nassau, NY">Northwell Long Island Jewish Medical Center</option>
+    </optgroup>
+    <optgroup label="Santa Ana, CA">
+      <option value="south-coast-global-mc" data-cluster="Santa Ana, CA">South Coast Global Medical Center</option>
     </optgroup>
     <optgroup label="Staten Island, NY">
-      <option value="northwell-staten-island">Staten Island University Hospital</option>
-    </optgroup>
-    <optgroup label="Sugar Land, TX">
-      <option value="memorial-hermann-sugar-land">Memorial Hermann Sugar Land Hospital</option>
-    </optgroup>
-    <optgroup label="Sylmar, CA">
-      <option value="olive-view-ucla">Olive View-UCLA Medical Center</option>
-    </optgroup>
-    <optgroup label="Tampa, FL">
-      <option value="baycare-st-josephs-tampa">BayCare St. Joseph's Hospital Tampa</option>
-      <option value="moffitt-cancer-center">H. Lee Moffitt Cancer Center</option>
-      <option value="tampa-general">Tampa General Hospital</option>
-    </optgroup>
-    <optgroup label="Tarzana, CA">
-      <option value="providence-tarzana">Providence Cedars-Sinai Tarzana Medical Center</option>
-    </optgroup>
-    <optgroup label="Torrance, CA">
-      <option value="harbor-ucla">Harbor-UCLA Medical Center</option>
-      <option value="torrance-memorial">Torrance Memorial Medical Center</option>
-    </optgroup>
-    <optgroup label="Troy, MI">
-      <option value="corewell-troy">Corewell Health Troy</option>
-    </optgroup>
-    <optgroup label="Walnut Creek, CA">
-      <option value="john-muir-walnut-creek">John Muir Health Walnut Creek Medical Center</option>
+      <option value="northwell-staten-island" data-cluster="Staten Island, NY">Staten Island University Hospital</option>
     </optgroup>
     <optgroup label="Washington, DC">
-      <option value="medstar-georgetown">MedStar Georgetown University Hospital</option>
-    </optgroup>
-    <optgroup label="West Bloomfield, MI">
-      <option value="henry-ford-west-bloomfield">Henry Ford West Bloomfield Hospital</option>
-    </optgroup>
-    <optgroup label="Whittier, CA">
-      <option value="whittier-hospital">Whittier Hospital Medical Center</option>
+      <option value="medstar-georgetown" data-cluster="Washington, DC">MedStar Georgetown University Hospital</option>
     </optgroup>
       </select>
       <span style="font-family:var(--display-font);color:var(--ink-3);font-size:18px">vs.</span>
       <select id="hospB" style="padding:14px 16px;font-size:15px;font-family:'Inter',sans-serif;background:var(--paper);border:1px solid var(--rule-soft);border-radius:12px;width:100%;color:var(--ink);appearance:menulist">
         <option value="">Hospital B…</option>
-    <optgroup label="Arcadia, CA">
-      <option value="usc-arcadia">USC Arcadia Hospital</option>
+    <optgroup label="Greater Los Angeles, CA">
+      <option value="adventist-glendale" data-cluster="Greater Los Angeles, CA">Adventist Health Glendale</option>
+      <option value="adventist-simi-valley" data-cluster="Greater Los Angeles, CA">Adventist Health Simi Valley</option>
+      <option value="adventist-white-memorial-montebello" data-cluster="Greater Los Angeles, CA">Adventist Health White Memorial Montebello</option>
+      <option value="dignity-california-hospital" data-cluster="Greater Los Angeles, CA">California Hospital Medical Center</option>
+      <option value="cedars-sinai-marina-del-rey" data-cluster="Greater Los Angeles, CA">Cedars-Sinai Marina del Rey Hospital</option>
+      <option value="cedars-sinai" data-cluster="Greater Los Angeles, CA">Cedars-Sinai Medical Center</option>
+      <option value="chla" data-cluster="Greater Los Angeles, CA">Children's Hospital Los Angeles</option>
+      <option value="coast-plaza" data-cluster="Greater Los Angeles, CA">Coast Plaza Hospital</option>
+      <option value="garfield-medical-center" data-cluster="Greater Los Angeles, CA">Garfield Medical Center</option>
+      <option value="dignity-glendale-memorial" data-cluster="Greater Los Angeles, CA">Glendale Memorial Hospital</option>
+      <option value="greater-el-monte" data-cluster="Greater Los Angeles, CA">Greater El Monte Community Hospital</option>
+      <option value="harbor-ucla" data-cluster="Greater Los Angeles, CA">Harbor-UCLA Medical Center</option>
+      <option value="hoag-newport" data-cluster="Greater Los Angeles, CA">Hoag Memorial Hospital Presbyterian</option>
+      <option value="hoag-orthopedic-institute" data-cluster="Greater Los Angeles, CA">Hoag Orthopedic Institute</option>
+      <option value="hollywood-presbyterian" data-cluster="Greater Los Angeles, CA">Hollywood Presbyterian Medical Center</option>
+      <option value="huntington-pasadena" data-cluster="Greater Los Angeles, CA">Huntington Hospital</option>
+      <option value="kaiser-la-sunset" data-cluster="Greater Los Angeles, CA">Kaiser Permanente LA Medical Center</option>
+      <option value="usc-keck" data-cluster="Greater Los Angeles, CA">Keck Hospital of USC</option>
+      <option value="long-beach-memorial" data-cluster="Greater Los Angeles, CA">MemorialCare Long Beach Medical Center</option>
+      <option value="miller-childrens" data-cluster="Greater Los Angeles, CA">MemorialCare Miller Children's &amp; Women's Hospital</option>
+      <option value="mlk-community" data-cluster="Greater Los Angeles, CA">MLK Community Hospital</option>
+      <option value="monterey-park-hospital" data-cluster="Greater Los Angeles, CA">Monterey Park Hospital</option>
+      <option value="olive-view-ucla" data-cluster="Greater Los Angeles, CA">Olive View-UCLA Medical Center</option>
+      <option value="pomona-valley" data-cluster="Greater Los Angeles, CA">Pomona Valley Hospital Medical Center</option>
+      <option value="providence-tarzana" data-cluster="Greater Los Angeles, CA">Providence Cedars-Sinai Tarzana Medical Center</option>
+      <option value="providence-st-johns-santa-monica" data-cluster="Greater Los Angeles, CA">Providence Saint John's Health Center</option>
+      <option value="providence-st-joseph" data-cluster="Greater Los Angeles, CA">Providence Saint Joseph (Burbank)</option>
+      <option value="ucla-ronald-reagan" data-cluster="Greater Los Angeles, CA">Ronald Reagan UCLA Medical Center</option>
+      <option value="st-francis-lynwood" data-cluster="Greater Los Angeles, CA">Saint Francis Medical Center</option>
+      <option value="san-gabriel-valley-mc" data-cluster="Greater Los Angeles, CA">San Gabriel Valley Medical Center</option>
+      <option value="dignity-st-mary-long-beach" data-cluster="Greater Los Angeles, CA">St. Mary Medical Center</option>
+      <option value="torrance-memorial" data-cluster="Greater Los Angeles, CA">Torrance Memorial Medical Center</option>
+      <option value="ucla-santa-monica" data-cluster="Greater Los Angeles, CA">UCLA Santa Monica Medical Center</option>
+      <option value="usc-arcadia" data-cluster="Greater Los Angeles, CA">USC Arcadia Hospital</option>
+      <option value="usc-norris" data-cluster="Greater Los Angeles, CA">USC Norris Cancer Hospital</option>
+      <option value="usc-verdugo-hills" data-cluster="Greater Los Angeles, CA">USC Verdugo Hills Hospital</option>
+      <option value="whittier-hospital" data-cluster="Greater Los Angeles, CA">Whittier Hospital Medical Center</option>
     </optgroup>
-    <optgroup label="Atlanta, GA">
-      <option value="emory-decatur">Emory Decatur Hospital</option>
-      <option value="emory-university-hospital">Emory University Hospital</option>
-      <option value="grady-memorial">Grady Memorial Hospital</option>
-      <option value="piedmont-atlanta">Piedmont Atlanta Hospital</option>
+    <optgroup label="Greater New York, NY">
+      <option value="nychh-bellevue" data-cluster="Greater New York, NY">Bellevue Hospital Center</option>
+      <option value="nychh-elmhurst" data-cluster="Greater New York, NY">Elmhurst Hospital Center</option>
+      <option value="hss-main" data-cluster="Greater New York, NY">Hospital for Special Surgery</option>
+      <option value="nychh-jacobi" data-cluster="Greater New York, NY">Jacobi Medical Center</option>
+      <option value="nychh-kings-county" data-cluster="Greater New York, NY">Kings County Hospital Center</option>
+      <option value="northwell-lenox-hill" data-cluster="Greater New York, NY">Lenox Hill Hospital</option>
+      <option value="maimonides-medical-center" data-cluster="Greater New York, NY">Maimonides Medical Center</option>
+      <option value="msk-cancer-center" data-cluster="Greater New York, NY">Memorial Sloan Kettering Cancer Center</option>
+      <option value="montefiore-medical-center" data-cluster="Greater New York, NY">Montefiore Medical Center</option>
+      <option value="mount-sinai-hospital" data-cluster="Greater New York, NY">Mount Sinai Hospital</option>
+      <option value="nyp-columbia" data-cluster="Greater New York, NY">NewYork-Presbyterian / Columbia &amp; Weill Cornell</option>
+      <option value="nyp-queens" data-cluster="Greater New York, NY">NewYork-Presbyterian Queens</option>
+      <option value="nyu-langone-tisch" data-cluster="Greater New York, NY">NYU Langone Tisch Hospital</option>
     </optgroup>
-    <optgroup label="Austin, TX">
-      <option value="ascension-seton-medical-austin">Ascension Seton Medical Center Austin</option>
-      <option value="ascension-seton-northwest">Ascension Seton Northwest Hospital</option>
-      <option value="dell-childrens-austin">Dell Children's Medical Center</option>
-      <option value="dell-seton-uta">Dell Seton Medical Center at UT Austin</option>
-      <option value="heart-hospital-austin">Heart Hospital of Austin</option>
-      <option value="st-davids-medical-center">St. David's Medical Center</option>
-      <option value="st-davids-north-austin">St. David's North Austin Medical Center</option>
+    <optgroup label="Greater Houston, TX">
+      <option value="baylor-st-lukes-tmc" data-cluster="Greater Houston, TX">Baylor St. Luke's Medical Center</option>
+      <option value="harris-health-ben-taub" data-cluster="Greater Houston, TX">Ben Taub Hospital</option>
+      <option value="hca-houston-kingwood" data-cluster="Greater Houston, TX">HCA Houston Healthcare Kingwood</option>
+      <option value="hca-houston-medical-center" data-cluster="Greater Houston, TX">HCA Houston Healthcare Medical Center</option>
+      <option value="houston-methodist" data-cluster="Greater Houston, TX">Houston Methodist Hospital</option>
+      <option value="memorial-hermann-memorial-city" data-cluster="Greater Houston, TX">Memorial Hermann Memorial City Medical Center</option>
+      <option value="memorial-hermann-southwest" data-cluster="Greater Houston, TX">Memorial Hermann Southwest Hospital</option>
+      <option value="memorial-hermann-sugar-land" data-cluster="Greater Houston, TX">Memorial Hermann Sugar Land Hospital</option>
+      <option value="memorial-hermann-tmc" data-cluster="Greater Houston, TX">Memorial Hermann-Texas Medical Center</option>
+      <option value="texas-childrens" data-cluster="Greater Houston, TX">Texas Children's Hospital</option>
+      <option value="md-anderson" data-cluster="Greater Houston, TX">UT MD Anderson Cancer Center</option>
     </optgroup>
-    <optgroup label="Boston, MA">
-      <option value="bidmc">Beth Israel Deaconess Medical Center</option>
-      <option value="boston-childrens">Boston Children's Hospital</option>
-      <option value="brigham-and-womens">Brigham and Women's Hospital</option>
-      <option value="mass-general">Massachusetts General Hospital</option>
+    <optgroup label="Greater Chicago, IL">
+      <option value="advocate-christ" data-cluster="Greater Chicago, IL">Advocate Christ Medical Center</option>
+      <option value="advocate-illinois-masonic" data-cluster="Greater Chicago, IL">Advocate Illinois Masonic Medical Center</option>
+      <option value="advocate-lutheran-general" data-cluster="Greater Chicago, IL">Advocate Lutheran General Hospital</option>
+      <option value="lurie-childrens" data-cluster="Greater Chicago, IL">Ann &amp; Robert H. Lurie Children's Hospital</option>
+      <option value="endeavor-evanston" data-cluster="Greater Chicago, IL">Endeavor Health Evanston Hospital</option>
+      <option value="stroger-cook-county" data-cluster="Greater Chicago, IL">John H. Stroger Jr. Hospital</option>
+      <option value="loyola-medical-center" data-cluster="Greater Chicago, IL">Loyola University Medical Center</option>
+      <option value="northwestern-memorial" data-cluster="Greater Chicago, IL">Northwestern Memorial Hospital</option>
+      <option value="rush-university" data-cluster="Greater Chicago, IL">Rush University Medical Center</option>
+      <option value="uchicago-medical-center" data-cluster="Greater Chicago, IL">University of Chicago Medical Center</option>
     </optgroup>
-    <optgroup label="Bronx, NY">
-      <option value="nychh-jacobi">Jacobi Medical Center</option>
-      <option value="montefiore-medical-center">Montefiore Medical Center</option>
+    <optgroup label="Greater Detroit, MI">
+      <option value="childrens-hospital-michigan" data-cluster="Greater Detroit, MI">Children's Hospital of Michigan</option>
+      <option value="corewell-dearborn" data-cluster="Greater Detroit, MI">Corewell Health Dearborn</option>
+      <option value="corewell-farmington-hills" data-cluster="Greater Detroit, MI">Corewell Health Farmington Hills</option>
+      <option value="corewell-royal-oak" data-cluster="Greater Detroit, MI">Corewell Health Royal Oak</option>
+      <option value="corewell-troy" data-cluster="Greater Detroit, MI">Corewell Health Troy</option>
+      <option value="dmc-detroit-receiving" data-cluster="Greater Detroit, MI">DMC Detroit Receiving Hospital</option>
+      <option value="dmc-harper-university" data-cluster="Greater Detroit, MI">DMC Harper University Hospital</option>
+      <option value="dmc-sinai-grace" data-cluster="Greater Detroit, MI">DMC Sinai-Grace Hospital</option>
+      <option value="henry-ford-detroit" data-cluster="Greater Detroit, MI">Henry Ford Hospital</option>
+      <option value="henry-ford-west-bloomfield" data-cluster="Greater Detroit, MI">Henry Ford West Bloomfield Hospital</option>
     </optgroup>
-    <optgroup label="Brooklyn, NY">
-      <option value="nychh-kings-county">Kings County Hospital Center</option>
-      <option value="maimonides-medical-center">Maimonides Medical Center</option>
+    <optgroup label="Greater Austin, TX">
+      <option value="ascension-seton-medical-austin" data-cluster="Greater Austin, TX">Ascension Seton Medical Center Austin</option>
+      <option value="ascension-seton-northwest" data-cluster="Greater Austin, TX">Ascension Seton Northwest Hospital</option>
+      <option value="dell-childrens-austin" data-cluster="Greater Austin, TX">Dell Children's Medical Center</option>
+      <option value="dell-seton-uta" data-cluster="Greater Austin, TX">Dell Seton Medical Center at UT Austin</option>
+      <option value="heart-hospital-austin" data-cluster="Greater Austin, TX">Heart Hospital of Austin</option>
+      <option value="st-davids-medical-center" data-cluster="Greater Austin, TX">St. David's Medical Center</option>
+      <option value="st-davids-north-austin" data-cluster="Greater Austin, TX">St. David's North Austin Medical Center</option>
+      <option value="st-davids-round-rock" data-cluster="Greater Austin, TX">St. David's Round Rock Medical Center</option>
     </optgroup>
-    <optgroup label="Burlington, MA">
-      <option value="lahey-burlington">Lahey Hospital &amp; Medical Center</option>
-    </optgroup>
-    <optgroup label="Chicago, IL">
-      <option value="advocate-christ">Advocate Christ Medical Center</option>
-      <option value="advocate-illinois-masonic">Advocate Illinois Masonic Medical Center</option>
-      <option value="lurie-childrens">Ann &amp; Robert H. Lurie Children's Hospital</option>
-      <option value="stroger-cook-county">John H. Stroger Jr. Hospital</option>
-      <option value="northwestern-memorial">Northwestern Memorial Hospital</option>
-      <option value="rush-university">Rush University Medical Center</option>
-      <option value="uchicago-medical-center">University of Chicago Medical Center</option>
-    </optgroup>
-    <optgroup label="Clearwater, FL">
-      <option value="baycare-morton-plant">BayCare Morton Plant Hospital</option>
-    </optgroup>
-    <optgroup label="Cleveland, OH">
-      <option value="cleveland-clinic">Cleveland Clinic</option>
-    </optgroup>
-    <optgroup label="Colorado Springs, CO">
-      <option value="uchealth-memorial-central">UCHealth Memorial Hospital Central</option>
-    </optgroup>
-    <optgroup label="Concord, CA">
-      <option value="john-muir-concord">John Muir Health Concord Medical Center</option>
-    </optgroup>
-    <optgroup label="Coral Gables, FL">
-      <option value="baptist-doctors-coral-gables">Doctors Hospital</option>
+    <optgroup label="Greater Miami, FL">
+      <option value="baptist-hospital-miami" data-cluster="Greater Miami, FL">Baptist Hospital of Miami</option>
+      <option value="baptist-doctors-coral-gables" data-cluster="Greater Miami, FL">Doctors Hospital</option>
+      <option value="baptist-homestead" data-cluster="Greater Miami, FL">Homestead Hospital</option>
+      <option value="jackson-memorial" data-cluster="Greater Miami, FL">Jackson Memorial Hospital</option>
+      <option value="jackson-north" data-cluster="Greater Miami, FL">Jackson North Medical Center</option>
+      <option value="jackson-south" data-cluster="Greater Miami, FL">Jackson South Medical Center</option>
+      <option value="nicklaus-childrens" data-cluster="Greater Miami, FL">Nicklaus Children's Hospital</option>
     </optgroup>
     <optgroup label="Dallas, TX">
-      <option value="baylor-university-medical-center">Baylor University Medical Center</option>
-      <option value="childrens-medical-center-dallas">Children's Medical Center Dallas</option>
-      <option value="methodist-dallas">Methodist Dallas Medical Center</option>
-      <option value="parkland-memorial">Parkland Memorial Hospital</option>
-      <option value="texas-health-presbyterian-dallas">Texas Health Presbyterian Hospital Dallas</option>
-      <option value="ut-southwestern">UT Southwestern Medical Center</option>
+      <option value="baylor-university-medical-center" data-cluster="Dallas, TX">Baylor University Medical Center</option>
+      <option value="childrens-medical-center-dallas" data-cluster="Dallas, TX">Children's Medical Center Dallas</option>
+      <option value="methodist-dallas" data-cluster="Dallas, TX">Methodist Dallas Medical Center</option>
+      <option value="parkland-memorial" data-cluster="Dallas, TX">Parkland Memorial Hospital</option>
+      <option value="texas-health-presbyterian-dallas" data-cluster="Dallas, TX">Texas Health Presbyterian Hospital Dallas</option>
+      <option value="ut-southwestern" data-cluster="Dallas, TX">UT Southwestern Medical Center</option>
     </optgroup>
-    <optgroup label="Dearborn, MI">
-      <option value="corewell-dearborn">Corewell Health Dearborn</option>
-    </optgroup>
-    <optgroup label="Detroit, MI">
-      <option value="childrens-hospital-michigan">Children's Hospital of Michigan</option>
-      <option value="dmc-detroit-receiving">DMC Detroit Receiving Hospital</option>
-      <option value="dmc-harper-university">DMC Harper University Hospital</option>
-      <option value="dmc-sinai-grace">DMC Sinai-Grace Hospital</option>
-      <option value="henry-ford-detroit">Henry Ford Hospital</option>
-    </optgroup>
-    <optgroup label="Evanston, IL">
-      <option value="endeavor-evanston">Endeavor Health Evanston Hospital</option>
-    </optgroup>
-    <optgroup label="Farmington Hills, MI">
-      <option value="corewell-farmington-hills">Corewell Health Farmington Hills</option>
-    </optgroup>
-    <optgroup label="Glendale, CA">
-      <option value="adventist-glendale">Adventist Health Glendale</option>
-      <option value="dignity-glendale-memorial">Glendale Memorial Hospital</option>
-      <option value="usc-verdugo-hills">USC Verdugo Hills Hospital</option>
-    </optgroup>
-    <optgroup label="Homestead, FL">
-      <option value="baptist-homestead">Homestead Hospital</option>
-    </optgroup>
-    <optgroup label="Houston, TX">
-      <option value="baylor-st-lukes-tmc">Baylor St. Luke's Medical Center</option>
-      <option value="harris-health-ben-taub">Ben Taub Hospital</option>
-      <option value="hca-houston-kingwood">HCA Houston Healthcare Kingwood</option>
-      <option value="hca-houston-medical-center">HCA Houston Healthcare Medical Center</option>
-      <option value="houston-methodist">Houston Methodist Hospital</option>
-      <option value="memorial-hermann-memorial-city">Memorial Hermann Memorial City Medical Center</option>
-      <option value="memorial-hermann-southwest">Memorial Hermann Southwest Hospital</option>
-      <option value="memorial-hermann-tmc">Memorial Hermann-Texas Medical Center</option>
-      <option value="texas-childrens">Texas Children's Hospital</option>
-      <option value="md-anderson">UT MD Anderson Cancer Center</option>
-    </optgroup>
-    <optgroup label="Jefferson Hills, PA">
-      <option value="ahn-jefferson-regional">Jefferson Regional Medical Center</option>
-    </optgroup>
-    <optgroup label="La Jolla, CA">
-      <option value="scripps-la-jolla">Scripps Memorial Hospital La Jolla</option>
-    </optgroup>
-    <optgroup label="La Mesa, CA">
-      <option value="sharp-grossmont">Sharp Grossmont Hospital</option>
-    </optgroup>
-    <optgroup label="Long Beach, CA">
-      <option value="long-beach-memorial">MemorialCare Long Beach Medical Center</option>
-      <option value="miller-childrens">MemorialCare Miller Children's &amp; Women's Hospital</option>
-      <option value="dignity-st-mary-long-beach">St. Mary Medical Center</option>
-    </optgroup>
-    <optgroup label="Los Angeles, CA">
-      <option value="dignity-california-hospital">California Hospital Medical Center</option>
-      <option value="cedars-sinai">Cedars-Sinai Medical Center</option>
-      <option value="chla">Children's Hospital Los Angeles</option>
-      <option value="hollywood-presbyterian">Hollywood Presbyterian Medical Center</option>
-      <option value="kaiser-la-sunset">Kaiser Permanente LA Medical Center</option>
-      <option value="usc-keck">Keck Hospital of USC</option>
-      <option value="mlk-community">MLK Community Hospital</option>
-      <option value="providence-st-joseph">Providence Saint Joseph (Burbank)</option>
-      <option value="ucla-ronald-reagan">Ronald Reagan UCLA Medical Center</option>
-      <option value="usc-norris">USC Norris Cancer Hospital</option>
-    </optgroup>
-    <optgroup label="Lynwood, CA">
-      <option value="st-francis-lynwood">Saint Francis Medical Center</option>
-    </optgroup>
-    <optgroup label="Manhasset, NY">
-      <option value="northwell-north-shore">North Shore University Hospital</option>
-    </optgroup>
-    <optgroup label="Marietta, GA">
-      <option value="wellstar-kennestone">WellStar Kennestone Hospital</option>
-    </optgroup>
-    <optgroup label="Marina del Rey, CA">
-      <option value="cedars-sinai-marina-del-rey">Cedars-Sinai Marina del Rey Hospital</option>
-    </optgroup>
-    <optgroup label="Maywood, IL">
-      <option value="loyola-medical-center">Loyola University Medical Center</option>
-    </optgroup>
-    <optgroup label="Miami, FL">
-      <option value="baptist-hospital-miami">Baptist Hospital of Miami</option>
-      <option value="jackson-memorial">Jackson Memorial Hospital</option>
-      <option value="jackson-south">Jackson South Medical Center</option>
-      <option value="nicklaus-childrens">Nicklaus Children's Hospital</option>
-    </optgroup>
-    <optgroup label="Monroeville, PA">
-      <option value="ahn-forbes">Forbes Hospital</option>
-    </optgroup>
-    <optgroup label="Montebello, CA">
-      <option value="adventist-white-memorial-montebello">Adventist Health White Memorial Montebello</option>
-    </optgroup>
-    <optgroup label="Monterey Park, CA">
-      <option value="garfield-medical-center">Garfield Medical Center</option>
-      <option value="monterey-park-hospital">Monterey Park Hospital</option>
-    </optgroup>
-    <optgroup label="Nashville, TN">
-      <option value="vanderbilt-umc">Vanderbilt University Medical Center</option>
-    </optgroup>
-    <optgroup label="New York, NY">
-      <option value="nychh-bellevue">Bellevue Hospital Center</option>
-      <option value="hss-main">Hospital for Special Surgery</option>
-      <option value="northwell-lenox-hill">Lenox Hill Hospital</option>
-      <option value="msk-cancer-center">Memorial Sloan Kettering Cancer Center</option>
-      <option value="mount-sinai-hospital">Mount Sinai Hospital</option>
-      <option value="nyp-columbia">NewYork-Presbyterian / Columbia &amp; Weill Cornell</option>
-      <option value="nyu-langone-tisch">NYU Langone Tisch Hospital</option>
-    </optgroup>
-    <optgroup label="Newport Beach, CA">
-      <option value="hoag-newport">Hoag Memorial Hospital Presbyterian</option>
-      <option value="hoag-orthopedic-institute">Hoag Orthopedic Institute</option>
-    </optgroup>
-    <optgroup label="North Miami Beach, FL">
-      <option value="jackson-north">Jackson North Medical Center</option>
-    </optgroup>
-    <optgroup label="Northridge, CA">
-      <option value="dignity-northridge">Northridge Hospital Medical Center</option>
-    </optgroup>
-    <optgroup label="Norwalk, CA">
-      <option value="coast-plaza">Coast Plaza Hospital</option>
-    </optgroup>
-    <optgroup label="Oakland, CA">
-      <option value="kaiser-oakland">Kaiser Permanente Oakland Medical Center</option>
-    </optgroup>
-    <optgroup label="Palo Alto, CA">
-      <option value="stanford-health-care">Stanford Health Care</option>
-    </optgroup>
-    <optgroup label="Park Ridge, IL">
-      <option value="advocate-lutheran-general">Advocate Lutheran General Hospital</option>
-    </optgroup>
-    <optgroup label="Pasadena, CA">
-      <option value="huntington-pasadena">Huntington Hospital</option>
+    <optgroup label="Greater San Diego, CA">
+      <option value="rady-childrens" data-cluster="Greater San Diego, CA">Rady Children's Hospital San Diego</option>
+      <option value="scripps-la-jolla" data-cluster="Greater San Diego, CA">Scripps Memorial Hospital La Jolla</option>
+      <option value="scripps-mercy-sd" data-cluster="Greater San Diego, CA">Scripps Mercy Hospital San Diego</option>
+      <option value="sharp-grossmont" data-cluster="Greater San Diego, CA">Sharp Grossmont Hospital</option>
+      <option value="sharp-memorial" data-cluster="Greater San Diego, CA">Sharp Memorial Hospital</option>
+      <option value="ucsd-health" data-cluster="Greater San Diego, CA">UC San Diego Health</option>
     </optgroup>
     <optgroup label="Philadelphia, PA">
-      <option value="chop">Children's Hospital of Philadelphia</option>
-      <option value="hup-penn">Hospital of the University of Pennsylvania</option>
-      <option value="jefferson-abington">Jefferson Abington Hospital</option>
-      <option value="jefferson-einstein-philadelphia">Jefferson Einstein Philadelphia</option>
-      <option value="penn-presbyterian">Penn Presbyterian Medical Center</option>
-      <option value="temple-university-hospital">Temple University Hospital</option>
+      <option value="chop" data-cluster="Philadelphia, PA">Children's Hospital of Philadelphia</option>
+      <option value="hup-penn" data-cluster="Philadelphia, PA">Hospital of the University of Pennsylvania</option>
+      <option value="jefferson-abington" data-cluster="Philadelphia, PA">Jefferson Abington Hospital</option>
+      <option value="jefferson-einstein-philadelphia" data-cluster="Philadelphia, PA">Jefferson Einstein Philadelphia</option>
+      <option value="penn-presbyterian" data-cluster="Philadelphia, PA">Penn Presbyterian Medical Center</option>
+      <option value="temple-university-hospital" data-cluster="Philadelphia, PA">Temple University Hospital</option>
+    </optgroup>
+    <optgroup label="SF Bay Area, CA">
+      <option value="john-muir-concord" data-cluster="SF Bay Area, CA">John Muir Health Concord Medical Center</option>
+      <option value="john-muir-walnut-creek" data-cluster="SF Bay Area, CA">John Muir Health Walnut Creek Medical Center</option>
+      <option value="kaiser-oakland" data-cluster="SF Bay Area, CA">Kaiser Permanente Oakland Medical Center</option>
+      <option value="kaiser-redwood-city" data-cluster="SF Bay Area, CA">Kaiser Permanente Redwood City Medical Center</option>
+      <option value="stanford-health-care" data-cluster="SF Bay Area, CA">Stanford Health Care</option>
+      <option value="stanford-tri-valley" data-cluster="SF Bay Area, CA">Stanford Health Care Tri-Valley</option>
+    </optgroup>
+    <optgroup label="Greater Atlanta, GA">
+      <option value="emory-decatur" data-cluster="Greater Atlanta, GA">Emory Decatur Hospital</option>
+      <option value="emory-university-hospital" data-cluster="Greater Atlanta, GA">Emory University Hospital</option>
+      <option value="grady-memorial" data-cluster="Greater Atlanta, GA">Grady Memorial Hospital</option>
+      <option value="piedmont-atlanta" data-cluster="Greater Atlanta, GA">Piedmont Atlanta Hospital</option>
+      <option value="wellstar-kennestone" data-cluster="Greater Atlanta, GA">WellStar Kennestone Hospital</option>
+    </optgroup>
+    <optgroup label="Greater Boston, MA">
+      <option value="bidmc" data-cluster="Greater Boston, MA">Beth Israel Deaconess Medical Center</option>
+      <option value="boston-childrens" data-cluster="Greater Boston, MA">Boston Children's Hospital</option>
+      <option value="brigham-and-womens" data-cluster="Greater Boston, MA">Brigham and Women's Hospital</option>
+      <option value="lahey-burlington" data-cluster="Greater Boston, MA">Lahey Hospital &amp; Medical Center</option>
+      <option value="mass-general" data-cluster="Greater Boston, MA">Massachusetts General Hospital</option>
+    </optgroup>
+    <optgroup label="Greater Pittsburgh, PA">
+      <option value="ahn-allegheny-general" data-cluster="Greater Pittsburgh, PA">Allegheny General Hospital</option>
+      <option value="ahn-jefferson-regional" data-cluster="Greater Pittsburgh, PA">Jefferson Regional Medical Center</option>
+      <option value="upmc-childrens-pittsburgh" data-cluster="Greater Pittsburgh, PA">UPMC Children's Hospital of Pittsburgh</option>
+      <option value="upmc-magee-womens" data-cluster="Greater Pittsburgh, PA">UPMC Magee-Womens Hospital</option>
+      <option value="upmc-presbyterian-shadyside" data-cluster="Greater Pittsburgh, PA">UPMC Presbyterian Shadyside</option>
     </optgroup>
     <optgroup label="Phoenix, AZ">
-      <option value="banner-university-phoenix">Banner - University Medical Center Phoenix</option>
-      <option value="honorhealth-deer-valley">HonorHealth Deer Valley Medical Center</option>
-      <option value="honorhealth-osborn">HonorHealth Scottsdale Osborn</option>
-      <option value="phoenix-childrens">Phoenix Children's Hospital</option>
-      <option value="st-josephs-phoenix">St. Joseph's Hospital and Medical Center</option>
+      <option value="banner-university-phoenix" data-cluster="Phoenix, AZ">Banner - University Medical Center Phoenix</option>
+      <option value="honorhealth-deer-valley" data-cluster="Phoenix, AZ">HonorHealth Deer Valley Medical Center</option>
+      <option value="honorhealth-osborn" data-cluster="Phoenix, AZ">HonorHealth Scottsdale Osborn</option>
+      <option value="phoenix-childrens" data-cluster="Phoenix, AZ">Phoenix Children's Hospital</option>
+      <option value="st-josephs-phoenix" data-cluster="Phoenix, AZ">St. Joseph's Hospital and Medical Center</option>
     </optgroup>
-    <optgroup label="Pittsburgh, PA">
-      <option value="ahn-allegheny-general">Allegheny General Hospital</option>
-      <option value="upmc-childrens-pittsburgh">UPMC Children's Hospital of Pittsburgh</option>
-      <option value="upmc-magee-womens">UPMC Magee-Womens Hospital</option>
-      <option value="upmc-presbyterian-shadyside">UPMC Presbyterian Shadyside</option>
-    </optgroup>
-    <optgroup label="Pleasanton, CA">
-      <option value="stanford-tri-valley">Stanford Health Care Tri-Valley</option>
-    </optgroup>
-    <optgroup label="Pomona, CA">
-      <option value="pomona-valley">Pomona Valley Hospital Medical Center</option>
-    </optgroup>
-    <optgroup label="Queens / Nassau, NY">
-      <option value="northwell-lij">Northwell Long Island Jewish Medical Center</option>
-    </optgroup>
-    <optgroup label="Queens, NY">
-      <option value="nychh-elmhurst">Elmhurst Hospital Center</option>
-      <option value="nyp-queens">NewYork-Presbyterian Queens</option>
-    </optgroup>
-    <optgroup label="Redwood City, CA">
-      <option value="kaiser-redwood-city">Kaiser Permanente Redwood City Medical Center</option>
-    </optgroup>
-    <optgroup label="Round Rock, TX">
-      <option value="st-davids-round-rock">St. David's Round Rock Medical Center</option>
-    </optgroup>
-    <optgroup label="Royal Oak, MI">
-      <option value="corewell-royal-oak">Corewell Health Royal Oak</option>
-    </optgroup>
-    <optgroup label="San Diego, CA">
-      <option value="rady-childrens">Rady Children's Hospital San Diego</option>
-      <option value="scripps-mercy-sd">Scripps Mercy Hospital San Diego</option>
-      <option value="sharp-memorial">Sharp Memorial Hospital</option>
-      <option value="ucsd-health">UC San Diego Health</option>
-    </optgroup>
-    <optgroup label="San Gabriel, CA">
-      <option value="san-gabriel-valley-mc">San Gabriel Valley Medical Center</option>
-    </optgroup>
-    <optgroup label="Santa Ana, CA">
-      <option value="south-coast-global-mc">South Coast Global Medical Center</option>
-    </optgroup>
-    <optgroup label="Santa Monica, CA">
-      <option value="providence-st-johns-santa-monica">Providence Saint John's Health Center</option>
-      <option value="ucla-santa-monica">UCLA Santa Monica Medical Center</option>
+    <optgroup label="Greater Tampa, FL">
+      <option value="baycare-morton-plant" data-cluster="Greater Tampa, FL">BayCare Morton Plant Hospital</option>
+      <option value="baycare-st-josephs-tampa" data-cluster="Greater Tampa, FL">BayCare St. Joseph's Hospital Tampa</option>
+      <option value="moffitt-cancer-center" data-cluster="Greater Tampa, FL">H. Lee Moffitt Cancer Center</option>
+      <option value="tampa-general" data-cluster="Greater Tampa, FL">Tampa General Hospital</option>
     </optgroup>
     <optgroup label="Seattle, WA">
-      <option value="seattle-childrens">Seattle Children's Hospital</option>
-      <option value="swedish-first-hill">Swedish Medical Center First Hill</option>
-      <option value="virginia-mason">Virginia Mason Medical Center</option>
+      <option value="seattle-childrens" data-cluster="Seattle, WA">Seattle Children's Hospital</option>
+      <option value="swedish-first-hill" data-cluster="Seattle, WA">Swedish Medical Center First Hill</option>
+      <option value="virginia-mason" data-cluster="Seattle, WA">Virginia Mason Medical Center</option>
     </optgroup>
-    <optgroup label="Simi Valley, CA">
-      <option value="adventist-simi-valley">Adventist Health Simi Valley</option>
+    <optgroup label="Cleveland, OH">
+      <option value="cleveland-clinic" data-cluster="Cleveland, OH">Cleveland Clinic</option>
     </optgroup>
-    <optgroup label="South El Monte, CA">
-      <option value="greater-el-monte">Greater El Monte Community Hospital</option>
+    <optgroup label="Colorado Springs, CO">
+      <option value="uchealth-memorial-central" data-cluster="Colorado Springs, CO">UCHealth Memorial Hospital Central</option>
+    </optgroup>
+    <optgroup label="Manhasset, NY">
+      <option value="northwell-north-shore" data-cluster="Manhasset, NY">North Shore University Hospital</option>
+    </optgroup>
+    <optgroup label="Monroeville, PA">
+      <option value="ahn-forbes" data-cluster="Monroeville, PA">Forbes Hospital</option>
+    </optgroup>
+    <optgroup label="Nashville, TN">
+      <option value="vanderbilt-umc" data-cluster="Nashville, TN">Vanderbilt University Medical Center</option>
+    </optgroup>
+    <optgroup label="Northridge, CA">
+      <option value="dignity-northridge" data-cluster="Northridge, CA">Northridge Hospital Medical Center</option>
+    </optgroup>
+    <optgroup label="Queens / Nassau, NY">
+      <option value="northwell-lij" data-cluster="Queens / Nassau, NY">Northwell Long Island Jewish Medical Center</option>
+    </optgroup>
+    <optgroup label="Santa Ana, CA">
+      <option value="south-coast-global-mc" data-cluster="Santa Ana, CA">South Coast Global Medical Center</option>
     </optgroup>
     <optgroup label="Staten Island, NY">
-      <option value="northwell-staten-island">Staten Island University Hospital</option>
-    </optgroup>
-    <optgroup label="Sugar Land, TX">
-      <option value="memorial-hermann-sugar-land">Memorial Hermann Sugar Land Hospital</option>
-    </optgroup>
-    <optgroup label="Sylmar, CA">
-      <option value="olive-view-ucla">Olive View-UCLA Medical Center</option>
-    </optgroup>
-    <optgroup label="Tampa, FL">
-      <option value="baycare-st-josephs-tampa">BayCare St. Joseph's Hospital Tampa</option>
-      <option value="moffitt-cancer-center">H. Lee Moffitt Cancer Center</option>
-      <option value="tampa-general">Tampa General Hospital</option>
-    </optgroup>
-    <optgroup label="Tarzana, CA">
-      <option value="providence-tarzana">Providence Cedars-Sinai Tarzana Medical Center</option>
-    </optgroup>
-    <optgroup label="Torrance, CA">
-      <option value="harbor-ucla">Harbor-UCLA Medical Center</option>
-      <option value="torrance-memorial">Torrance Memorial Medical Center</option>
-    </optgroup>
-    <optgroup label="Troy, MI">
-      <option value="corewell-troy">Corewell Health Troy</option>
-    </optgroup>
-    <optgroup label="Walnut Creek, CA">
-      <option value="john-muir-walnut-creek">John Muir Health Walnut Creek Medical Center</option>
+      <option value="northwell-staten-island" data-cluster="Staten Island, NY">Staten Island University Hospital</option>
     </optgroup>
     <optgroup label="Washington, DC">
-      <option value="medstar-georgetown">MedStar Georgetown University Hospital</option>
-    </optgroup>
-    <optgroup label="West Bloomfield, MI">
-      <option value="henry-ford-west-bloomfield">Henry Ford West Bloomfield Hospital</option>
-    </optgroup>
-    <optgroup label="Whittier, CA">
-      <option value="whittier-hospital">Whittier Hospital Medical Center</option>
+      <option value="medstar-georgetown" data-cluster="Washington, DC">MedStar Georgetown University Hospital</option>
     </optgroup>
       </select>
     </div>
@@ -740,112 +567,140 @@
       <section class="cat-block">
         <h2 class="display">Los Angeles, CA</h2>
         <div class="grid">
-        <a href="/compare/cedars-sinai-vs-mlk-community">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> MLK Community Hospital</a>
-        <a href="/compare/cedars-sinai-vs-providence-st-joseph">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Providence Saint Joseph (Burbank)</a>
-        <a href="/compare/cedars-sinai-vs-hollywood-presbyterian">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Hollywood Presbyterian Medical Center</a>
-        <a href="/compare/cedars-sinai-vs-dignity-california-hospital">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> California Hospital Medical Center</a>
         <a href="/compare/cedars-sinai-vs-ucla-ronald-reagan">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Ronald Reagan UCLA Medical Center</a>
+        <a href="/compare/cedars-sinai-vs-providence-st-joseph">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Providence Saint Joseph (Burbank)</a>
+        <a href="/compare/cedars-sinai-vs-providence-st-johns-santa-monica">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Providence Saint John's Health Center</a>
         <a href="/compare/cedars-sinai-vs-usc-keck">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Keck Hospital of USC</a>
         <a href="/compare/cedars-sinai-vs-usc-norris">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Norris Cancer Hospital</a>
-        <a href="/compare/mlk-community-vs-providence-st-joseph">MLK Community Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Providence Saint Joseph (Burbank)</a>
-        </div>
-      </section>
-      <section class="cat-block">
-        <h2 class="display">Houston, TX</h2>
-        <div class="grid">
-        <a href="/compare/houston-methodist-vs-hca-houston-medical-center">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> HCA Houston Healthcare Medical Center</a>
-        <a href="/compare/houston-methodist-vs-hca-houston-kingwood">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> HCA Houston Healthcare Kingwood</a>
-        <a href="/compare/houston-methodist-vs-harris-health-ben-taub">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Ben Taub Hospital</a>
-        <a href="/compare/houston-methodist-vs-md-anderson">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> UT MD Anderson Cancer Center</a>
-        <a href="/compare/houston-methodist-vs-baylor-st-lukes-tmc">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Baylor St. Luke's Medical Center</a>
-        <a href="/compare/houston-methodist-vs-memorial-hermann-tmc">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann-Texas Medical Center</a>
-        <a href="/compare/houston-methodist-vs-memorial-hermann-southwest">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann Southwest Hospital</a>
-        <a href="/compare/hca-houston-medical-center-vs-hca-houston-kingwood">HCA Houston Healthcare Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> HCA Houston Healthcare Kingwood</a>
-        </div>
-      </section>
-      <section class="cat-block">
-        <h2 class="display">Chicago, IL</h2>
-        <div class="grid">
-        <a href="/compare/advocate-christ-vs-stroger-cook-county">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> John H. Stroger Jr. Hospital</a>
-        <a href="/compare/advocate-christ-vs-advocate-illinois-masonic">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Advocate Illinois Masonic Medical Center</a>
-        <a href="/compare/advocate-christ-vs-northwestern-memorial">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Northwestern Memorial Hospital</a>
-        <a href="/compare/advocate-christ-vs-uchicago-medical-center">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> University of Chicago Medical Center</a>
-        <a href="/compare/advocate-christ-vs-rush-university">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Rush University Medical Center</a>
-        <a href="/compare/advocate-christ-vs-lurie-childrens">Advocate Christ Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Ann &amp; Robert H. Lurie Children's Hospital</a>
-        <a href="/compare/stroger-cook-county-vs-advocate-illinois-masonic">John H. Stroger Jr. Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Advocate Illinois Masonic Medical Center</a>
-        <a href="/compare/stroger-cook-county-vs-northwestern-memorial">John H. Stroger Jr. Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Northwestern Memorial Hospital</a>
+        <a href="/compare/cedars-sinai-vs-usc-verdugo-hills">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Verdugo Hills Hospital</a>
+        <a href="/compare/cedars-sinai-vs-usc-arcadia">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Arcadia Hospital</a>
+        <a href="/compare/cedars-sinai-vs-hoag-newport">Cedars-Sinai Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Hoag Memorial Hospital Presbyterian</a>
         </div>
       </section>
       <section class="cat-block">
         <h2 class="display">New York, NY</h2>
         <div class="grid">
-        <a href="/compare/mount-sinai-hospital-vs-nychh-bellevue">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Bellevue Hospital Center</a>
-        <a href="/compare/mount-sinai-hospital-vs-nyu-langone-tisch">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> NYU Langone Tisch Hospital</a>
-        <a href="/compare/mount-sinai-hospital-vs-nyp-columbia">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> NewYork-Presbyterian / Columbia &amp; Weill Cornell</a>
-        <a href="/compare/mount-sinai-hospital-vs-msk-cancer-center">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Sloan Kettering Cancer Center</a>
-        <a href="/compare/mount-sinai-hospital-vs-hss-main">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Hospital for Special Surgery</a>
-        <a href="/compare/mount-sinai-hospital-vs-northwell-lenox-hill">Mount Sinai Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Lenox Hill Hospital</a>
-        <a href="/compare/nychh-bellevue-vs-nyu-langone-tisch">Bellevue Hospital Center <span style="color:var(--ink-3);font-weight:400">vs</span> NYU Langone Tisch Hospital</a>
-        <a href="/compare/nychh-bellevue-vs-nyp-columbia">Bellevue Hospital Center <span style="color:var(--ink-3);font-weight:400">vs</span> NewYork-Presbyterian / Columbia &amp; Weill Cornell</a>
+        <a href="/compare/nyu-langone-tisch-vs-mount-sinai-hospital">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Mount Sinai Hospital</a>
+        <a href="/compare/nyu-langone-tisch-vs-nyp-columbia">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> NewYork-Presbyterian / Columbia &amp; Weill Cornell</a>
+        <a href="/compare/nyu-langone-tisch-vs-nyp-queens">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> NewYork-Presbyterian Queens</a>
+        <a href="/compare/nyu-langone-tisch-vs-msk-cancer-center">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Sloan Kettering Cancer Center</a>
+        <a href="/compare/nyu-langone-tisch-vs-hss-main">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Hospital for Special Surgery</a>
+        <a href="/compare/nyu-langone-tisch-vs-northwell-lenox-hill">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Lenox Hill Hospital</a>
+        <a href="/compare/nyu-langone-tisch-vs-montefiore-medical-center">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Montefiore Medical Center</a>
+        <a href="/compare/nyu-langone-tisch-vs-nychh-bellevue">NYU Langone Tisch Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Bellevue Hospital Center</a>
         </div>
       </section>
       <section class="cat-block">
-        <h2 class="display">Austin, TX</h2>
+        <h2 class="display">Santa Monica, CA</h2>
         <div class="grid">
-        <a href="/compare/dell-seton-uta-vs-ascension-seton-medical-austin">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Ascension Seton Medical Center Austin</a>
-        <a href="/compare/dell-seton-uta-vs-dell-childrens-austin">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Dell Children's Medical Center</a>
-        <a href="/compare/dell-seton-uta-vs-ascension-seton-northwest">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Ascension Seton Northwest Hospital</a>
-        <a href="/compare/dell-seton-uta-vs-st-davids-medical-center">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> St. David's Medical Center</a>
-        <a href="/compare/dell-seton-uta-vs-st-davids-north-austin">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> St. David's North Austin Medical Center</a>
-        <a href="/compare/dell-seton-uta-vs-heart-hospital-austin">Dell Seton Medical Center at UT Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Heart Hospital of Austin</a>
-        <a href="/compare/ascension-seton-medical-austin-vs-dell-childrens-austin">Ascension Seton Medical Center Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Dell Children's Medical Center</a>
-        <a href="/compare/ascension-seton-medical-austin-vs-ascension-seton-northwest">Ascension Seton Medical Center Austin <span style="color:var(--ink-3);font-weight:400">vs</span> Ascension Seton Northwest Hospital</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-usc-keck">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> Keck Hospital of USC</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-usc-norris">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Norris Cancer Hospital</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-usc-verdugo-hills">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Verdugo Hills Hospital</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-usc-arcadia">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> USC Arcadia Hospital</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-hoag-newport">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> Hoag Memorial Hospital Presbyterian</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-chla">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> Children's Hospital Los Angeles</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-kaiser-la-sunset">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> Kaiser Permanente LA Medical Center</a>
+        <a href="/compare/providence-st-johns-santa-monica-vs-mlk-community">Providence Saint John's Health Center <span style="color:var(--ink-3);font-weight:400">vs</span> MLK Community Hospital</a>
         </div>
       </section>
       <section class="cat-block">
-        <h2 class="display">Philadelphia, PA</h2>
+        <h2 class="display">Houston, TX</h2>
         <div class="grid">
-        <a href="/compare/jefferson-abington-vs-jefferson-einstein-philadelphia">Jefferson Abington Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Jefferson Einstein Philadelphia</a>
-        <a href="/compare/jefferson-abington-vs-hup-penn">Jefferson Abington Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Hospital of the University of Pennsylvania</a>
-        <a href="/compare/jefferson-abington-vs-temple-university-hospital">Jefferson Abington Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Temple University Hospital</a>
-        <a href="/compare/jefferson-abington-vs-penn-presbyterian">Jefferson Abington Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Penn Presbyterian Medical Center</a>
-        <a href="/compare/jefferson-abington-vs-chop">Jefferson Abington Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Children's Hospital of Philadelphia</a>
-        <a href="/compare/jefferson-einstein-philadelphia-vs-hup-penn">Jefferson Einstein Philadelphia <span style="color:var(--ink-3);font-weight:400">vs</span> Hospital of the University of Pennsylvania</a>
-        <a href="/compare/jefferson-einstein-philadelphia-vs-temple-university-hospital">Jefferson Einstein Philadelphia <span style="color:var(--ink-3);font-weight:400">vs</span> Temple University Hospital</a>
-        <a href="/compare/jefferson-einstein-philadelphia-vs-penn-presbyterian">Jefferson Einstein Philadelphia <span style="color:var(--ink-3);font-weight:400">vs</span> Penn Presbyterian Medical Center</a>
+        <a href="/compare/houston-methodist-vs-md-anderson">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> UT MD Anderson Cancer Center</a>
+        <a href="/compare/houston-methodist-vs-memorial-hermann-tmc">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann-Texas Medical Center</a>
+        <a href="/compare/houston-methodist-vs-memorial-hermann-southwest">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann Southwest Hospital</a>
+        <a href="/compare/houston-methodist-vs-memorial-hermann-memorial-city">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann Memorial City Medical Center</a>
+        <a href="/compare/houston-methodist-vs-memorial-hermann-sugar-land">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Memorial Hermann Sugar Land Hospital</a>
+        <a href="/compare/houston-methodist-vs-baylor-st-lukes-tmc">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Baylor St. Luke's Medical Center</a>
+        <a href="/compare/houston-methodist-vs-texas-childrens">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Texas Children's Hospital</a>
+        <a href="/compare/houston-methodist-vs-harris-health-ben-taub">Houston Methodist Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Ben Taub Hospital</a>
+        </div>
+      </section>
+      <section class="cat-block">
+        <h2 class="display">Glendale, CA</h2>
+        <div class="grid">
+        <a href="/compare/usc-verdugo-hills-vs-usc-arcadia">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> USC Arcadia Hospital</a>
+        <a href="/compare/usc-verdugo-hills-vs-hoag-newport">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Hoag Memorial Hospital Presbyterian</a>
+        <a href="/compare/usc-verdugo-hills-vs-chla">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Children's Hospital Los Angeles</a>
+        <a href="/compare/usc-verdugo-hills-vs-kaiser-la-sunset">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Kaiser Permanente LA Medical Center</a>
+        <a href="/compare/usc-verdugo-hills-vs-mlk-community">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> MLK Community Hospital</a>
+        <a href="/compare/usc-verdugo-hills-vs-olive-view-ucla">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Olive View-UCLA Medical Center</a>
+        <a href="/compare/usc-verdugo-hills-vs-harbor-ucla">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> Harbor-UCLA Medical Center</a>
+        <a href="/compare/usc-verdugo-hills-vs-ucla-santa-monica">USC Verdugo Hills Hospital <span style="color:var(--ink-3);font-weight:400">vs</span> UCLA Santa Monica Medical Center</a>
+        </div>
+      </section>
+      <section class="cat-block">
+        <h2 class="display">Torrance, CA</h2>
+        <div class="grid">
+        <a href="/compare/harbor-ucla-vs-ucla-santa-monica">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> UCLA Santa Monica Medical Center</a>
+        <a href="/compare/harbor-ucla-vs-torrance-memorial">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Torrance Memorial Medical Center</a>
+        <a href="/compare/harbor-ucla-vs-huntington-pasadena">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Huntington Hospital</a>
+        <a href="/compare/harbor-ucla-vs-cedars-sinai-marina-del-rey">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Cedars-Sinai Marina del Rey Hospital</a>
+        <a href="/compare/harbor-ucla-vs-pomona-valley">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Pomona Valley Hospital Medical Center</a>
+        <a href="/compare/harbor-ucla-vs-hollywood-presbyterian">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Hollywood Presbyterian Medical Center</a>
+        <a href="/compare/harbor-ucla-vs-st-francis-lynwood">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> Saint Francis Medical Center</a>
+        <a href="/compare/harbor-ucla-vs-dignity-st-mary-long-beach">Harbor-UCLA Medical Center <span style="color:var(--ink-3);font-weight:400">vs</span> St. Mary Medical Center</a>
         </div>
       </section>
 
   <div class="cta">
-    <h2>218 pre-built comparisons.</h2>
+    <h2>1047 pre-built comparisons.</h2>
     <p>For metros with multiple hospitals in our dataset, every pairing of the top hospitals already has a dedicated comparison page indexed by Google. Use the picker above for any pair, or click through the featured metros.</p>
     <a href="/procedure">Browse procedures  →</a>
   </div>
 
 <script>
-  // Compare-page picker. The build emits comparison pages for top 8
-  // hospitals per metro in procedure-coverage order. The picker normalizes
-  // alphabetically and tries both URL orderings (we generated only one
-  // direction). If the page 404s the user gets a friendly nudge.
+  // Compare-page picker. We generate every unordered pair of hospitals
+  // within each metro cluster (greater LA, greater NYC, etc.). The picker
+  // filters dropdown B to same-cluster options after A is chosen so users
+  // can only construct valid pairs.
   (function () {
-    var existing = ["cedars-sinai-vs-mlk-community","cedars-sinai-vs-providence-st-joseph","cedars-sinai-vs-hollywood-presbyterian","cedars-sinai-vs-dignity-california-hospital","cedars-sinai-vs-ucla-ronald-reagan","cedars-sinai-vs-usc-keck","cedars-sinai-vs-usc-norris","mlk-community-vs-providence-st-joseph","mlk-community-vs-hollywood-presbyterian","mlk-community-vs-dignity-california-hospital","mlk-community-vs-ucla-ronald-reagan","mlk-community-vs-usc-keck","mlk-community-vs-usc-norris","providence-st-joseph-vs-hollywood-presbyterian","providence-st-joseph-vs-dignity-california-hospital","providence-st-joseph-vs-ucla-ronald-reagan","providence-st-joseph-vs-usc-keck","providence-st-joseph-vs-usc-norris","hollywood-presbyterian-vs-dignity-california-hospital","hollywood-presbyterian-vs-ucla-ronald-reagan","hollywood-presbyterian-vs-usc-keck","hollywood-presbyterian-vs-usc-norris","dignity-california-hospital-vs-ucla-ronald-reagan","dignity-california-hospital-vs-usc-keck","dignity-california-hospital-vs-usc-norris","ucla-ronald-reagan-vs-usc-keck","ucla-ronald-reagan-vs-usc-norris","usc-keck-vs-usc-norris","houston-methodist-vs-hca-houston-medical-center","houston-methodist-vs-hca-houston-kingwood","houston-methodist-vs-harris-health-ben-taub","houston-methodist-vs-md-anderson","houston-methodist-vs-baylor-st-lukes-tmc","houston-methodist-vs-memorial-hermann-tmc","houston-methodist-vs-memorial-hermann-southwest","hca-houston-medical-center-vs-hca-houston-kingwood","hca-houston-medical-center-vs-harris-health-ben-taub","hca-houston-medical-center-vs-md-anderson","hca-houston-medical-center-vs-baylor-st-lukes-tmc","hca-houston-medical-center-vs-memorial-hermann-tmc","hca-houston-medical-center-vs-memorial-hermann-southwest","hca-houston-kingwood-vs-harris-health-ben-taub","hca-houston-kingwood-vs-md-anderson","hca-houston-kingwood-vs-baylor-st-lukes-tmc","hca-houston-kingwood-vs-memorial-hermann-tmc","hca-houston-kingwood-vs-memorial-hermann-southwest","harris-health-ben-taub-vs-md-anderson","harris-health-ben-taub-vs-baylor-st-lukes-tmc","harris-health-ben-taub-vs-memorial-hermann-tmc","harris-health-ben-taub-vs-memorial-hermann-southwest","md-anderson-vs-baylor-st-lukes-tmc","md-anderson-vs-memorial-hermann-tmc","md-anderson-vs-memorial-hermann-southwest","baylor-st-lukes-tmc-vs-memorial-hermann-tmc","baylor-st-lukes-tmc-vs-memorial-hermann-southwest","memorial-hermann-tmc-vs-memorial-hermann-southwest","advocate-christ-vs-stroger-cook-county","advocate-christ-vs-advocate-illinois-masonic","advocate-christ-vs-northwestern-memorial","advocate-christ-vs-uchicago-medical-center","advocate-christ-vs-rush-university","advocate-christ-vs-lurie-childrens","stroger-cook-county-vs-advocate-illinois-masonic","stroger-cook-county-vs-northwestern-memorial","stroger-cook-county-vs-uchicago-medical-center","stroger-cook-county-vs-rush-university","stroger-cook-county-vs-lurie-childrens","advocate-illinois-masonic-vs-northwestern-memorial","advocate-illinois-masonic-vs-uchicago-medical-center","advocate-illinois-masonic-vs-rush-university","advocate-illinois-masonic-vs-lurie-childrens","northwestern-memorial-vs-uchicago-medical-center","northwestern-memorial-vs-rush-university","northwestern-memorial-vs-lurie-childrens","uchicago-medical-center-vs-rush-university","uchicago-medical-center-vs-lurie-childrens","rush-university-vs-lurie-childrens","mount-sinai-hospital-vs-nychh-bellevue","mount-sinai-hospital-vs-nyu-langone-tisch","mount-sinai-hospital-vs-nyp-columbia","mount-sinai-hospital-vs-msk-cancer-center","mount-sinai-hospital-vs-hss-main","mount-sinai-hospital-vs-northwell-lenox-hill","nychh-bellevue-vs-nyu-langone-tisch","nychh-bellevue-vs-nyp-columbia","nychh-bellevue-vs-msk-cancer-center","nychh-bellevue-vs-hss-main","nychh-bellevue-vs-northwell-lenox-hill","nyu-langone-tisch-vs-nyp-columbia","nyu-langone-tisch-vs-msk-cancer-center","nyu-langone-tisch-vs-hss-main","nyu-langone-tisch-vs-northwell-lenox-hill","nyp-columbia-vs-msk-cancer-center","nyp-columbia-vs-hss-main","nyp-columbia-vs-northwell-lenox-hill","msk-cancer-center-vs-hss-main","msk-cancer-center-vs-northwell-lenox-hill","hss-main-vs-northwell-lenox-hill","bidmc-vs-mass-general","bidmc-vs-brigham-and-womens","bidmc-vs-boston-childrens","mass-general-vs-brigham-and-womens","mass-general-vs-boston-childrens","brigham-and-womens-vs-boston-childrens","jefferson-abington-vs-jefferson-einstein-philadelphia","jefferson-abington-vs-hup-penn","jefferson-abington-vs-temple-university-hospital","jefferson-abington-vs-penn-presbyterian","jefferson-abington-vs-chop","jefferson-einstein-philadelphia-vs-hup-penn","jefferson-einstein-philadelphia-vs-temple-university-hospital","jefferson-einstein-philadelphia-vs-penn-presbyterian","jefferson-einstein-philadelphia-vs-chop","hup-penn-vs-temple-university-hospital","hup-penn-vs-penn-presbyterian","hup-penn-vs-chop","temple-university-hospital-vs-penn-presbyterian","temple-university-hospital-vs-chop","penn-presbyterian-vs-chop","grady-memorial-vs-emory-decatur","grady-memorial-vs-emory-university-hospital","grady-memorial-vs-piedmont-atlanta","emory-decatur-vs-emory-university-hospital","emory-decatur-vs-piedmont-atlanta","emory-university-hospital-vs-piedmont-atlanta","honorhealth-osborn-vs-phoenix-childrens","honorhealth-osborn-vs-honorhealth-deer-valley","honorhealth-osborn-vs-st-josephs-phoenix","honorhealth-osborn-vs-banner-university-phoenix","phoenix-childrens-vs-honorhealth-deer-valley","phoenix-childrens-vs-st-josephs-phoenix","phoenix-childrens-vs-banner-university-phoenix","honorhealth-deer-valley-vs-st-josephs-phoenix","honorhealth-deer-valley-vs-banner-university-phoenix","st-josephs-phoenix-vs-banner-university-phoenix","virginia-mason-vs-swedish-first-hill","virginia-mason-vs-seattle-childrens","swedish-first-hill-vs-seattle-childrens","providence-st-johns-santa-monica-vs-ucla-santa-monica","usc-verdugo-hills-vs-dignity-glendale-memorial","usc-verdugo-hills-vs-adventist-glendale","dignity-glendale-memorial-vs-adventist-glendale","hoag-newport-vs-hoag-orthopedic-institute","torrance-memorial-vs-harbor-ucla","long-beach-memorial-vs-miller-childrens","long-beach-memorial-vs-dignity-st-mary-long-beach","miller-childrens-vs-dignity-st-mary-long-beach","nychh-elmhurst-vs-nyp-queens","montefiore-medical-center-vs-nychh-jacobi","nychh-kings-county-vs-maimonides-medical-center","ut-southwestern-vs-childrens-medical-center-dallas","ut-southwestern-vs-parkland-memorial","ut-southwestern-vs-texas-health-presbyterian-dallas","ut-southwestern-vs-methodist-dallas","ut-southwestern-vs-baylor-university-medical-center","childrens-medical-center-dallas-vs-parkland-memorial","childrens-medical-center-dallas-vs-texas-health-presbyterian-dallas","childrens-medical-center-dallas-vs-methodist-dallas","childrens-medical-center-dallas-vs-baylor-university-medical-center","parkland-memorial-vs-texas-health-presbyterian-dallas","parkland-memorial-vs-methodist-dallas","parkland-memorial-vs-baylor-university-medical-center","texas-health-presbyterian-dallas-vs-methodist-dallas","texas-health-presbyterian-dallas-vs-baylor-university-medical-center","methodist-dallas-vs-baylor-university-medical-center","monterey-park-hospital-vs-garfield-medical-center","henry-ford-detroit-vs-dmc-harper-university","henry-ford-detroit-vs-dmc-detroit-receiving","henry-ford-detroit-vs-dmc-sinai-grace","henry-ford-detroit-vs-childrens-hospital-michigan","dmc-harper-university-vs-dmc-detroit-receiving","dmc-harper-university-vs-dmc-sinai-grace","dmc-harper-university-vs-childrens-hospital-michigan","dmc-detroit-receiving-vs-dmc-sinai-grace","dmc-detroit-receiving-vs-childrens-hospital-michigan","dmc-sinai-grace-vs-childrens-hospital-michigan","ahn-allegheny-general-vs-upmc-presbyterian-shadyside","ahn-allegheny-general-vs-upmc-magee-womens","ahn-allegheny-general-vs-upmc-childrens-pittsburgh","upmc-presbyterian-shadyside-vs-upmc-magee-womens","upmc-presbyterian-shadyside-vs-upmc-childrens-pittsburgh","upmc-magee-womens-vs-upmc-childrens-pittsburgh","tampa-general-vs-baycare-st-josephs-tampa","tampa-general-vs-moffitt-cancer-center","baycare-st-josephs-tampa-vs-moffitt-cancer-center","nicklaus-childrens-vs-baptist-hospital-miami","nicklaus-childrens-vs-jackson-memorial","nicklaus-childrens-vs-jackson-south","baptist-hospital-miami-vs-jackson-memorial","baptist-hospital-miami-vs-jackson-south","jackson-memorial-vs-jackson-south","dell-seton-uta-vs-ascension-seton-medical-austin","dell-seton-uta-vs-dell-childrens-austin","dell-seton-uta-vs-ascension-seton-northwest","dell-seton-uta-vs-st-davids-medical-center","dell-seton-uta-vs-st-davids-north-austin","dell-seton-uta-vs-heart-hospital-austin","ascension-seton-medical-austin-vs-dell-childrens-austin","ascension-seton-medical-austin-vs-ascension-seton-northwest","ascension-seton-medical-austin-vs-st-davids-medical-center","ascension-seton-medical-austin-vs-st-davids-north-austin","ascension-seton-medical-austin-vs-heart-hospital-austin","dell-childrens-austin-vs-ascension-seton-northwest","dell-childrens-austin-vs-st-davids-medical-center","dell-childrens-austin-vs-st-davids-north-austin","dell-childrens-austin-vs-heart-hospital-austin","ascension-seton-northwest-vs-st-davids-medical-center","ascension-seton-northwest-vs-st-davids-north-austin","ascension-seton-northwest-vs-heart-hospital-austin","st-davids-medical-center-vs-st-davids-north-austin","st-davids-medical-center-vs-heart-hospital-austin","st-davids-north-austin-vs-heart-hospital-austin","rady-childrens-vs-ucsd-health","rady-childrens-vs-sharp-memorial","rady-childrens-vs-scripps-mercy-sd","ucsd-health-vs-sharp-memorial","ucsd-health-vs-scripps-mercy-sd","sharp-memorial-vs-scripps-mercy-sd"];
+    var existing = ["cedars-sinai-vs-ucla-ronald-reagan","cedars-sinai-vs-providence-st-joseph","cedars-sinai-vs-providence-st-johns-santa-monica","cedars-sinai-vs-usc-keck","cedars-sinai-vs-usc-norris","cedars-sinai-vs-usc-verdugo-hills","cedars-sinai-vs-usc-arcadia","cedars-sinai-vs-hoag-newport","cedars-sinai-vs-chla","cedars-sinai-vs-kaiser-la-sunset","cedars-sinai-vs-mlk-community","cedars-sinai-vs-olive-view-ucla","cedars-sinai-vs-harbor-ucla","cedars-sinai-vs-ucla-santa-monica","cedars-sinai-vs-torrance-memorial","cedars-sinai-vs-huntington-pasadena","cedars-sinai-vs-cedars-sinai-marina-del-rey","cedars-sinai-vs-pomona-valley","cedars-sinai-vs-hollywood-presbyterian","cedars-sinai-vs-st-francis-lynwood","cedars-sinai-vs-dignity-st-mary-long-beach","cedars-sinai-vs-dignity-california-hospital","cedars-sinai-vs-dignity-glendale-memorial","cedars-sinai-vs-whittier-hospital","cedars-sinai-vs-san-gabriel-valley-mc","cedars-sinai-vs-garfield-medical-center","cedars-sinai-vs-greater-el-monte","cedars-sinai-vs-monterey-park-hospital","cedars-sinai-vs-providence-tarzana","cedars-sinai-vs-long-beach-memorial","cedars-sinai-vs-miller-childrens","cedars-sinai-vs-coast-plaza","cedars-sinai-vs-adventist-white-memorial-montebello","cedars-sinai-vs-adventist-glendale","cedars-sinai-vs-adventist-simi-valley","cedars-sinai-vs-hoag-orthopedic-institute","ucla-ronald-reagan-vs-providence-st-joseph","ucla-ronald-reagan-vs-providence-st-johns-santa-monica","ucla-ronald-reagan-vs-usc-keck","ucla-ronald-reagan-vs-usc-norris","ucla-ronald-reagan-vs-usc-verdugo-hills","ucla-ronald-reagan-vs-usc-arcadia","ucla-ronald-reagan-vs-hoag-newport","ucla-ronald-reagan-vs-chla","ucla-ronald-reagan-vs-kaiser-la-sunset","ucla-ronald-reagan-vs-mlk-community","ucla-ronald-reagan-vs-olive-view-ucla","ucla-ronald-reagan-vs-harbor-ucla","ucla-ronald-reagan-vs-ucla-santa-monica","ucla-ronald-reagan-vs-torrance-memorial","ucla-ronald-reagan-vs-huntington-pasadena","ucla-ronald-reagan-vs-cedars-sinai-marina-del-rey","ucla-ronald-reagan-vs-pomona-valley","ucla-ronald-reagan-vs-hollywood-presbyterian","ucla-ronald-reagan-vs-st-francis-lynwood","ucla-ronald-reagan-vs-dignity-st-mary-long-beach","ucla-ronald-reagan-vs-dignity-california-hospital","ucla-ronald-reagan-vs-dignity-glendale-memorial","ucla-ronald-reagan-vs-whittier-hospital","ucla-ronald-reagan-vs-san-gabriel-valley-mc","ucla-ronald-reagan-vs-garfield-medical-center","ucla-ronald-reagan-vs-greater-el-monte","ucla-ronald-reagan-vs-monterey-park-hospital","ucla-ronald-reagan-vs-providence-tarzana","ucla-ronald-reagan-vs-long-beach-memorial","ucla-ronald-reagan-vs-miller-childrens","ucla-ronald-reagan-vs-coast-plaza","ucla-ronald-reagan-vs-adventist-white-memorial-montebello","ucla-ronald-reagan-vs-adventist-glendale","ucla-ronald-reagan-vs-adventist-simi-valley","ucla-ronald-reagan-vs-hoag-orthopedic-institute","providence-st-joseph-vs-providence-st-johns-santa-monica","providence-st-joseph-vs-usc-keck","providence-st-joseph-vs-usc-norris","providence-st-joseph-vs-usc-verdugo-hills","providence-st-joseph-vs-usc-arcadia","providence-st-joseph-vs-hoag-newport","providence-st-joseph-vs-chla","providence-st-joseph-vs-kaiser-la-sunset","providence-st-joseph-vs-mlk-community","providence-st-joseph-vs-olive-view-ucla","providence-st-joseph-vs-harbor-ucla","providence-st-joseph-vs-ucla-santa-monica","providence-st-joseph-vs-torrance-memorial","providence-st-joseph-vs-huntington-pasadena","providence-st-joseph-vs-cedars-sinai-marina-del-rey","providence-st-joseph-vs-pomona-valley","providence-st-joseph-vs-hollywood-presbyterian","providence-st-joseph-vs-st-francis-lynwood","providence-st-joseph-vs-dignity-st-mary-long-beach","providence-st-joseph-vs-dignity-california-hospital","providence-st-joseph-vs-dignity-glendale-memorial","providence-st-joseph-vs-whittier-hospital","providence-st-joseph-vs-san-gabriel-valley-mc","providence-st-joseph-vs-garfield-medical-center","providence-st-joseph-vs-greater-el-monte","providence-st-joseph-vs-monterey-park-hospital","providence-st-joseph-vs-providence-tarzana","providence-st-joseph-vs-long-beach-memorial","providence-st-joseph-vs-miller-childrens","providence-st-joseph-vs-coast-plaza","providence-st-joseph-vs-adventist-white-memorial-montebello","providence-st-joseph-vs-adventist-glendale","providence-st-joseph-vs-adventist-simi-valley","providence-st-joseph-vs-hoag-orthopedic-institute","providence-st-johns-santa-monica-vs-usc-keck","providence-st-johns-santa-monica-vs-usc-norris","providence-st-johns-santa-monica-vs-usc-verdugo-hills","providence-st-johns-santa-monica-vs-usc-arcadia","providence-st-johns-santa-monica-vs-hoag-newport","providence-st-johns-santa-monica-vs-chla","providence-st-johns-santa-monica-vs-kaiser-la-sunset","providence-st-johns-santa-monica-vs-mlk-community","providence-st-johns-santa-monica-vs-olive-view-ucla","providence-st-johns-santa-monica-vs-harbor-ucla","providence-st-johns-santa-monica-vs-ucla-santa-monica","providence-st-johns-santa-monica-vs-torrance-memorial","providence-st-johns-santa-monica-vs-huntington-pasadena","providence-st-johns-santa-monica-vs-cedars-sinai-marina-del-rey","providence-st-johns-santa-monica-vs-pomona-valley","providence-st-johns-santa-monica-vs-hollywood-presbyterian","providence-st-johns-santa-monica-vs-st-francis-lynwood","providence-st-johns-santa-monica-vs-dignity-st-mary-long-beach","providence-st-johns-santa-monica-vs-dignity-california-hospital","providence-st-johns-santa-monica-vs-dignity-glendale-memorial","providence-st-johns-santa-monica-vs-whittier-hospital","providence-st-johns-santa-monica-vs-san-gabriel-valley-mc","providence-st-johns-santa-monica-vs-garfield-medical-center","providence-st-johns-santa-monica-vs-greater-el-monte","providence-st-johns-santa-monica-vs-monterey-park-hospital","providence-st-johns-santa-monica-vs-providence-tarzana","providence-st-johns-santa-monica-vs-long-beach-memorial","providence-st-johns-santa-monica-vs-miller-childrens","providence-st-johns-santa-monica-vs-coast-plaza","providence-st-johns-santa-monica-vs-adventist-white-memorial-montebello","providence-st-johns-santa-monica-vs-adventist-glendale","providence-st-johns-santa-monica-vs-adventist-simi-valley","providence-st-johns-santa-monica-vs-hoag-orthopedic-institute","usc-keck-vs-usc-norris","usc-keck-vs-usc-verdugo-hills","usc-keck-vs-usc-arcadia","usc-keck-vs-hoag-newport","usc-keck-vs-chla","usc-keck-vs-kaiser-la-sunset","usc-keck-vs-mlk-community","usc-keck-vs-olive-view-ucla","usc-keck-vs-harbor-ucla","usc-keck-vs-ucla-santa-monica","usc-keck-vs-torrance-memorial","usc-keck-vs-huntington-pasadena","usc-keck-vs-cedars-sinai-marina-del-rey","usc-keck-vs-pomona-valley","usc-keck-vs-hollywood-presbyterian","usc-keck-vs-st-francis-lynwood","usc-keck-vs-dignity-st-mary-long-beach","usc-keck-vs-dignity-california-hospital","usc-keck-vs-dignity-glendale-memorial","usc-keck-vs-whittier-hospital","usc-keck-vs-san-gabriel-valley-mc","usc-keck-vs-garfield-medical-center","usc-keck-vs-greater-el-monte","usc-keck-vs-monterey-park-hospital","usc-keck-vs-providence-tarzana","usc-keck-vs-long-beach-memorial","usc-keck-vs-miller-childrens","usc-keck-vs-coast-plaza","usc-keck-vs-adventist-white-memorial-montebello","usc-keck-vs-adventist-glendale","usc-keck-vs-adventist-simi-valley","usc-keck-vs-hoag-orthopedic-institute","usc-norris-vs-usc-verdugo-hills","usc-norris-vs-usc-arcadia","usc-norris-vs-hoag-newport","usc-norris-vs-chla","usc-norris-vs-kaiser-la-sunset","usc-norris-vs-mlk-community","usc-norris-vs-olive-view-ucla","usc-norris-vs-harbor-ucla","usc-norris-vs-ucla-santa-monica","usc-norris-vs-torrance-memorial","usc-norris-vs-huntington-pasadena","usc-norris-vs-cedars-sinai-marina-del-rey","usc-norris-vs-pomona-valley","usc-norris-vs-hollywood-presbyterian","usc-norris-vs-st-francis-lynwood","usc-norris-vs-dignity-st-mary-long-beach","usc-norris-vs-dignity-california-hospital","usc-norris-vs-dignity-glendale-memorial","usc-norris-vs-whittier-hospital","usc-norris-vs-san-gabriel-valley-mc","usc-norris-vs-garfield-medical-center","usc-norris-vs-greater-el-monte","usc-norris-vs-monterey-park-hospital","usc-norris-vs-providence-tarzana","usc-norris-vs-long-beach-memorial","usc-norris-vs-miller-childrens","usc-norris-vs-coast-plaza","usc-norris-vs-adventist-white-memorial-montebello","usc-norris-vs-adventist-glendale","usc-norris-vs-adventist-simi-valley","usc-norris-vs-hoag-orthopedic-institute","usc-verdugo-hills-vs-usc-arcadia","usc-verdugo-hills-vs-hoag-newport","usc-verdugo-hills-vs-chla","usc-verdugo-hills-vs-kaiser-la-sunset","usc-verdugo-hills-vs-mlk-community","usc-verdugo-hills-vs-olive-view-ucla","usc-verdugo-hills-vs-harbor-ucla","usc-verdugo-hills-vs-ucla-santa-monica","usc-verdugo-hills-vs-torrance-memorial","usc-verdugo-hills-vs-huntington-pasadena","usc-verdugo-hills-vs-cedars-sinai-marina-del-rey","usc-verdugo-hills-vs-pomona-valley","usc-verdugo-hills-vs-hollywood-presbyterian","usc-verdugo-hills-vs-st-francis-lynwood","usc-verdugo-hills-vs-dignity-st-mary-long-beach","usc-verdugo-hills-vs-dignity-california-hospital","usc-verdugo-hills-vs-dignity-glendale-memorial","usc-verdugo-hills-vs-whittier-hospital","usc-verdugo-hills-vs-san-gabriel-valley-mc","usc-verdugo-hills-vs-garfield-medical-center","usc-verdugo-hills-vs-greater-el-monte","usc-verdugo-hills-vs-monterey-park-hospital","usc-verdugo-hills-vs-providence-tarzana","usc-verdugo-hills-vs-long-beach-memorial","usc-verdugo-hills-vs-miller-childrens","usc-verdugo-hills-vs-coast-plaza","usc-verdugo-hills-vs-adventist-white-memorial-montebello","usc-verdugo-hills-vs-adventist-glendale","usc-verdugo-hills-vs-adventist-simi-valley","usc-verdugo-hills-vs-hoag-orthopedic-institute","usc-arcadia-vs-hoag-newport","usc-arcadia-vs-chla","usc-arcadia-vs-kaiser-la-sunset","usc-arcadia-vs-mlk-community","usc-arcadia-vs-olive-view-ucla","usc-arcadia-vs-harbor-ucla","usc-arcadia-vs-ucla-santa-monica","usc-arcadia-vs-torrance-memorial","usc-arcadia-vs-huntington-pasadena","usc-arcadia-vs-cedars-sinai-marina-del-rey","usc-arcadia-vs-pomona-valley","usc-arcadia-vs-hollywood-presbyterian","usc-arcadia-vs-st-francis-lynwood","usc-arcadia-vs-dignity-st-mary-long-beach","usc-arcadia-vs-dignity-california-hospital","usc-arcadia-vs-dignity-glendale-memorial","usc-arcadia-vs-whittier-hospital","usc-arcadia-vs-san-gabriel-valley-mc","usc-arcadia-vs-garfield-medical-center","usc-arcadia-vs-greater-el-monte","usc-arcadia-vs-monterey-park-hospital","usc-arcadia-vs-providence-tarzana","usc-arcadia-vs-long-beach-memorial","usc-arcadia-vs-miller-childrens","usc-arcadia-vs-coast-plaza","usc-arcadia-vs-adventist-white-memorial-montebello","usc-arcadia-vs-adventist-glendale","usc-arcadia-vs-adventist-simi-valley","usc-arcadia-vs-hoag-orthopedic-institute","hoag-newport-vs-chla","hoag-newport-vs-kaiser-la-sunset","hoag-newport-vs-mlk-community","hoag-newport-vs-olive-view-ucla","hoag-newport-vs-harbor-ucla","hoag-newport-vs-ucla-santa-monica","hoag-newport-vs-torrance-memorial","hoag-newport-vs-huntington-pasadena","hoag-newport-vs-cedars-sinai-marina-del-rey","hoag-newport-vs-pomona-valley","hoag-newport-vs-hollywood-presbyterian","hoag-newport-vs-st-francis-lynwood","hoag-newport-vs-dignity-st-mary-long-beach","hoag-newport-vs-dignity-california-hospital","hoag-newport-vs-dignity-glendale-memorial","hoag-newport-vs-whittier-hospital","hoag-newport-vs-san-gabriel-valley-mc","hoag-newport-vs-garfield-medical-center","hoag-newport-vs-greater-el-monte","hoag-newport-vs-monterey-park-hospital","hoag-newport-vs-providence-tarzana","hoag-newport-vs-long-beach-memorial","hoag-newport-vs-miller-childrens","hoag-newport-vs-coast-plaza","hoag-newport-vs-adventist-white-memorial-montebello","hoag-newport-vs-adventist-glendale","hoag-newport-vs-adventist-simi-valley","hoag-newport-vs-hoag-orthopedic-institute","chla-vs-kaiser-la-sunset","chla-vs-mlk-community","chla-vs-olive-view-ucla","chla-vs-harbor-ucla","chla-vs-ucla-santa-monica","chla-vs-torrance-memorial","chla-vs-huntington-pasadena","chla-vs-cedars-sinai-marina-del-rey","chla-vs-pomona-valley","chla-vs-hollywood-presbyterian","chla-vs-st-francis-lynwood","chla-vs-dignity-st-mary-long-beach","chla-vs-dignity-california-hospital","chla-vs-dignity-glendale-memorial","chla-vs-whittier-hospital","chla-vs-san-gabriel-valley-mc","chla-vs-garfield-medical-center","chla-vs-greater-el-monte","chla-vs-monterey-park-hospital","chla-vs-providence-tarzana","chla-vs-long-beach-memorial","chla-vs-miller-childrens","chla-vs-coast-plaza","chla-vs-adventist-white-memorial-montebello","chla-vs-adventist-glendale","chla-vs-adventist-simi-valley","chla-vs-hoag-orthopedic-institute","kaiser-la-sunset-vs-mlk-community","kaiser-la-sunset-vs-olive-view-ucla","kaiser-la-sunset-vs-harbor-ucla","kaiser-la-sunset-vs-ucla-santa-monica","kaiser-la-sunset-vs-torrance-memorial","kaiser-la-sunset-vs-huntington-pasadena","kaiser-la-sunset-vs-cedars-sinai-marina-del-rey","kaiser-la-sunset-vs-pomona-valley","kaiser-la-sunset-vs-hollywood-presbyterian","kaiser-la-sunset-vs-st-francis-lynwood","kaiser-la-sunset-vs-dignity-st-mary-long-beach","kaiser-la-sunset-vs-dignity-california-hospital","kaiser-la-sunset-vs-dignity-glendale-memorial","kaiser-la-sunset-vs-whittier-hospital","kaiser-la-sunset-vs-san-gabriel-valley-mc","kaiser-la-sunset-vs-garfield-medical-center","kaiser-la-sunset-vs-greater-el-monte","kaiser-la-sunset-vs-monterey-park-hospital","kaiser-la-sunset-vs-providence-tarzana","kaiser-la-sunset-vs-long-beach-memorial","kaiser-la-sunset-vs-miller-childrens","kaiser-la-sunset-vs-coast-plaza","kaiser-la-sunset-vs-adventist-white-memorial-montebello","kaiser-la-sunset-vs-adventist-glendale","kaiser-la-sunset-vs-adventist-simi-valley","kaiser-la-sunset-vs-hoag-orthopedic-institute","mlk-community-vs-olive-view-ucla","mlk-community-vs-harbor-ucla","mlk-community-vs-ucla-santa-monica","mlk-community-vs-torrance-memorial","mlk-community-vs-huntington-pasadena","mlk-community-vs-cedars-sinai-marina-del-rey","mlk-community-vs-pomona-valley","mlk-community-vs-hollywood-presbyterian","mlk-community-vs-st-francis-lynwood","mlk-community-vs-dignity-st-mary-long-beach","mlk-community-vs-dignity-california-hospital","mlk-community-vs-dignity-glendale-memorial","mlk-community-vs-whittier-hospital","mlk-community-vs-san-gabriel-valley-mc","mlk-community-vs-garfield-medical-center","mlk-community-vs-greater-el-monte","mlk-community-vs-monterey-park-hospital","mlk-community-vs-providence-tarzana","mlk-community-vs-long-beach-memorial","mlk-community-vs-miller-childrens","mlk-community-vs-coast-plaza","mlk-community-vs-adventist-white-memorial-montebello","mlk-community-vs-adventist-glendale","mlk-community-vs-adventist-simi-valley","mlk-community-vs-hoag-orthopedic-institute","olive-view-ucla-vs-harbor-ucla","olive-view-ucla-vs-ucla-santa-monica","olive-view-ucla-vs-torrance-memorial","olive-view-ucla-vs-huntington-pasadena","olive-view-ucla-vs-cedars-sinai-marina-del-rey","olive-view-ucla-vs-pomona-valley","olive-view-ucla-vs-hollywood-presbyterian","olive-view-ucla-vs-st-francis-lynwood","olive-view-ucla-vs-dignity-st-mary-long-beach","olive-view-ucla-vs-dignity-california-hospital","olive-view-ucla-vs-dignity-glendale-memorial","olive-view-ucla-vs-whittier-hospital","olive-view-ucla-vs-san-gabriel-valley-mc","olive-view-ucla-vs-garfield-medical-center","olive-view-ucla-vs-greater-el-monte","olive-view-ucla-vs-monterey-park-hospital","olive-view-ucla-vs-providence-tarzana","olive-view-ucla-vs-long-beach-memorial","olive-view-ucla-vs-miller-childrens","olive-view-ucla-vs-coast-plaza","olive-view-ucla-vs-adventist-white-memorial-montebello","olive-view-ucla-vs-adventist-glendale","olive-view-ucla-vs-adventist-simi-valley","olive-view-ucla-vs-hoag-orthopedic-institute","harbor-ucla-vs-ucla-santa-monica","harbor-ucla-vs-torrance-memorial","harbor-ucla-vs-huntington-pasadena","harbor-ucla-vs-cedars-sinai-marina-del-rey","harbor-ucla-vs-pomona-valley","harbor-ucla-vs-hollywood-presbyterian","harbor-ucla-vs-st-francis-lynwood","harbor-ucla-vs-dignity-st-mary-long-beach","harbor-ucla-vs-dignity-california-hospital","harbor-ucla-vs-dignity-glendale-memorial","harbor-ucla-vs-whittier-hospital","harbor-ucla-vs-san-gabriel-valley-mc","harbor-ucla-vs-garfield-medical-center","harbor-ucla-vs-greater-el-monte","harbor-ucla-vs-monterey-park-hospital","harbor-ucla-vs-providence-tarzana","harbor-ucla-vs-long-beach-memorial","harbor-ucla-vs-miller-childrens","harbor-ucla-vs-coast-plaza","harbor-ucla-vs-adventist-white-memorial-montebello","harbor-ucla-vs-adventist-glendale","harbor-ucla-vs-adventist-simi-valley","harbor-ucla-vs-hoag-orthopedic-institute","ucla-santa-monica-vs-torrance-memorial","ucla-santa-monica-vs-huntington-pasadena","ucla-santa-monica-vs-cedars-sinai-marina-del-rey","ucla-santa-monica-vs-pomona-valley","ucla-santa-monica-vs-hollywood-presbyterian","ucla-santa-monica-vs-st-francis-lynwood","ucla-santa-monica-vs-dignity-st-mary-long-beach","ucla-santa-monica-vs-dignity-california-hospital","ucla-santa-monica-vs-dignity-glendale-memorial","ucla-santa-monica-vs-whittier-hospital","ucla-santa-monica-vs-san-gabriel-valley-mc","ucla-santa-monica-vs-garfield-medical-center","ucla-santa-monica-vs-greater-el-monte","ucla-santa-monica-vs-monterey-park-hospital","ucla-santa-monica-vs-providence-tarzana","ucla-santa-monica-vs-long-beach-memorial","ucla-santa-monica-vs-miller-childrens","ucla-santa-monica-vs-coast-plaza","ucla-santa-monica-vs-adventist-white-memorial-montebello","ucla-santa-monica-vs-adventist-glendale","ucla-santa-monica-vs-adventist-simi-valley","ucla-santa-monica-vs-hoag-orthopedic-institute","torrance-memorial-vs-huntington-pasadena","torrance-memorial-vs-cedars-sinai-marina-del-rey","torrance-memorial-vs-pomona-valley","torrance-memorial-vs-hollywood-presbyterian","torrance-memorial-vs-st-francis-lynwood","torrance-memorial-vs-dignity-st-mary-long-beach","torrance-memorial-vs-dignity-california-hospital","torrance-memorial-vs-dignity-glendale-memorial","torrance-memorial-vs-whittier-hospital","torrance-memorial-vs-san-gabriel-valley-mc","torrance-memorial-vs-garfield-medical-center","torrance-memorial-vs-greater-el-monte","torrance-memorial-vs-monterey-park-hospital","torrance-memorial-vs-providence-tarzana","torrance-memorial-vs-long-beach-memorial","torrance-memorial-vs-miller-childrens","torrance-memorial-vs-coast-plaza","torrance-memorial-vs-adventist-white-memorial-montebello","torrance-memorial-vs-adventist-glendale","torrance-memorial-vs-adventist-simi-valley","torrance-memorial-vs-hoag-orthopedic-institute","huntington-pasadena-vs-cedars-sinai-marina-del-rey","huntington-pasadena-vs-pomona-valley","huntington-pasadena-vs-hollywood-presbyterian","huntington-pasadena-vs-st-francis-lynwood","huntington-pasadena-vs-dignity-st-mary-long-beach","huntington-pasadena-vs-dignity-california-hospital","huntington-pasadena-vs-dignity-glendale-memorial","huntington-pasadena-vs-whittier-hospital","huntington-pasadena-vs-san-gabriel-valley-mc","huntington-pasadena-vs-garfield-medical-center","huntington-pasadena-vs-greater-el-monte","huntington-pasadena-vs-monterey-park-hospital","huntington-pasadena-vs-providence-tarzana","huntington-pasadena-vs-long-beach-memorial","huntington-pasadena-vs-miller-childrens","huntington-pasadena-vs-coast-plaza","huntington-pasadena-vs-adventist-white-memorial-montebello","huntington-pasadena-vs-adventist-glendale","huntington-pasadena-vs-adventist-simi-valley","huntington-pasadena-vs-hoag-orthopedic-institute","cedars-sinai-marina-del-rey-vs-pomona-valley","cedars-sinai-marina-del-rey-vs-hollywood-presbyterian","cedars-sinai-marina-del-rey-vs-st-francis-lynwood","cedars-sinai-marina-del-rey-vs-dignity-st-mary-long-beach","cedars-sinai-marina-del-rey-vs-dignity-california-hospital","cedars-sinai-marina-del-rey-vs-dignity-glendale-memorial","cedars-sinai-marina-del-rey-vs-whittier-hospital","cedars-sinai-marina-del-rey-vs-san-gabriel-valley-mc","cedars-sinai-marina-del-rey-vs-garfield-medical-center","cedars-sinai-marina-del-rey-vs-greater-el-monte","cedars-sinai-marina-del-rey-vs-monterey-park-hospital","cedars-sinai-marina-del-rey-vs-providence-tarzana","cedars-sinai-marina-del-rey-vs-long-beach-memorial","cedars-sinai-marina-del-rey-vs-miller-childrens","cedars-sinai-marina-del-rey-vs-coast-plaza","cedars-sinai-marina-del-rey-vs-adventist-white-memorial-montebello","cedars-sinai-marina-del-rey-vs-adventist-glendale","cedars-sinai-marina-del-rey-vs-adventist-simi-valley","cedars-sinai-marina-del-rey-vs-hoag-orthopedic-institute","pomona-valley-vs-hollywood-presbyterian","pomona-valley-vs-st-francis-lynwood","pomona-valley-vs-dignity-st-mary-long-beach","pomona-valley-vs-dignity-california-hospital","pomona-valley-vs-dignity-glendale-memorial","pomona-valley-vs-whittier-hospital","pomona-valley-vs-san-gabriel-valley-mc","pomona-valley-vs-garfield-medical-center","pomona-valley-vs-greater-el-monte","pomona-valley-vs-monterey-park-hospital","pomona-valley-vs-providence-tarzana","pomona-valley-vs-long-beach-memorial","pomona-valley-vs-miller-childrens","pomona-valley-vs-coast-plaza","pomona-valley-vs-adventist-white-memorial-montebello","pomona-valley-vs-adventist-glendale","pomona-valley-vs-adventist-simi-valley","pomona-valley-vs-hoag-orthopedic-institute","hollywood-presbyterian-vs-st-francis-lynwood","hollywood-presbyterian-vs-dignity-st-mary-long-beach","hollywood-presbyterian-vs-dignity-california-hospital","hollywood-presbyterian-vs-dignity-glendale-memorial","hollywood-presbyterian-vs-whittier-hospital","hollywood-presbyterian-vs-san-gabriel-valley-mc","hollywood-presbyterian-vs-garfield-medical-center","hollywood-presbyterian-vs-greater-el-monte","hollywood-presbyterian-vs-monterey-park-hospital","hollywood-presbyterian-vs-providence-tarzana","hollywood-presbyterian-vs-long-beach-memorial","hollywood-presbyterian-vs-miller-childrens","hollywood-presbyterian-vs-coast-plaza","hollywood-presbyterian-vs-adventist-white-memorial-montebello","hollywood-presbyterian-vs-adventist-glendale","hollywood-presbyterian-vs-adventist-simi-valley","hollywood-presbyterian-vs-hoag-orthopedic-institute","st-francis-lynwood-vs-dignity-st-mary-long-beach","st-francis-lynwood-vs-dignity-california-hospital","st-francis-lynwood-vs-dignity-glendale-memorial","st-francis-lynwood-vs-whittier-hospital","st-francis-lynwood-vs-san-gabriel-valley-mc","st-francis-lynwood-vs-garfield-medical-center","st-francis-lynwood-vs-greater-el-monte","st-francis-lynwood-vs-monterey-park-hospital","st-francis-lynwood-vs-providence-tarzana","st-francis-lynwood-vs-long-beach-memorial","st-francis-lynwood-vs-miller-childrens","st-francis-lynwood-vs-coast-plaza","st-francis-lynwood-vs-adventist-white-memorial-montebello","st-francis-lynwood-vs-adventist-glendale","st-francis-lynwood-vs-adventist-simi-valley","st-francis-lynwood-vs-hoag-orthopedic-institute","dignity-st-mary-long-beach-vs-dignity-california-hospital","dignity-st-mary-long-beach-vs-dignity-glendale-memorial","dignity-st-mary-long-beach-vs-whittier-hospital","dignity-st-mary-long-beach-vs-san-gabriel-valley-mc","dignity-st-mary-long-beach-vs-garfield-medical-center","dignity-st-mary-long-beach-vs-greater-el-monte","dignity-st-mary-long-beach-vs-monterey-park-hospital","dignity-st-mary-long-beach-vs-providence-tarzana","dignity-st-mary-long-beach-vs-long-beach-memorial","dignity-st-mary-long-beach-vs-miller-childrens","dignity-st-mary-long-beach-vs-coast-plaza","dignity-st-mary-long-beach-vs-adventist-white-memorial-montebello","dignity-st-mary-long-beach-vs-adventist-glendale","dignity-st-mary-long-beach-vs-adventist-simi-valley","dignity-st-mary-long-beach-vs-hoag-orthopedic-institute","dignity-california-hospital-vs-dignity-glendale-memorial","dignity-california-hospital-vs-whittier-hospital","dignity-california-hospital-vs-san-gabriel-valley-mc","dignity-california-hospital-vs-garfield-medical-center","dignity-california-hospital-vs-greater-el-monte","dignity-california-hospital-vs-monterey-park-hospital","dignity-california-hospital-vs-providence-tarzana","dignity-california-hospital-vs-long-beach-memorial","dignity-california-hospital-vs-miller-childrens","dignity-california-hospital-vs-coast-plaza","dignity-california-hospital-vs-adventist-white-memorial-montebello","dignity-california-hospital-vs-adventist-glendale","dignity-california-hospital-vs-adventist-simi-valley","dignity-california-hospital-vs-hoag-orthopedic-institute","dignity-glendale-memorial-vs-whittier-hospital","dignity-glendale-memorial-vs-san-gabriel-valley-mc","dignity-glendale-memorial-vs-garfield-medical-center","dignity-glendale-memorial-vs-greater-el-monte","dignity-glendale-memorial-vs-monterey-park-hospital","dignity-glendale-memorial-vs-providence-tarzana","dignity-glendale-memorial-vs-long-beach-memorial","dignity-glendale-memorial-vs-miller-childrens","dignity-glendale-memorial-vs-coast-plaza","dignity-glendale-memorial-vs-adventist-white-memorial-montebello","dignity-glendale-memorial-vs-adventist-glendale","dignity-glendale-memorial-vs-adventist-simi-valley","dignity-glendale-memorial-vs-hoag-orthopedic-institute","whittier-hospital-vs-san-gabriel-valley-mc","whittier-hospital-vs-garfield-medical-center","whittier-hospital-vs-greater-el-monte","whittier-hospital-vs-monterey-park-hospital","whittier-hospital-vs-providence-tarzana","whittier-hospital-vs-long-beach-memorial","whittier-hospital-vs-miller-childrens","whittier-hospital-vs-coast-plaza","whittier-hospital-vs-adventist-white-memorial-montebello","whittier-hospital-vs-adventist-glendale","whittier-hospital-vs-adventist-simi-valley","whittier-hospital-vs-hoag-orthopedic-institute","san-gabriel-valley-mc-vs-garfield-medical-center","san-gabriel-valley-mc-vs-greater-el-monte","san-gabriel-valley-mc-vs-monterey-park-hospital","san-gabriel-valley-mc-vs-providence-tarzana","san-gabriel-valley-mc-vs-long-beach-memorial","san-gabriel-valley-mc-vs-miller-childrens","san-gabriel-valley-mc-vs-coast-plaza","san-gabriel-valley-mc-vs-adventist-white-memorial-montebello","san-gabriel-valley-mc-vs-adventist-glendale","san-gabriel-valley-mc-vs-adventist-simi-valley","san-gabriel-valley-mc-vs-hoag-orthopedic-institute","garfield-medical-center-vs-greater-el-monte","garfield-medical-center-vs-monterey-park-hospital","garfield-medical-center-vs-providence-tarzana","garfield-medical-center-vs-long-beach-memorial","garfield-medical-center-vs-miller-childrens","garfield-medical-center-vs-coast-plaza","garfield-medical-center-vs-adventist-white-memorial-montebello","garfield-medical-center-vs-adventist-glendale","garfield-medical-center-vs-adventist-simi-valley","garfield-medical-center-vs-hoag-orthopedic-institute","greater-el-monte-vs-monterey-park-hospital","greater-el-monte-vs-providence-tarzana","greater-el-monte-vs-long-beach-memorial","greater-el-monte-vs-miller-childrens","greater-el-monte-vs-coast-plaza","greater-el-monte-vs-adventist-white-memorial-montebello","greater-el-monte-vs-adventist-glendale","greater-el-monte-vs-adventist-simi-valley","greater-el-monte-vs-hoag-orthopedic-institute","monterey-park-hospital-vs-providence-tarzana","monterey-park-hospital-vs-long-beach-memorial","monterey-park-hospital-vs-miller-childrens","monterey-park-hospital-vs-coast-plaza","monterey-park-hospital-vs-adventist-white-memorial-montebello","monterey-park-hospital-vs-adventist-glendale","monterey-park-hospital-vs-adventist-simi-valley","monterey-park-hospital-vs-hoag-orthopedic-institute","providence-tarzana-vs-long-beach-memorial","providence-tarzana-vs-miller-childrens","providence-tarzana-vs-coast-plaza","providence-tarzana-vs-adventist-white-memorial-montebello","providence-tarzana-vs-adventist-glendale","providence-tarzana-vs-adventist-simi-valley","providence-tarzana-vs-hoag-orthopedic-institute","long-beach-memorial-vs-miller-childrens","long-beach-memorial-vs-coast-plaza","long-beach-memorial-vs-adventist-white-memorial-montebello","long-beach-memorial-vs-adventist-glendale","long-beach-memorial-vs-adventist-simi-valley","long-beach-memorial-vs-hoag-orthopedic-institute","miller-childrens-vs-coast-plaza","miller-childrens-vs-adventist-white-memorial-montebello","miller-childrens-vs-adventist-glendale","miller-childrens-vs-adventist-simi-valley","miller-childrens-vs-hoag-orthopedic-institute","coast-plaza-vs-adventist-white-memorial-montebello","coast-plaza-vs-adventist-glendale","coast-plaza-vs-adventist-simi-valley","coast-plaza-vs-hoag-orthopedic-institute","adventist-white-memorial-montebello-vs-adventist-glendale","adventist-white-memorial-montebello-vs-adventist-simi-valley","adventist-white-memorial-montebello-vs-hoag-orthopedic-institute","adventist-glendale-vs-adventist-simi-valley","adventist-glendale-vs-hoag-orthopedic-institute","adventist-simi-valley-vs-hoag-orthopedic-institute","houston-methodist-vs-md-anderson","houston-methodist-vs-memorial-hermann-tmc","houston-methodist-vs-memorial-hermann-southwest","houston-methodist-vs-memorial-hermann-memorial-city","houston-methodist-vs-memorial-hermann-sugar-land","houston-methodist-vs-baylor-st-lukes-tmc","houston-methodist-vs-texas-childrens","houston-methodist-vs-harris-health-ben-taub","houston-methodist-vs-hca-houston-medical-center","houston-methodist-vs-hca-houston-kingwood","md-anderson-vs-memorial-hermann-tmc","md-anderson-vs-memorial-hermann-southwest","md-anderson-vs-memorial-hermann-memorial-city","md-anderson-vs-memorial-hermann-sugar-land","md-anderson-vs-baylor-st-lukes-tmc","md-anderson-vs-texas-childrens","md-anderson-vs-harris-health-ben-taub","md-anderson-vs-hca-houston-medical-center","md-anderson-vs-hca-houston-kingwood","memorial-hermann-tmc-vs-memorial-hermann-southwest","memorial-hermann-tmc-vs-memorial-hermann-memorial-city","memorial-hermann-tmc-vs-memorial-hermann-sugar-land","memorial-hermann-tmc-vs-baylor-st-lukes-tmc","memorial-hermann-tmc-vs-texas-childrens","memorial-hermann-tmc-vs-harris-health-ben-taub","memorial-hermann-tmc-vs-hca-houston-medical-center","memorial-hermann-tmc-vs-hca-houston-kingwood","memorial-hermann-southwest-vs-memorial-hermann-memorial-city","memorial-hermann-southwest-vs-memorial-hermann-sugar-land","memorial-hermann-southwest-vs-baylor-st-lukes-tmc","memorial-hermann-southwest-vs-texas-childrens","memorial-hermann-southwest-vs-harris-health-ben-taub","memorial-hermann-southwest-vs-hca-houston-medical-center","memorial-hermann-southwest-vs-hca-houston-kingwood","memorial-hermann-memorial-city-vs-memorial-hermann-sugar-land","memorial-hermann-memorial-city-vs-baylor-st-lukes-tmc","memorial-hermann-memorial-city-vs-texas-childrens","memorial-hermann-memorial-city-vs-harris-health-ben-taub","memorial-hermann-memorial-city-vs-hca-houston-medical-center","memorial-hermann-memorial-city-vs-hca-houston-kingwood","memorial-hermann-sugar-land-vs-baylor-st-lukes-tmc","memorial-hermann-sugar-land-vs-texas-childrens","memorial-hermann-sugar-land-vs-harris-health-ben-taub","memorial-hermann-sugar-land-vs-hca-houston-medical-center","memorial-hermann-sugar-land-vs-hca-houston-kingwood","baylor-st-lukes-tmc-vs-texas-childrens","baylor-st-lukes-tmc-vs-harris-health-ben-taub","baylor-st-lukes-tmc-vs-hca-houston-medical-center","baylor-st-lukes-tmc-vs-hca-houston-kingwood","texas-childrens-vs-harris-health-ben-taub","texas-childrens-vs-hca-houston-medical-center","texas-childrens-vs-hca-houston-kingwood","harris-health-ben-taub-vs-hca-houston-medical-center","harris-health-ben-taub-vs-hca-houston-kingwood","hca-houston-medical-center-vs-hca-houston-kingwood","advocate-christ-vs-northwestern-memorial","advocate-christ-vs-rush-university","advocate-christ-vs-uchicago-medical-center","advocate-christ-vs-loyola-medical-center","advocate-christ-vs-lurie-childrens","advocate-christ-vs-stroger-cook-county","advocate-christ-vs-advocate-lutheran-general","advocate-christ-vs-advocate-illinois-masonic","advocate-christ-vs-endeavor-evanston","northwestern-memorial-vs-rush-university","northwestern-memorial-vs-uchicago-medical-center","northwestern-memorial-vs-loyola-medical-center","northwestern-memorial-vs-lurie-childrens","northwestern-memorial-vs-stroger-cook-county","northwestern-memorial-vs-advocate-lutheran-general","northwestern-memorial-vs-advocate-illinois-masonic","northwestern-memorial-vs-endeavor-evanston","rush-university-vs-uchicago-medical-center","rush-university-vs-loyola-medical-center","rush-university-vs-lurie-childrens","rush-university-vs-stroger-cook-county","rush-university-vs-advocate-lutheran-general","rush-university-vs-advocate-illinois-masonic","rush-university-vs-endeavor-evanston","uchicago-medical-center-vs-loyola-medical-center","uchicago-medical-center-vs-lurie-childrens","uchicago-medical-center-vs-stroger-cook-county","uchicago-medical-center-vs-advocate-lutheran-general","uchicago-medical-center-vs-advocate-illinois-masonic","uchicago-medical-center-vs-endeavor-evanston","loyola-medical-center-vs-lurie-childrens","loyola-medical-center-vs-stroger-cook-county","loyola-medical-center-vs-advocate-lutheran-general","loyola-medical-center-vs-advocate-illinois-masonic","loyola-medical-center-vs-endeavor-evanston","lurie-childrens-vs-stroger-cook-county","lurie-childrens-vs-advocate-lutheran-general","lurie-childrens-vs-advocate-illinois-masonic","lurie-childrens-vs-endeavor-evanston","stroger-cook-county-vs-advocate-lutheran-general","stroger-cook-county-vs-advocate-illinois-masonic","stroger-cook-county-vs-endeavor-evanston","advocate-lutheran-general-vs-advocate-illinois-masonic","advocate-lutheran-general-vs-endeavor-evanston","advocate-illinois-masonic-vs-endeavor-evanston","nyu-langone-tisch-vs-mount-sinai-hospital","nyu-langone-tisch-vs-nyp-columbia","nyu-langone-tisch-vs-nyp-queens","nyu-langone-tisch-vs-msk-cancer-center","nyu-langone-tisch-vs-hss-main","nyu-langone-tisch-vs-northwell-lenox-hill","nyu-langone-tisch-vs-montefiore-medical-center","nyu-langone-tisch-vs-nychh-bellevue","nyu-langone-tisch-vs-nychh-elmhurst","nyu-langone-tisch-vs-nychh-jacobi","nyu-langone-tisch-vs-nychh-kings-county","nyu-langone-tisch-vs-maimonides-medical-center","mount-sinai-hospital-vs-nyp-columbia","mount-sinai-hospital-vs-nyp-queens","mount-sinai-hospital-vs-msk-cancer-center","mount-sinai-hospital-vs-hss-main","mount-sinai-hospital-vs-northwell-lenox-hill","mount-sinai-hospital-vs-montefiore-medical-center","mount-sinai-hospital-vs-nychh-bellevue","mount-sinai-hospital-vs-nychh-elmhurst","mount-sinai-hospital-vs-nychh-jacobi","mount-sinai-hospital-vs-nychh-kings-county","mount-sinai-hospital-vs-maimonides-medical-center","nyp-columbia-vs-nyp-queens","nyp-columbia-vs-msk-cancer-center","nyp-columbia-vs-hss-main","nyp-columbia-vs-northwell-lenox-hill","nyp-columbia-vs-montefiore-medical-center","nyp-columbia-vs-nychh-bellevue","nyp-columbia-vs-nychh-elmhurst","nyp-columbia-vs-nychh-jacobi","nyp-columbia-vs-nychh-kings-county","nyp-columbia-vs-maimonides-medical-center","nyp-queens-vs-msk-cancer-center","nyp-queens-vs-hss-main","nyp-queens-vs-northwell-lenox-hill","nyp-queens-vs-montefiore-medical-center","nyp-queens-vs-nychh-bellevue","nyp-queens-vs-nychh-elmhurst","nyp-queens-vs-nychh-jacobi","nyp-queens-vs-nychh-kings-county","nyp-queens-vs-maimonides-medical-center","msk-cancer-center-vs-hss-main","msk-cancer-center-vs-northwell-lenox-hill","msk-cancer-center-vs-montefiore-medical-center","msk-cancer-center-vs-nychh-bellevue","msk-cancer-center-vs-nychh-elmhurst","msk-cancer-center-vs-nychh-jacobi","msk-cancer-center-vs-nychh-kings-county","msk-cancer-center-vs-maimonides-medical-center","hss-main-vs-northwell-lenox-hill","hss-main-vs-montefiore-medical-center","hss-main-vs-nychh-bellevue","hss-main-vs-nychh-elmhurst","hss-main-vs-nychh-jacobi","hss-main-vs-nychh-kings-county","hss-main-vs-maimonides-medical-center","northwell-lenox-hill-vs-montefiore-medical-center","northwell-lenox-hill-vs-nychh-bellevue","northwell-lenox-hill-vs-nychh-elmhurst","northwell-lenox-hill-vs-nychh-jacobi","northwell-lenox-hill-vs-nychh-kings-county","northwell-lenox-hill-vs-maimonides-medical-center","montefiore-medical-center-vs-nychh-bellevue","montefiore-medical-center-vs-nychh-elmhurst","montefiore-medical-center-vs-nychh-jacobi","montefiore-medical-center-vs-nychh-kings-county","montefiore-medical-center-vs-maimonides-medical-center","nychh-bellevue-vs-nychh-elmhurst","nychh-bellevue-vs-nychh-jacobi","nychh-bellevue-vs-nychh-kings-county","nychh-bellevue-vs-maimonides-medical-center","nychh-elmhurst-vs-nychh-jacobi","nychh-elmhurst-vs-nychh-kings-county","nychh-elmhurst-vs-maimonides-medical-center","nychh-jacobi-vs-nychh-kings-county","nychh-jacobi-vs-maimonides-medical-center","nychh-kings-county-vs-maimonides-medical-center","mass-general-vs-brigham-and-womens","mass-general-vs-bidmc","mass-general-vs-boston-childrens","mass-general-vs-lahey-burlington","brigham-and-womens-vs-bidmc","brigham-and-womens-vs-boston-childrens","brigham-and-womens-vs-lahey-burlington","bidmc-vs-boston-childrens","bidmc-vs-lahey-burlington","boston-childrens-vs-lahey-burlington","jefferson-abington-vs-hup-penn","jefferson-abington-vs-penn-presbyterian","jefferson-abington-vs-temple-university-hospital","jefferson-abington-vs-chop","jefferson-abington-vs-jefferson-einstein-philadelphia","hup-penn-vs-penn-presbyterian","hup-penn-vs-temple-university-hospital","hup-penn-vs-chop","hup-penn-vs-jefferson-einstein-philadelphia","penn-presbyterian-vs-temple-university-hospital","penn-presbyterian-vs-chop","penn-presbyterian-vs-jefferson-einstein-philadelphia","temple-university-hospital-vs-chop","temple-university-hospital-vs-jefferson-einstein-philadelphia","chop-vs-jefferson-einstein-philadelphia","emory-decatur-vs-emory-university-hospital","emory-decatur-vs-piedmont-atlanta","emory-decatur-vs-grady-memorial","emory-decatur-vs-wellstar-kennestone","emory-university-hospital-vs-piedmont-atlanta","emory-university-hospital-vs-grady-memorial","emory-university-hospital-vs-wellstar-kennestone","piedmont-atlanta-vs-grady-memorial","piedmont-atlanta-vs-wellstar-kennestone","grady-memorial-vs-wellstar-kennestone","honorhealth-osborn-vs-banner-university-phoenix","honorhealth-osborn-vs-st-josephs-phoenix","honorhealth-osborn-vs-phoenix-childrens","honorhealth-osborn-vs-honorhealth-deer-valley","banner-university-phoenix-vs-st-josephs-phoenix","banner-university-phoenix-vs-phoenix-childrens","banner-university-phoenix-vs-honorhealth-deer-valley","st-josephs-phoenix-vs-phoenix-childrens","st-josephs-phoenix-vs-honorhealth-deer-valley","phoenix-childrens-vs-honorhealth-deer-valley","seattle-childrens-vs-swedish-first-hill","seattle-childrens-vs-virginia-mason","swedish-first-hill-vs-virginia-mason","ut-southwestern-vs-baylor-university-medical-center","ut-southwestern-vs-methodist-dallas","ut-southwestern-vs-texas-health-presbyterian-dallas","ut-southwestern-vs-childrens-medical-center-dallas","ut-southwestern-vs-parkland-memorial","baylor-university-medical-center-vs-methodist-dallas","baylor-university-medical-center-vs-texas-health-presbyterian-dallas","baylor-university-medical-center-vs-childrens-medical-center-dallas","baylor-university-medical-center-vs-parkland-memorial","methodist-dallas-vs-texas-health-presbyterian-dallas","methodist-dallas-vs-childrens-medical-center-dallas","methodist-dallas-vs-parkland-memorial","texas-health-presbyterian-dallas-vs-childrens-medical-center-dallas","texas-health-presbyterian-dallas-vs-parkland-memorial","childrens-medical-center-dallas-vs-parkland-memorial","henry-ford-detroit-vs-henry-ford-west-bloomfield","henry-ford-detroit-vs-dmc-detroit-receiving","henry-ford-detroit-vs-dmc-harper-university","henry-ford-detroit-vs-dmc-sinai-grace","henry-ford-detroit-vs-childrens-hospital-michigan","henry-ford-detroit-vs-corewell-royal-oak","henry-ford-detroit-vs-corewell-troy","henry-ford-detroit-vs-corewell-farmington-hills","henry-ford-detroit-vs-corewell-dearborn","henry-ford-west-bloomfield-vs-dmc-detroit-receiving","henry-ford-west-bloomfield-vs-dmc-harper-university","henry-ford-west-bloomfield-vs-dmc-sinai-grace","henry-ford-west-bloomfield-vs-childrens-hospital-michigan","henry-ford-west-bloomfield-vs-corewell-royal-oak","henry-ford-west-bloomfield-vs-corewell-troy","henry-ford-west-bloomfield-vs-corewell-farmington-hills","henry-ford-west-bloomfield-vs-corewell-dearborn","dmc-detroit-receiving-vs-dmc-harper-university","dmc-detroit-receiving-vs-dmc-sinai-grace","dmc-detroit-receiving-vs-childrens-hospital-michigan","dmc-detroit-receiving-vs-corewell-royal-oak","dmc-detroit-receiving-vs-corewell-troy","dmc-detroit-receiving-vs-corewell-farmington-hills","dmc-detroit-receiving-vs-corewell-dearborn","dmc-harper-university-vs-dmc-sinai-grace","dmc-harper-university-vs-childrens-hospital-michigan","dmc-harper-university-vs-corewell-royal-oak","dmc-harper-university-vs-corewell-troy","dmc-harper-university-vs-corewell-farmington-hills","dmc-harper-university-vs-corewell-dearborn","dmc-sinai-grace-vs-childrens-hospital-michigan","dmc-sinai-grace-vs-corewell-royal-oak","dmc-sinai-grace-vs-corewell-troy","dmc-sinai-grace-vs-corewell-farmington-hills","dmc-sinai-grace-vs-corewell-dearborn","childrens-hospital-michigan-vs-corewell-royal-oak","childrens-hospital-michigan-vs-corewell-troy","childrens-hospital-michigan-vs-corewell-farmington-hills","childrens-hospital-michigan-vs-corewell-dearborn","corewell-royal-oak-vs-corewell-troy","corewell-royal-oak-vs-corewell-farmington-hills","corewell-royal-oak-vs-corewell-dearborn","corewell-troy-vs-corewell-farmington-hills","corewell-troy-vs-corewell-dearborn","corewell-farmington-hills-vs-corewell-dearborn","upmc-presbyterian-shadyside-vs-upmc-magee-womens","upmc-presbyterian-shadyside-vs-upmc-childrens-pittsburgh","upmc-presbyterian-shadyside-vs-ahn-allegheny-general","upmc-presbyterian-shadyside-vs-ahn-jefferson-regional","upmc-magee-womens-vs-upmc-childrens-pittsburgh","upmc-magee-womens-vs-ahn-allegheny-general","upmc-magee-womens-vs-ahn-jefferson-regional","upmc-childrens-pittsburgh-vs-ahn-allegheny-general","upmc-childrens-pittsburgh-vs-ahn-jefferson-regional","ahn-allegheny-general-vs-ahn-jefferson-regional","tampa-general-vs-baycare-st-josephs-tampa","tampa-general-vs-baycare-morton-plant","tampa-general-vs-moffitt-cancer-center","baycare-st-josephs-tampa-vs-baycare-morton-plant","baycare-st-josephs-tampa-vs-moffitt-cancer-center","baycare-morton-plant-vs-moffitt-cancer-center","jackson-memorial-vs-jackson-north","jackson-memorial-vs-jackson-south","jackson-memorial-vs-baptist-hospital-miami","jackson-memorial-vs-baptist-doctors-coral-gables","jackson-memorial-vs-baptist-homestead","jackson-memorial-vs-nicklaus-childrens","jackson-north-vs-jackson-south","jackson-north-vs-baptist-hospital-miami","jackson-north-vs-baptist-doctors-coral-gables","jackson-north-vs-baptist-homestead","jackson-north-vs-nicklaus-childrens","jackson-south-vs-baptist-hospital-miami","jackson-south-vs-baptist-doctors-coral-gables","jackson-south-vs-baptist-homestead","jackson-south-vs-nicklaus-childrens","baptist-hospital-miami-vs-baptist-doctors-coral-gables","baptist-hospital-miami-vs-baptist-homestead","baptist-hospital-miami-vs-nicklaus-childrens","baptist-doctors-coral-gables-vs-baptist-homestead","baptist-doctors-coral-gables-vs-nicklaus-childrens","baptist-homestead-vs-nicklaus-childrens","dell-seton-uta-vs-ascension-seton-medical-austin","dell-seton-uta-vs-dell-childrens-austin","dell-seton-uta-vs-ascension-seton-northwest","dell-seton-uta-vs-st-davids-medical-center","dell-seton-uta-vs-st-davids-north-austin","dell-seton-uta-vs-st-davids-round-rock","dell-seton-uta-vs-heart-hospital-austin","ascension-seton-medical-austin-vs-dell-childrens-austin","ascension-seton-medical-austin-vs-ascension-seton-northwest","ascension-seton-medical-austin-vs-st-davids-medical-center","ascension-seton-medical-austin-vs-st-davids-north-austin","ascension-seton-medical-austin-vs-st-davids-round-rock","ascension-seton-medical-austin-vs-heart-hospital-austin","dell-childrens-austin-vs-ascension-seton-northwest","dell-childrens-austin-vs-st-davids-medical-center","dell-childrens-austin-vs-st-davids-north-austin","dell-childrens-austin-vs-st-davids-round-rock","dell-childrens-austin-vs-heart-hospital-austin","ascension-seton-northwest-vs-st-davids-medical-center","ascension-seton-northwest-vs-st-davids-north-austin","ascension-seton-northwest-vs-st-davids-round-rock","ascension-seton-northwest-vs-heart-hospital-austin","st-davids-medical-center-vs-st-davids-north-austin","st-davids-medical-center-vs-st-davids-round-rock","st-davids-medical-center-vs-heart-hospital-austin","st-davids-north-austin-vs-st-davids-round-rock","st-davids-north-austin-vs-heart-hospital-austin","st-davids-round-rock-vs-heart-hospital-austin","stanford-health-care-vs-stanford-tri-valley","stanford-health-care-vs-kaiser-oakland","stanford-health-care-vs-kaiser-redwood-city","stanford-health-care-vs-john-muir-walnut-creek","stanford-health-care-vs-john-muir-concord","stanford-tri-valley-vs-kaiser-oakland","stanford-tri-valley-vs-kaiser-redwood-city","stanford-tri-valley-vs-john-muir-walnut-creek","stanford-tri-valley-vs-john-muir-concord","kaiser-oakland-vs-kaiser-redwood-city","kaiser-oakland-vs-john-muir-walnut-creek","kaiser-oakland-vs-john-muir-concord","kaiser-redwood-city-vs-john-muir-walnut-creek","kaiser-redwood-city-vs-john-muir-concord","john-muir-walnut-creek-vs-john-muir-concord","ucsd-health-vs-sharp-memorial","ucsd-health-vs-sharp-grossmont","ucsd-health-vs-scripps-la-jolla","ucsd-health-vs-scripps-mercy-sd","ucsd-health-vs-rady-childrens","sharp-memorial-vs-sharp-grossmont","sharp-memorial-vs-scripps-la-jolla","sharp-memorial-vs-scripps-mercy-sd","sharp-memorial-vs-rady-childrens","sharp-grossmont-vs-scripps-la-jolla","sharp-grossmont-vs-scripps-mercy-sd","sharp-grossmont-vs-rady-childrens","scripps-la-jolla-vs-scripps-mercy-sd","scripps-la-jolla-vs-rady-childrens","scripps-mercy-sd-vs-rady-childrens"];
     var existingSet = new Set(existing);
     var a = document.getElementById('hospA');
     var b = document.getElementById('hospB');
     var go = document.getElementById('pickerGo');
     var msg = document.getElementById('pickerMsg');
 
+    // Cache the original full optgroups so we can restore B when A clears.
+    var bOriginal = b.innerHTML;
+    var aOriginal = a.innerHTML;
+
     function buildSlugs(x, y) {
       // Try both orderings since we only generated one direction.
       return [x + '-vs-' + y, y + '-vs-' + x];
     }
-    function update() {
-      msg.textContent = '';
-      if (!a.value || !b.value) return;
-      if (a.value === b.value) { msg.textContent = 'Pick two different hospitals.'; return; }
+
+    // Filter "other" select to only show options whose data-cluster
+    // matches the cluster of the chosen value in "selected". If selected
+    // is empty, restore the full list.
+    function filterPartner(selected, other, originalHtml) {
+      if (!selected.value) {
+        other.innerHTML = originalHtml;
+        return;
+      }
+      var chosenOption = selected.options[selected.selectedIndex];
+      var cluster = chosenOption.getAttribute('data-cluster');
+      if (!cluster) return;
+      var prevValue = other.value;
+      // Reset to the full list, then prune optgroups that don't match.
+      other.innerHTML = originalHtml;
+      var groups = other.querySelectorAll('optgroup');
+      groups.forEach(function (g) {
+        if (g.label !== cluster) g.parentNode.removeChild(g);
+      });
+      // If user had previously chosen a hospital in another cluster, clear.
+      if (prevValue && other.value !== prevValue) other.value = '';
     }
-    a.addEventListener('change', update);
-    b.addEventListener('change', update);
+
+    a.addEventListener('change', function () {
+      filterPartner(a, b, bOriginal);
+      msg.textContent = '';
+    });
+    b.addEventListener('change', function () {
+      filterPartner(b, a, aOriginal);
+      msg.textContent = '';
+    });
 
     go.addEventListener('click', function () {
       if (!a.value || !b.value) { msg.textContent = 'Pick both hospitals.'; return; }
@@ -853,41 +708,43 @@
       var candidates = buildSlugs(a.value, b.value);
       var match = candidates.find(function (s) { return existingSet.has(s); });
       if (match) { window.location.href = '/compare/' + match; return; }
-      msg.innerHTML = 'No pre-built comparison for that pair yet. <a href="/hospital/' + a.value + '" style="color:var(--signal)">Open ' + (a.options[a.selectedIndex].text) + '</a> and <a href="/hospital/' + b.value + '" style="color:var(--signal)">' + (b.options[b.selectedIndex].text) + '</a> instead.';
+      // Pair is in same cluster (filter ensures it) but somehow not generated.
+      // Fallback: open hospital A; user can navigate to B from there.
+      window.location.href = '/hospital/' + a.value;
     });
   })();
 </script>
 
-  <footer style="margin-top:64px;padding:48px 0 32px;border-top:1px solid var(--rule-soft);color:var(--ink-3);font-size:13px">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;margin-bottom:32px">
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Compare</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/procedure" style="color:var(--ink-2);text-decoration:none">All procedures</a>
-          <a href="/hospital" style="color:var(--ink-2);text-decoration:none">All hospitals</a>
-          <a href="/compare" style="color:var(--ink-2);text-decoration:none">Head-to-head</a>
-          <a href="/system" style="color:var(--ink-2);text-decoration:none">Hospital systems</a>
-        </div>
+  <footer class="site-foot">
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h4>Compare</h4>
+        <ul>
+          <li><a href="/procedure">All procedures</a></li>
+          <li><a href="/hospital">All hospitals</a></li>
+          <li><a href="/compare">Head-to-head</a></li>
+          <li><a href="/system">Hospital systems</a></li>
+        </ul>
       </div>
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Resources</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/bills.html" style="color:var(--ink-2);text-decoration:none">Got a bill?</a>
-          <a href="/guide/dispute-medical-bill" style="color:var(--ink-2);text-decoration:none">Dispute-bill guide</a>
-          <a href="/glossary" style="color:var(--ink-2);text-decoration:none">Glossary</a>
-        </div>
+      <div class="foot-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="/bills.html">Got a bill?</a></li>
+          <li><a href="/guide/dispute-medical-bill">Dispute-bill guide</a></li>
+          <li><a href="/glossary">Glossary</a></li>
+        </ul>
       </div>
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">About</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/#methodology" style="color:var(--ink-2);text-decoration:none">Methodology</a>
-          <a href="/#faq" style="color:var(--ink-2);text-decoration:none">FAQ</a>
-        </div>
+      <div class="foot-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="/#methodology">Methodology</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
       </div>
     </div>
-    <div style="border-top:1px solid var(--rule-soft);padding-top:20px">
+    <div class="foot-rule">
       <strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). CMS HCAHPS patient survey (dgck-syfz). Last refresh: 2026-04-27.
-      <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+      <div class="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/">itemized.health</a></div>
     </div>
   </footer>
 </main>

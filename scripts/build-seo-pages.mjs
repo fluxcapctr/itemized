@@ -22,6 +22,92 @@ const UI_DIR = path.join(REPO, "ui");
 const DIST_DIR = path.join(UI_DIR, "dist");
 const SITE_ORIGIN = "https://itemized.health";
 
+// Metro-area clustering. Our hospital `metro` field is the literal city
+// ("Burbank, CA" / "Bronx, NY"), which is too granular for comparison
+// pages. People search "Cedars-Sinai vs UCLA" expecting all greater-LA
+// hospitals to pair with each other regardless of which suburb they're
+// in. This map normalizes city-metros to their broader regional cluster.
+//
+// Cities not listed fall back to their raw metro string.
+const METRO_CLUSTERS = {
+  // Greater Los Angeles
+  "Los Angeles, CA": "Greater Los Angeles, CA",
+  "Santa Monica, CA": "Greater Los Angeles, CA",
+  "Glendale, CA": "Greater Los Angeles, CA",
+  "Newport Beach, CA": "Greater Los Angeles, CA",
+  "Monterey Park, CA": "Greater Los Angeles, CA",
+  "Long Beach, CA": "Greater Los Angeles, CA",
+  "Arcadia, CA": "Greater Los Angeles, CA",
+  "Sylmar, CA": "Greater Los Angeles, CA",
+  "Torrance, CA": "Greater Los Angeles, CA",
+  "Pasadena, CA": "Greater Los Angeles, CA",
+  "Marina del Rey, CA": "Greater Los Angeles, CA",
+  "Pomona, CA": "Greater Los Angeles, CA",
+  "Lynwood, CA": "Greater Los Angeles, CA",
+  "Whittier, CA": "Greater Los Angeles, CA",
+  "San Gabriel, CA": "Greater Los Angeles, CA",
+  "South El Monte, CA": "Greater Los Angeles, CA",
+  "Tarzana, CA": "Greater Los Angeles, CA",
+  "Norwalk, CA": "Greater Los Angeles, CA",
+  "Montebello, CA": "Greater Los Angeles, CA",
+  "Simi Valley, CA": "Greater Los Angeles, CA",
+  // Greater New York
+  "New York, NY": "Greater New York, NY",
+  "Bronx, NY": "Greater New York, NY",
+  "Brooklyn, NY": "Greater New York, NY",
+  "Queens, NY": "Greater New York, NY",
+  // Greater Boston
+  "Boston, MA": "Greater Boston, MA",
+  "Burlington, MA": "Greater Boston, MA",
+  // Greater Chicago
+  "Chicago, IL": "Greater Chicago, IL",
+  "Maywood, IL": "Greater Chicago, IL",
+  "Park Ridge, IL": "Greater Chicago, IL",
+  "Evanston, IL": "Greater Chicago, IL",
+  // Greater Houston
+  "Houston, TX": "Greater Houston, TX",
+  "Sugar Land, TX": "Greater Houston, TX",
+  // Greater Atlanta
+  "Atlanta, GA": "Greater Atlanta, GA",
+  "Marietta, GA": "Greater Atlanta, GA",
+  // Greater Detroit
+  "Detroit, MI": "Greater Detroit, MI",
+  "West Bloomfield, MI": "Greater Detroit, MI",
+  "Royal Oak, MI": "Greater Detroit, MI",
+  "Troy, MI": "Greater Detroit, MI",
+  "Farmington Hills, MI": "Greater Detroit, MI",
+  "Dearborn, MI": "Greater Detroit, MI",
+  // Greater Pittsburgh
+  "Pittsburgh, PA": "Greater Pittsburgh, PA",
+  "Jefferson Hills, PA": "Greater Pittsburgh, PA",
+  // Greater Tampa Bay
+  "Tampa, FL": "Greater Tampa, FL",
+  "Clearwater, FL": "Greater Tampa, FL",
+  // Greater Miami
+  "Miami, FL": "Greater Miami, FL",
+  "North Miami Beach, FL": "Greater Miami, FL",
+  "Coral Gables, FL": "Greater Miami, FL",
+  "Homestead, FL": "Greater Miami, FL",
+  // Greater Austin
+  "Austin, TX": "Greater Austin, TX",
+  "Round Rock, TX": "Greater Austin, TX",
+  // SF Bay Area
+  "Palo Alto, CA": "SF Bay Area, CA",
+  "Pleasanton, CA": "SF Bay Area, CA",
+  "Oakland, CA": "SF Bay Area, CA",
+  "Redwood City, CA": "SF Bay Area, CA",
+  "Walnut Creek, CA": "SF Bay Area, CA",
+  "Concord, CA": "SF Bay Area, CA",
+  // Greater San Diego
+  "San Diego, CA": "Greater San Diego, CA",
+  "La Mesa, CA": "Greater San Diego, CA",
+  "La Jolla, CA": "Greater San Diego, CA",
+};
+
+function metroCluster(metro) {
+  return METRO_CLUSTERS[metro] || metro;
+}
+
 // US state abbreviation -> full name. Used for state-level rollup pages.
 const STATE_NAMES = {
   AL: "Alabama", AK: "Alaska", AZ: "Arizona", AR: "Arkansas", CA: "California",
@@ -1576,8 +1662,19 @@ function renderShellHead({ title, description, canonical, ldBlocks, type = "webs
     .pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
     .pill-row a { background: var(--paper-2); padding: 8px 14px; border-radius: 999px; font-size: 13px; color: var(--ink-2); text-decoration: none; }
     .pill-row a:hover { background: var(--paper-3); color: var(--ink); }
-    footer { border-top: 1px solid var(--rule-soft); padding: 32px 0; margin-top: 48px; color: var(--ink-3); font-size: 13px; }
-    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } }
+    /* Site-wide footer used on every static SEO page. Three columns
+       (Compare / Resources / About) on desktop, stacks on mobile. */
+    .site-foot { border-top: 1px solid var(--rule-soft); margin: 80px 0 0; padding: 48px 0 32px; color: var(--ink-3); font-size: 13px; }
+    .site-foot .foot-cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 48px; margin-bottom: 36px; }
+    .site-foot .foot-col h4 { font-family: var(--display-font); font-weight: 600; font-size: 13px; color: var(--ink); margin: 0 0 14px; text-transform: uppercase; letter-spacing: 0.12em; }
+    .site-foot .foot-col ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+    .site-foot .foot-col a { color: var(--ink-2); text-decoration: none; font-size: 14px; transition: color 120ms ease; }
+    .site-foot .foot-col a:hover { color: var(--signal); }
+    .site-foot .foot-rule { border-top: 1px solid var(--rule-soft); padding-top: 20px; line-height: 1.5; max-width: 100%; }
+    .site-foot .foot-rule strong { color: var(--ink-2); }
+    .site-foot .foot-rule .foot-disc { margin-top: 6px; font-style: italic; color: var(--ink-3); }
+    .site-foot .foot-rule .foot-disc a { color: var(--ink-2); text-decoration: none; }
+    @media (max-width: 720px) { .pair { grid-template-columns: 1fr; } .pair .vs { transform: rotate(90deg); } .site-foot .foot-cols { grid-template-columns: 1fr; gap: 32px; } }
   </style>
 
 ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, null, 2)}</script>`).join("\n")}
@@ -1600,36 +1697,36 @@ ${ldBlocks.map((b) => `  <script type="application/ld+json">${JSON.stringify(b, 
 
 function renderShellFoot({ asOf }) {
   return `
-  <footer style="margin-top:64px;padding:48px 0 32px;border-top:1px solid var(--rule-soft);color:var(--ink-3);font-size:13px">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:32px;margin-bottom:32px">
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Compare</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/procedure" style="color:var(--ink-2);text-decoration:none">All procedures</a>
-          <a href="/hospital" style="color:var(--ink-2);text-decoration:none">All hospitals</a>
-          <a href="/compare" style="color:var(--ink-2);text-decoration:none">Head-to-head</a>
-          <a href="/system" style="color:var(--ink-2);text-decoration:none">Hospital systems</a>
-        </div>
+  <footer class="site-foot">
+    <div class="foot-cols">
+      <div class="foot-col">
+        <h4>Compare</h4>
+        <ul>
+          <li><a href="/procedure">All procedures</a></li>
+          <li><a href="/hospital">All hospitals</a></li>
+          <li><a href="/compare">Head-to-head</a></li>
+          <li><a href="/system">Hospital systems</a></li>
+        </ul>
       </div>
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">Resources</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/bills.html" style="color:var(--ink-2);text-decoration:none">Got a bill?</a>
-          <a href="/guide/dispute-medical-bill" style="color:var(--ink-2);text-decoration:none">Dispute-bill guide</a>
-          <a href="/glossary" style="color:var(--ink-2);text-decoration:none">Glossary</a>
-        </div>
+      <div class="foot-col">
+        <h4>Resources</h4>
+        <ul>
+          <li><a href="/bills.html">Got a bill?</a></li>
+          <li><a href="/guide/dispute-medical-bill">Dispute-bill guide</a></li>
+          <li><a href="/glossary">Glossary</a></li>
+        </ul>
       </div>
-      <div>
-        <div style="font-family:var(--display-font);font-weight:600;font-size:13px;color:var(--ink);margin-bottom:10px;text-transform:uppercase;letter-spacing:0.1em">About</div>
-        <div style="display:flex;flex-direction:column;gap:6px">
-          <a href="/#methodology" style="color:var(--ink-2);text-decoration:none">Methodology</a>
-          <a href="/#faq" style="color:var(--ink-2);text-decoration:none">FAQ</a>
-        </div>
+      <div class="foot-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="/#methodology">Methodology</a></li>
+          <li><a href="/#faq">FAQ</a></li>
+        </ul>
       </div>
     </div>
-    <div style="border-top:1px solid var(--rule-soft);padding-top:20px">
+    <div class="foot-rule">
       <strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). CMS HCAHPS patient survey (dgck-syfz). Last refresh: ${escHtml(asOf)}.
-      <div style="margin-top:8px;font-style:italic">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/" style="color:var(--ink-2)">itemized.health</a></div>
+      <div class="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · <a href="/">itemized.health</a></div>
     </div>
   </footer>
 </main>
@@ -2386,18 +2483,23 @@ function renderCompareHub({ generatedPairs, hospitalsForPicker, asOf }) {
     ],
   }];
 
-  // Build optgroup options grouped by metro for the picker.
-  const byMetro = new Map();
+  // Build optgroup options grouped by metro CLUSTER (greater LA, etc.) for
+  // the picker. Each option carries data-cluster so JS can filter.
+  const byCluster = new Map();
   for (const h of hospitalsForPicker) {
-    const m = h.metro || "Other";
-    if (!byMetro.has(m)) byMetro.set(m, []);
-    byMetro.get(m).push(h);
+    const c = h.cluster || "Other";
+    if (!byCluster.has(c)) byCluster.set(c, []);
+    byCluster.get(c).push(h);
   }
-  const groups = [...byMetro.entries()].sort((a, b) => a[0].localeCompare(b[0]));
-  const optionsHtml = groups.map(([metro, list]) => {
+  const groups = [...byCluster.entries()].sort((a, b) => {
+    // Bigger clusters first (more interesting for the eye).
+    if (b[1].length !== a[1].length) return b[1].length - a[1].length;
+    return a[0].localeCompare(b[0]);
+  });
+  const optionsHtml = groups.map(([cluster, list]) => {
     const opts = list.sort((a, b) => a.name.localeCompare(b.name)).map((h) =>
-      `      <option value="${escAttr(h.id)}">${escHtml(h.name)}</option>`).join("\n");
-    return `    <optgroup label="${escAttr(metro)}">\n${opts}\n    </optgroup>`;
+      `      <option value="${escAttr(h.id)}" data-cluster="${escAttr(h.cluster || "")}">${escHtml(h.name)}</option>`).join("\n");
+    return `    <optgroup label="${escAttr(cluster)}">\n${opts}\n    </optgroup>`;
   }).join("\n");
 
   // The "popular pairs" callout shows pre-built pairs grouped by metro.
@@ -2455,10 +2557,10 @@ ${featuredHtml}
   </div>
 
 <script>
-  // Compare-page picker. The build emits comparison pages for top 8
-  // hospitals per metro in procedure-coverage order. The picker normalizes
-  // alphabetically and tries both URL orderings (we generated only one
-  // direction). If the page 404s the user gets a friendly nudge.
+  // Compare-page picker. We generate every unordered pair of hospitals
+  // within each metro cluster (greater LA, greater NYC, etc.). The picker
+  // filters dropdown B to same-cluster options after A is chosen so users
+  // can only construct valid pairs.
   (function () {
     var existing = ${JSON.stringify(generatedPairs.map((p) => p.slug))};
     var existingSet = new Set(existing);
@@ -2467,17 +2569,45 @@ ${featuredHtml}
     var go = document.getElementById('pickerGo');
     var msg = document.getElementById('pickerMsg');
 
+    // Cache the original full optgroups so we can restore B when A clears.
+    var bOriginal = b.innerHTML;
+    var aOriginal = a.innerHTML;
+
     function buildSlugs(x, y) {
       // Try both orderings since we only generated one direction.
       return [x + '-vs-' + y, y + '-vs-' + x];
     }
-    function update() {
-      msg.textContent = '';
-      if (!a.value || !b.value) return;
-      if (a.value === b.value) { msg.textContent = 'Pick two different hospitals.'; return; }
+
+    // Filter "other" select to only show options whose data-cluster
+    // matches the cluster of the chosen value in "selected". If selected
+    // is empty, restore the full list.
+    function filterPartner(selected, other, originalHtml) {
+      if (!selected.value) {
+        other.innerHTML = originalHtml;
+        return;
+      }
+      var chosenOption = selected.options[selected.selectedIndex];
+      var cluster = chosenOption.getAttribute('data-cluster');
+      if (!cluster) return;
+      var prevValue = other.value;
+      // Reset to the full list, then prune optgroups that don't match.
+      other.innerHTML = originalHtml;
+      var groups = other.querySelectorAll('optgroup');
+      groups.forEach(function (g) {
+        if (g.label !== cluster) g.parentNode.removeChild(g);
+      });
+      // If user had previously chosen a hospital in another cluster, clear.
+      if (prevValue && other.value !== prevValue) other.value = '';
     }
-    a.addEventListener('change', update);
-    b.addEventListener('change', update);
+
+    a.addEventListener('change', function () {
+      filterPartner(a, b, bOriginal);
+      msg.textContent = '';
+    });
+    b.addEventListener('change', function () {
+      filterPartner(b, a, aOriginal);
+      msg.textContent = '';
+    });
 
     go.addEventListener('click', function () {
       if (!a.value || !b.value) { msg.textContent = 'Pick both hospitals.'; return; }
@@ -2485,7 +2615,9 @@ ${featuredHtml}
       var candidates = buildSlugs(a.value, b.value);
       var match = candidates.find(function (s) { return existingSet.has(s); });
       if (match) { window.location.href = '/compare/' + match; return; }
-      msg.innerHTML = 'No pre-built comparison for that pair yet. <a href="/hospital/' + a.value + '" style="color:var(--signal)">Open ' + (a.options[a.selectedIndex].text) + '</a> and <a href="/hospital/' + b.value + '" style="color:var(--signal)">' + (b.options[b.selectedIndex].text) + '</a> instead.';
+      // Pair is in same cluster (filter ensures it) but somehow not generated.
+      // Fallback: open hospital A; user can navigate to B from there.
+      window.location.href = '/hospital/' + a.value;
     });
   })();
 </script>
@@ -2801,25 +2933,23 @@ async function main() {
   fs.mkdirSync(compareDir, { recursive: true });
   let comparePagesWritten = 0;
   const generatedPairs = [];
-  // Group hospitals by metro and rank each metro's hospitals by procedure
-  // coverage (# procedures with data).
-  const byMetroSet = new Map();
+  // Group hospitals by metro CLUSTER (not raw city-metro) so all greater-
+  // LA hospitals pair with each other regardless of suburb. Generate every
+  // unordered pair within each cluster (no top-N cap; hospital pair search
+  // is the whole point of this surface).
+  const byClusterSet = new Map();
   for (const [hid, h] of hospitalById) {
     if (!h.metro) continue;
-    if (!byMetroSet.has(h.metro)) byMetroSet.set(h.metro, []);
-    byMetroSet.get(h.metro).push({ hid, h });
+    const cluster = metroCluster(h.metro);
+    if (!byClusterSet.has(cluster)) byClusterSet.set(cluster, []);
+    byClusterSet.get(cluster).push({ hid, h });
   }
-  for (const [metro, list] of byMetroSet) {
+  for (const [cluster, list] of byClusterSet) {
     if (list.length < 2) continue;
-    // Sort by procedure coverage desc.
-    const enriched = list.map(({ hid, h }) => ({
-      hid, h, procCount: (procsByHospital.get(hid) || []).length,
-    })).sort((a, b) => b.procCount - a.procCount);
-    const top = enriched.slice(0, 8);
-    for (let i = 0; i < top.length; i++) {
-      for (let j = i + 1; j < top.length; j++) {
-        const a = top[i].h;
-        const b = top[j].h;
+    for (let i = 0; i < list.length; i++) {
+      for (let j = i + 1; j < list.length; j++) {
+        const a = list[i].h;
+        const b = list[j].h;
         const html = renderComparisonPage({
           a, b, ratings, hcahps, hospitalsByProc, procedures: data.procedures, asOf: data.as_of,
         });
@@ -2836,7 +2966,12 @@ async function main() {
   }
 
   // /compare hub with picker.
-  const hospitalsForPicker = [...hospitalById.values()];
+  // Stamp each hospital with its metro cluster so the picker can filter
+  // dropdown B to same-cluster hospitals after A is chosen.
+  const hospitalsForPicker = [...hospitalById.values()].map((h) => ({
+    ...h,
+    cluster: metroCluster(h.metro || ""),
+  }));
   fs.writeFileSync(path.join(compareDir, "index.html"), renderCompareHub({
     generatedPairs, hospitalsForPicker, asOf: data.as_of,
   }));
