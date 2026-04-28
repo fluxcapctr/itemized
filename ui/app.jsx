@@ -354,7 +354,12 @@ function PersonalizationForm({ plan, setPlan, payers, onReset, coverage, totalLo
         </div>
         <div className="answer">
           <div className={`pf-select-shell ${plan.payer ? "on" : ""}`}>
-            <span>{plan.payer ? payers.find(p => p.id === plan.payer)?.label : "Select your plan"}</span>
+            <span>{
+              plan.payer === "__cash__" ? "I'm paying cash"
+              : plan.payer === "__other__" ? "Other / not listed"
+              : plan.payer ? payers.find(p => p.id === plan.payer)?.label
+              : "Select your plan"
+            }</span>
             <span className="chev">▾</span>
             <select value={plan.payer || ""} onChange={e => setPlan({ ...plan, payer: e.target.value || null })}>
               <option value="">— Select —</option>
@@ -666,18 +671,6 @@ function MethodologyCards({ data }) {
           <h3 className="h">One <em>input</em>, not the answer.</h3>
           <p className="b">CMS star ratings are hospital-wide composites built from ~50 measures spanning safety, mortality, readmission, patient experience, and timeliness. They reflect <strong>overall hospital quality, not procedure-specific outcomes</strong>. A 5-star hospital may not be the best for every procedure, and a 3-star hospital may have a strong specific service line. Use the rating as one input, not the answer.</p>
           <a className="meth-link" href="https://www.medicare.gov/care-compare/" target="_blank" rel="noopener noreferrer">data.cms.gov · dataset xubh-q36u ↗</a>
-        </div>
-        <div className="meth-card">
-          <div className="eyebrow">§ 04 — What's NOT in this dataset</div>
-          <h3 className="h"><em>Hospitals only</em>. Not ASCs.</h3>
-          <p className="b">Our data comes from hospital MRFs published under <strong>45 CFR 180.50</strong> (the Hospital Price Transparency rule). That covers every US hospital — about 5,400 facilities. It does NOT cover free-standing surgery centers, imaging chains (RadNet, SimonMed, Akumin), or individual physician offices. Those facilities operate under different rules and don't publish bulk-downloadable price files.</p>
-          <p className="b">A separate federal rule — <strong>Transparency in Coverage</strong> (TiC) — requires <em>insurers</em> to publish their negotiated rates with every in-network provider. Those files exist but are 200x larger than hospital MRFs and require enterprise-scale data infrastructure to ingest. Companies like Turquoise Health and Serif Health have built that infrastructure for B2B clients. We've made the deliberate choice not to. Our edge is editorial honesty on the data we DO have, not breadth of every provider.</p>
-          <p className="b">For shoppable imaging specifically (knee MRI, mammogram, CT), free-standing imaging centers are typically <strong>50–70% cheaper than hospitals</strong>. We list them as alternatives where it helps; the data behind those alternatives comes from a small curated list, not from parsing payer files.</p>
-        </div>
-        <div className="meth-card dark">
-          <div className="eyebrow">§ 05 — Other honest caveats</div>
-          <h3 className="h">Where we cut <em>corners</em>.</h3>
-          <p className="b">25 LA-area hospitals. 30 procedures. National comparison set adds 71 hospitals across NYC, Chicago, Houston, Dallas, Philadelphia, Phoenix, Atlanta, Boston, Seattle, and a handful of other metros. Payer normalization is incomplete (Anthem BCBS and Blue Cross Blue Shield are kept separate). Some hospitals publish wide-format MRFs that need a separate parser. Some bundle the radiologist's professional fee; others don't. Pediatric specialty hospitals (Children's Hospital LA, Seattle Children's, CHOP, Texas Children's, Lurie, Phoenix Children's, Boston Children's) and cancer specialty hospitals (USC Norris, MSK, MD Anderson) aren't rated by CMS — the methodology depends on Medicare claims they don't generate. We surface every gap rather than paper over it.</p>
         </div>
       </div>
     </div>
