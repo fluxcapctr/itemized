@@ -1250,18 +1250,35 @@ function App() {
         />
 
         <footer className="foot">
-          <div className="foot-sources">
-            <div className="foot-h">Data sources</div>
-            <ul>
-              <li><strong>Hospital prices</strong> — CMS Hospital Price Transparency rule (45 CFR 180.50), as of {data.as_of}.</li>
-              <li><strong>Hospital quality ratings</strong> — CMS Hospital Care Compare (dataset xubh-q36u), as of {window.ITEMIZED_RATINGS?.as_of || "2026-04-26"}.</li>
-              <li><strong>Coverage</strong> — 14 hospitals across 8 metros. Methodology and gaps detailed above.</li>
-            </ul>
+          <div className="foot-cols">
+            <div className="foot-col">
+              <h4>Compare</h4>
+              <ul>
+                <li><a href="/procedure">All procedures</a></li>
+                <li><a href="/hospital">All hospitals</a></li>
+                <li><a href="/compare">Head-to-head</a></li>
+                <li><a href="/system">Hospital systems</a></li>
+              </ul>
+            </div>
+            <div className="foot-col">
+              <h4>Resources</h4>
+              <ul>
+                <li><a href="/bills.html">Got a bill?</a></li>
+                <li><a href="/guide/dispute-medical-bill">Dispute-bill guide</a></li>
+                <li><a href="/glossary">Glossary</a></li>
+              </ul>
+            </div>
+            <div className="foot-col">
+              <h4>About</h4>
+              <ul>
+                <li><a href="#methodology">Methodology</a></li>
+                <li><a href="#faq">FAQ</a></li>
+              </ul>
+            </div>
           </div>
-          <div className="foot-meta">
-            <div>Itemized · itemized.health</div>
-            <div className="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice.</div>
-            <div className="foot-ver">v0.3 · Apr 2026</div>
+          <div className="foot-rule">
+            <strong>Data sources:</strong> CMS Hospital Price Transparency rule (45 CFR 180.50). CMS Hospital Care Compare (xubh-q36u). CMS HCAHPS patient survey (dgck-syfz). Last refresh: {data.as_of}.
+            <div className="foot-disc">A consumer reading of CMS-mandated MRF data. Not medical or financial advice. Itemized · itemized.health</div>
           </div>
         </footer>
       </div>
