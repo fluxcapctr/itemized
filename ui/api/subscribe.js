@@ -88,12 +88,17 @@ export default async function handler(req) {
       console.log("[subscribe] KV sadd failed:", r2.status, txt);
       // Non-fatal: the per-email record is already stored.
     }
-    // Storage succeeded. Fire-and-forget the welcome email — failures
-    // here shouldn't break the user's subscribe experience.
-    sendWelcomeEmail(email).catch((err) => {
+    // Storage succeeded. Send the welcome email and AWAIT it — Vercel
+    // Edge runtime tears down the execution context after the response
+    // is returned, so fire-and-forget doesn't reliably complete the
+    // outbound fetch. Adds ~200-400ms but guarantees delivery attempt.
+    let welcomeSent = false;
+    try {
+      welcomeSent = await sendWelcomeEmail(email);
+    } catch (err) {
       console.log("[subscribe] welcome email send failed:", err?.message);
-    });
-    return jsonResponse({ ok: true, stored: true });
+    }
+    return jsonResponse({ ok: true, stored: true, welcomeSent });
   } catch (err) {
     console.log("[subscribe] KV exception:", err?.message);
     return jsonResponse({ ok: false, error: "Storage exception" }, 500);
@@ -101,12 +106,13 @@ export default async function handler(req) {
 }
 
 // Welcome email via Resend. Triggered after a successful KV write.
-// If RESEND_API_KEY isn't configured, logs and skips silently.
+// Returns true on 2xx, false on non-2xx or missing key. Throws on
+// network exception.
 async function sendWelcomeEmail(toEmail) {
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.log("[subscribe] RESEND_API_KEY not configured. Skipping welcome.");
-    return;
+    return false;
   }
   const r = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -130,7 +136,11 @@ async function sendWelcomeEmail(toEmail) {
   if (!r.ok) {
     const txt = await r.text().catch(() => "");
     console.log("[subscribe] Resend non-2xx:", r.status, txt);
+    return false;
   }
+  const body = await r.json().catch(() => ({}));
+  console.log("[subscribe] welcome email sent. Resend id:", body?.id || "(no id)");
+  return true;
 }
 
 const WELCOME_TEXT = `Welcome.
